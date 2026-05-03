@@ -104,7 +104,6 @@ function OptionRow({ option, isSelected, onSelect, showTextInput, onTextChange, 
             placeholder="Please specify..."
             value={inputValue || ''}
             onChange={(e) => onTextChange(e.target.value)}
-
             style={{
               width: '100%',
               padding: '0.625rem 0.875rem',
