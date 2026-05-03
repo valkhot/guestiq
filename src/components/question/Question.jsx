@@ -10,6 +10,7 @@ import SingleSelectQuestion from './SingleSelectQuestion';
 // scale_5 and multi_select added in Sprint 3
 const QUESTION_RENDERERS = {
   single_select: SingleSelectQuestion,
+  multi_select: SingleSelectQuestion,
 };
 
 export default function Question({
