@@ -1,0 +1,18 @@
+{
+  "app": {
+    "name": "GuestIQ",
+    "tagline": "Hotel Guest Expectations Research"
+  },
+  "common": {
+    "continue": "Continue",
+    "skip": "Skip — I'm done",
+    "notNow": "Not now — maybe later",
+    "refresh": "Refresh",
+    "tryAgain": "Try again",
+    "loading": "Loading..."
+  },
+  "errors": {
+    "generic": "Something went wrong. Please refresh the page to continue.",
+    "config": "Configuration error — GuestIQ cannot start. Please contact your administrator."
+  }
+}

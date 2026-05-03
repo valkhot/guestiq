@@ -1,0 +1,176 @@
+[
+  {
+    "sid": "/1-purpose-and-scope",
+    "title": "1. PURPOSE AND SCOPE",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/2-the-six-active-frameworks",
+    "title": "2. THE SIX ACTIVE FRAMEWORKS",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/3-behaviour-driven-tdd--full-specification",
+    "title": "3. BEHAVIOUR-DRIVEN TDD — FULL SPECIFICATION",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/31-what-it-is-and-what-it-is-not",
+        "title": "3.1 What It Is and What It Is Not",
+        "level": 2,
+        "parent": "/3-behaviour-driven-tdd--full-specification",
+        "children": []
+      },
+      {
+        "sid": "/32-the-three-tdd-instruments",
+        "title": "3.2 The Three TDD Instruments",
+        "level": 2,
+        "parent": "/3-behaviour-driven-tdd--full-specification",
+        "children": []
+      },
+      {
+        "sid": "/33-acceptance-criteria-as-test-specifications",
+        "title": "3.3 Acceptance Criteria as Test Specifications",
+        "level": 2,
+        "parent": "/3-behaviour-driven-tdd--full-specification",
+        "children": []
+      },
+      {
+        "sid": "/34-what-behaviour-driven-tdd-does-not-cover",
+        "title": "3.4 What Behaviour-Driven TDD Does NOT Cover",
+        "level": 2,
+        "parent": "/3-behaviour-driven-tdd--full-specification",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/4-product-led-growth--phase-1-mechanics",
+    "title": "4. PRODUCT-LED GROWTH — PHASE 1 MECHANICS",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/41-the-engagement-loop",
+        "title": "4.1 The Engagement Loop",
+        "level": 2,
+        "parent": "/4-product-led-growth--phase-1-mechanics",
+        "children": []
+      },
+      {
+        "sid": "/42-time-to-value--the-plg-onboarding-funnel",
+        "title": "4.2 Time-to-Value — The PLG Onboarding Funnel",
+        "level": 2,
+        "parent": "/4-product-led-growth--phase-1-mechanics",
+        "children": []
+      },
+      {
+        "sid": "/43-the-aha-moment",
+        "title": "4.3 The Aha Moment",
+        "level": 2,
+        "parent": "/4-product-led-growth--phase-1-mechanics",
+        "children": []
+      },
+      {
+        "sid": "/44-plg-metrics--phase-1",
+        "title": "4.4 PLG Metrics — Phase 1",
+        "level": 2,
+        "parent": "/4-product-led-growth--phase-1-mechanics",
+        "children": []
+      },
+      {
+        "sid": "/45-plg--phase-2-expansion",
+        "title": "4.5 PLG — Phase 2 Expansion",
+        "level": 2,
+        "parent": "/4-product-led-growth--phase-1-mechanics",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/5-work-hierarchy--epic--feature--story--task",
+    "title": "5. WORK HIERARCHY — EPIC → FEATURE → STORY → TASK",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/6-scrum-master-function",
+    "title": "6. SCRUM MASTER FUNCTION",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/61-the-problem-this-solves",
+        "title": "6.1 The Problem This Solves",
+        "level": 2,
+        "parent": "/6-scrum-master-function",
+        "children": []
+      },
+      {
+        "sid": "/62-role-definition",
+        "title": "6.2 Role Definition",
+        "level": 2,
+        "parent": "/6-scrum-master-function",
+        "children": []
+      },
+      {
+        "sid": "/63-the-sprint-start-checklist",
+        "title": "6.3 The Sprint-Start Checklist",
+        "level": 2,
+        "parent": "/6-scrum-master-function",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/7-business-goals-framework",
+    "title": "7. BUSINESS GOALS FRAMEWORK",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/71-jobs-to-be-done--three-actor-statements",
+        "title": "7.1 Jobs-to-Be-Done — Three Actor Statements",
+        "level": 2,
+        "parent": "/7-business-goals-framework",
+        "children": []
+      },
+      {
+        "sid": "/72-north-star-metric",
+        "title": "7.2 North Star Metric",
+        "level": 2,
+        "parent": "/7-business-goals-framework",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/8-story-mapping--deferred-to-phase-2",
+    "title": "8. STORY MAPPING — DEFERRED TO PHASE 2",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/9-complete-framework-decision-register",
+    "title": "9. COMPLETE FRAMEWORK DECISION REGISTER",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/10-framework-interaction-rules",
+    "title": "10. FRAMEWORK INTERACTION RULES",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/11-artifact-update-summary",
+    "title": "11. ARTIFACT UPDATE SUMMARY",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/12-version-update-log",
+    "title": "12. VERSION UPDATE LOG",
+    "level": 1,
+    "children": []
+  }
+]

@@ -1,0 +1,155 @@
+[
+  {
+    "sid": "/1-project-purpose",
+    "title": "1. PROJECT PURPOSE",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/2-project-objectives",
+    "title": "2. PROJECT OBJECTIVES",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/21-primary-objectives",
+        "title": "2.1 Primary Objectives",
+        "level": 2,
+        "parent": "/2-project-objectives",
+        "children": []
+      },
+      {
+        "sid": "/22-secondary-objectives",
+        "title": "2.2 Secondary Objectives",
+        "level": 2,
+        "parent": "/2-project-objectives",
+        "children": []
+      },
+      {
+        "sid": "/23-what-this-project-is-not-attempting",
+        "title": "2.3 What This Project Is NOT Attempting",
+        "level": 2,
+        "parent": "/2-project-objectives",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/3-project-scope",
+    "title": "3. PROJECT SCOPE",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/31-in-scope--phase-1-prototype",
+        "title": "3.1 In Scope — Phase 1 Prototype",
+        "level": 2,
+        "parent": "/3-project-scope",
+        "children": []
+      },
+      {
+        "sid": "/32-out-of-scope--phase-1-prototype",
+        "title": "3.2 Out of Scope — Phase 1 Prototype",
+        "level": 2,
+        "parent": "/3-project-scope",
+        "children": []
+      },
+      {
+        "sid": "/33-scope-change-process",
+        "title": "3.3 Scope Change Process",
+        "level": 2,
+        "parent": "/3-project-scope",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/4-success-criteria",
+    "title": "4. SUCCESS CRITERIA",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/5-stakeholders",
+    "title": "5. STAKEHOLDERS",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/51-stakeholder-communication-plan",
+        "title": "5.1 Stakeholder Communication Plan",
+        "level": 2,
+        "parent": "/5-stakeholders",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/6-high-level-timeline",
+    "title": "6. HIGH-LEVEL TIMELINE",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/61-key-milestones",
+        "title": "6.1 Key Milestones",
+        "level": 2,
+        "parent": "/6-high-level-timeline",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/7-budget",
+    "title": "7. BUDGET",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/8-key-project-risks",
+    "title": "8. KEY PROJECT RISKS",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/9-constraints-and-assumptions",
+    "title": "9. CONSTRAINTS AND ASSUMPTIONS",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/91-constraints",
+        "title": "9.1 Constraints",
+        "level": 2,
+        "parent": "/9-constraints-and-assumptions",
+        "children": []
+      },
+      {
+        "sid": "/92-assumptions",
+        "title": "9.2 Assumptions",
+        "level": 2,
+        "parent": "/9-constraints-and-assumptions",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/10-confirmed-technology-stack",
+    "title": "10. CONFIRMED TECHNOLOGY STACK",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/11-definition-of-project-success",
+    "title": "11. DEFINITION OF PROJECT SUCCESS",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/13-delivery-methodology",
+    "title": "13. DELIVERY METHODOLOGY",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/12-project-authorization-and-approval",
+    "title": "12. PROJECT AUTHORIZATION AND APPROVAL",
+    "level": 1,
+    "children": []
+  }
+]

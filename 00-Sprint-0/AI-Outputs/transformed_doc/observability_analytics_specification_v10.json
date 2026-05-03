@@ -1,0 +1,224 @@
+[
+  {
+    "sid": "/1-observability-architecture-overview",
+    "title": "1. Observability Architecture Overview",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/11-initialization-order--mandatory",
+        "title": "1.1 Initialization Order — Mandatory",
+        "level": 2,
+        "parent": "/1-observability-architecture-overview",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/2-sentry-configuration",
+    "title": "2. Sentry Configuration",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/21-sdk-setup",
+        "title": "2.1 SDK Setup",
+        "level": 2,
+        "parent": "/2-sentry-configuration",
+        "children": []
+      },
+      {
+        "sid": "/22-errorboundary",
+        "title": "2.2 ErrorBoundary",
+        "level": 2,
+        "parent": "/2-sentry-configuration",
+        "children": []
+      },
+      {
+        "sid": "/23-service-layer-error-capture",
+        "title": "2.3 Service Layer Error Capture",
+        "level": 2,
+        "parent": "/2-sentry-configuration",
+        "children": []
+      },
+      {
+        "sid": "/24-performance-monitoring--core-web-vitals-targets",
+        "title": "2.4 Performance Monitoring — Core Web Vitals Targets",
+        "level": 2,
+        "parent": "/2-sentry-configuration",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/3-posthog-configuration",
+    "title": "3. PostHog Configuration",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/31-sdk-setup",
+        "title": "3.1 SDK Setup",
+        "level": 2,
+        "parent": "/3-posthog-configuration",
+        "children": []
+      },
+      {
+        "sid": "/32-analytics-service-architecture",
+        "title": "3.2 Analytics Service Architecture",
+        "level": 2,
+        "parent": "/3-posthog-configuration",
+        "children": []
+      },
+      {
+        "sid": "/33-property_id-architecture",
+        "title": "3.3 property_id Architecture",
+        "level": 2,
+        "parent": "/3-posthog-configuration",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/4-the-27-canonical-posthog-events",
+    "title": "4. The 27 Canonical PostHog Events",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/41-sprint-2-events--16-events-implemented-sprint-2-day-one",
+        "title": "4.1 Sprint 2 Events — 16 events (implemented Sprint 2 day one)",
+        "level": 2,
+        "parent": "/4-the-27-canonical-posthog-events",
+        "children": []
+      },
+      {
+        "sid": "/42-sprint-3-events--8-events-implemented-sprint-3",
+        "title": "4.2 Sprint 3 Events — 8 events (implemented Sprint 3)",
+        "level": 2,
+        "parent": "/4-the-27-canonical-posthog-events",
+        "children": []
+      },
+      {
+        "sid": "/43-sprint-4-events--3-events-implemented-sprint-4",
+        "title": "4.3 Sprint 4 Events — 3 events (implemented Sprint 4)",
+        "level": 2,
+        "parent": "/4-the-27-canonical-posthog-events",
+        "children": []
+      },
+      {
+        "sid": "/44-supplementary-event--beyond-the-27-canonical-events",
+        "title": "4.4 Supplementary Event — beyond the 27 canonical events",
+        "level": 2,
+        "parent": "/4-the-27-canonical-posthog-events",
+        "children": []
+      },
+      {
+        "sid": "/45-funnel-definition--primary-research-instrument",
+        "title": "4.5 Funnel Definition — Primary Research Instrument",
+        "level": 2,
+        "parent": "/4-the-27-canonical-posthog-events",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/5-privacy-requirements",
+    "title": "5. Privacy Requirements",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/6-sprint-by-sprint-instrumentation-plan",
+    "title": "6. Sprint-by-Sprint Instrumentation Plan",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/pre-sprint",
+        "title": "Pre-Sprint",
+        "level": 2,
+        "parent": "/6-sprint-by-sprint-instrumentation-plan",
+        "children": []
+      },
+      {
+        "sid": "/sprint-2--observability-goes-live",
+        "title": "Sprint 2 — Observability Goes Live",
+        "level": 2,
+        "parent": "/6-sprint-by-sprint-instrumentation-plan",
+        "children": []
+      },
+      {
+        "sid": "/sprint-3--gamification-events",
+        "title": "Sprint 3 — Gamification Events",
+        "level": 2,
+        "parent": "/6-sprint-by-sprint-instrumentation-plan",
+        "children": []
+      },
+      {
+        "sid": "/sprint-4--full-verification",
+        "title": "Sprint 4 — Full Verification",
+        "level": 2,
+        "parent": "/6-sprint-by-sprint-instrumentation-plan",
+        "children": []
+      },
+      {
+        "sid": "/sprint-5--real-respondent-confirmation",
+        "title": "Sprint 5 — Real-Respondent Confirmation",
+        "level": 2,
+        "parent": "/6-sprint-by-sprint-instrumentation-plan",
+        "children": []
+      },
+      {
+        "sid": "/sprint-6--research-analytics",
+        "title": "Sprint 6 — Research Analytics",
+        "level": 2,
+        "parent": "/6-sprint-by-sprint-instrumentation-plan",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/7-sprint-4-verification-checklist",
+    "title": "7. Sprint 4 Verification Checklist",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/71-posthog-events-verification",
+        "title": "7.1 PostHog Events Verification",
+        "level": 2,
+        "parent": "/7-sprint-4-verification-checklist",
+        "children": []
+      },
+      {
+        "sid": "/72-sentry-verification",
+        "title": "7.2 Sentry Verification",
+        "level": 2,
+        "parent": "/7-sprint-4-verification-checklist",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/8-analytics-for-research--posthog-as-research-instrument",
+    "title": "8. Analytics for Research — PostHog as Research Instrument",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/81-key-research-questions-answered-by-posthog",
+        "title": "8.1 Key Research Questions Answered by PostHog",
+        "level": 2,
+        "parent": "/8-analytics-for-research--posthog-as-research-instrument",
+        "children": []
+      },
+      {
+        "sid": "/82-sprint-6-analytics-summary-scope",
+        "title": "8.2 Sprint 6 Analytics Summary Scope",
+        "level": 2,
+        "parent": "/8-analytics-for-research--posthog-as-research-instrument",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/9-version-log",
+    "title": "9. Version Log",
+    "level": 1,
+    "children": []
+  }
+]

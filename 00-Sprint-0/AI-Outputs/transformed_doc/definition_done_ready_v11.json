@@ -1,0 +1,114 @@
+[
+  {
+    "sid": "/1-purpose-and-importance",
+    "title": "1. PURPOSE AND IMPORTANCE",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/2-how-to-use-these-definitions",
+    "title": "2. HOW TO USE THESE DEFINITIONS",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/definition-of-ready",
+    "title": "DEFINITION OF READY",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/definition-of-done",
+    "title": "DEFINITION OF DONE",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/3-supplementary-criteria-for-specific-story-types",
+    "title": "3. SUPPLEMENTARY CRITERIA FOR SPECIFIC STORY TYPES",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/s1--branching-logic-specification",
+        "title": "S1 — Branching Logic Specification",
+        "level": 2,
+        "parent": "/3-supplementary-criteria-for-specific-story-types",
+        "children": []
+      },
+      {
+        "sid": "/s2--session-resume-and-disambiguation",
+        "title": "S2 — Session Resume and Disambiguation",
+        "level": 2,
+        "parent": "/3-supplementary-criteria-for-specific-story-types",
+        "children": []
+      },
+      {
+        "sid": "/s3--phase-1b-json-content-extraction-strangler-fig-migration",
+        "title": "S3 — Phase 1b JSON Content Extraction (Strangler Fig Migration)",
+        "level": 2,
+        "parent": "/3-supplementary-criteria-for-specific-story-types",
+        "children": []
+      },
+      {
+        "sid": "/s4--management-dashboard",
+        "title": "S4 — Management Dashboard",
+        "level": 2,
+        "parent": "/3-supplementary-criteria-for-specific-story-types",
+        "children": []
+      },
+      {
+        "sid": "/s5--uat-and-pilot-launch",
+        "title": "S5 — UAT and Pilot Launch",
+        "level": 2,
+        "parent": "/3-supplementary-criteria-for-specific-story-types",
+        "children": []
+      },
+      {
+        "sid": "/s6--pilot-data-and-debrief",
+        "title": "S6 — Pilot Data and Debrief",
+        "level": 2,
+        "parent": "/3-supplementary-criteria-for-specific-story-types",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/4-sprint-gate-conditions",
+    "title": "4. SPRINT GATE CONDITIONS",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/5-exception-process",
+    "title": "5. EXCEPTION PROCESS",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/6-quick-reference-checklists",
+    "title": "6. QUICK REFERENCE CHECKLISTS",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/definition-of-ready--quick-check",
+        "title": "DEFINITION OF READY — QUICK CHECK",
+        "level": 2,
+        "parent": "/6-quick-reference-checklists",
+        "children": []
+      },
+      {
+        "sid": "/definition-of-done--quick-check",
+        "title": "DEFINITION OF DONE — QUICK CHECK",
+        "level": 2,
+        "parent": "/6-quick-reference-checklists",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/7-version-update-log",
+    "title": "7. VERSION UPDATE LOG",
+    "level": 1,
+    "children": []
+  }
+]

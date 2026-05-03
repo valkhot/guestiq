@@ -1,0 +1,175 @@
+# Conversion Report
+
+## Document Information
+- **Source File**: c:\GuestIQ Research Project\01-Sprint-1\AI-Outputs\entity_relationship_diagram_v10.docx
+- **File Type**: DOCX
+- **Output Directory**: c:\GuestIQ Research Project\TargetMDDirectory\entity_relationship_diagram_v10
+- **Images Directory**: c:\GuestIQ Research Project\TargetMDDirectory\entity_relationship_diagram_v10\images
+
+## Conversion Results
+- **Total Headings**: 157
+- **Images Extracted**: 0
+- **Issues Handled**: 0
+- **Status**: ✅ Completed Successfully
+
+## Extracted Images
+No images found or extracted.
+
+## Document Structure
+  - **ENTITY RELATIONSHIP DIAGRAM**
+    - **GuestIQ**** — Hotel Guest Expectations Research Application**
+  - **Document ID**
+  - **Document Version**
+  - **Document Status**
+  - **Sprint**
+  - **Tables**
+  - **Migration Files**
+  - **Review Checklist**
+  - **Document Location**
+  - **Downstream Use**
+  - **Related Documents**
+    - **WARN****:  The**** sessions table contains a ****user_id**** field that is NULLABLE and always NULL in Phase 1. This field is the authentication bridge to Phase 2 — it must be present from Sprint 2 even though it is never populated in the prototype. The review checklist (S1-1.8) explicitly verifies this field ****is**** present.**
+- 1. ERD Notation and Field Constraint Legend
+  - **PK — Primary Key**
+  - **FK — Foreign Key**
+  - **NOT NULL**
+  - **NULLABLE**
+  - **Phase 2 field**
+  - **Phase 1 field**
+- 2. Table: sessions
+  - **Field Name**
+  - **Type**
+  - **Constraint**
+  - **Phase**
+  - **Description**
+  - **session_id**
+  - **PK · NOT NULL**
+  - **property_id**
+  - **NOT NULL**
+  - **tier**
+  - **NOT NULL**
+  - **tense_frame**
+  - **NULLABLE**
+  - **intent_category**
+  - **NULLABLE**
+  - **is_complete**
+  - **NOT NULL**
+  - **created_at**
+  - **NOT NULL · DEFAULT ****now(****)**
+  - **completed_at**
+  - **NULLABLE**
+  - **credentials_years**
+  - **NULLABLE**
+  - **credentials_interactions**
+  - **NULLABLE**
+  - **credentials_shift**
+  - **NULLABLE**
+  - **user_id**
+  - **NULLABLE**
+- 3. Table: responses
+  - **Field Name**
+  - **Type**
+  - **Constraint**
+  - **Phase**
+  - **Description**
+  - **response_id**
+  - **PK · NOT NULL**
+  - **session_id**
+  - **FK → sessions · NOT NULL**
+  - **question_id**
+  - **NOT NULL**
+  - **answer_code**
+  - **NOT NULL**
+  - **tense_frame**
+  - **NOT NULL**
+  - **module_number**
+  - **NOT NULL**
+  - **property_id**
+  - **NOT NULL**
+  - **created_at**
+  - **NOT NULL · DEFAULT ****now(****)**
+- 4. Table: scale_responses
+  - **Field Name**
+  - **Type**
+  - **Constraint**
+  - **Phase**
+  - **Description**
+  - **scale_response_id**
+  - **PK · NOT NULL**
+  - **session_id**
+  - **FK → sessions · NOT NULL**
+  - **question_id**
+  - **NOT NULL**
+  - **scale_value**
+  - **NOT NULL**
+  - **property_id**
+  - **NOT NULL**
+  - **created_at**
+  - **NOT NULL · DEFAULT ****now(****)**
+- 5. Table: none_flags
+  - **Field Name**
+  - **Type**
+  - **Constraint**
+  - **Phase**
+  - **Description**
+  - **none_flag_id**
+  - **PK · NOT NULL**
+  - **session_id**
+  - **FK → sessions · NOT NULL**
+  - **question_id**
+  - **NOT NULL**
+  - **property_id**
+  - **NOT NULL**
+  - **created_at**
+  - **NOT NULL · DEFAULT ****now(****)**
+- 6. Table Relationships
+  - **Parent Table**
+  - **Child Table**
+  - **Cardinality**
+  - **FK Field**
+  - **Business Rule**
+  - **sessions**
+  - **responses**
+  - **sessions**
+  - **scale_responses**
+  - **sessions**
+  - **none_flags**
+  - **sessions  (****1)**
+    - **responses  ****          ****scale_responses****  ****        ****none_flags**
+- 7. Row Level Security Policies
+  - **Table**
+  - **RLS Status**
+  - **Anon Key — INSERT**
+  - **Anon Key — SELECT**
+  - **Notes**
+  - **sessions**
+  - **✓**** PERMITTED**
+  - **✗**** BLOCKED**
+  - **responses**
+  - **✓**** PERMITTED**
+  - **✗**** BLOCKED**
+  - **scale_responses**
+  - **✓**** PERMITTED**
+  - **✗**** BLOCKED**
+  - **none_flags**
+  - **✓**** PERMITTED**
+  - **✗**** BLOCKED**
+    - **WARN:  ****getDashboardData****(****) in supabase.js reads from all 4 tables for the management dashboard. The default RLS policy blocks SELECT with the anon key. Migration file 20240101000005_rls_policies.sql includes a specific dashboard aggregate read policy. Verify this policy is active in ****Supabase**** Auth → Policies before testing the dashboard in Sprint 4.**
+- 8. Supabase Migration SQL
+  - Migration 1 — Create sessions table
+  - Migration 2 — Create responses table
+  - Migration 3 — Create scale_responses table
+  - Migration 4 — Create none_flags table
+  - Migration 5 — Enable RLS and create policies
+- 9. S1-1.8 Review Checklist
+  - **Check**
+  - **Verification**
+  - **Check 1 — ****user_id**** in sessions table**
+  - **Check 2 — ****property_id**** in sessions table**
+  - **Check 3 — All 4 tables present with correct fields**
+- 10. Version Log
+  - **Ver.**
+  - **Date**
+  - **By**
+  - **Change**
+  - **— END OF ENTITY RELATIONSHIP DIAGRAM v1.0 —**

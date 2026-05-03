@@ -1,0 +1,221 @@
+[
+  {
+    "sid": "/1-purpose-and-scope",
+    "title": "1. PURPOSE AND SCOPE",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/2-use-case-summary",
+    "title": "2. USE CASE SUMMARY",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/3-full-use-case-specifications",
+    "title": "3. FULL USE CASE SPECIFICATIONS",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/basic-scenario--success-path-respondent-completes-selected-tier-from-start-to-finish",
+        "title": "Basic Scenario — Success path: respondent completes selected tier from start to finish",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      },
+      {
+        "sid": "/use-case-slices-features--uc-01",
+        "title": "Use Case Slices (Features) — UC-01",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      },
+      {
+        "sid": "/traceability--uc-01",
+        "title": "Traceability — UC-01",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      },
+      {
+        "sid": "/basic-scenario--continuous-data-quality-maintenance-throughout-pilot",
+        "title": "Basic Scenario — Continuous data quality maintenance throughout pilot",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      },
+      {
+        "sid": "/use-case-slices-features--uc-02",
+        "title": "Use Case Slices (Features) — UC-02",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      },
+      {
+        "sid": "/traceability--uc-02",
+        "title": "Traceability — UC-02",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      },
+      {
+        "sid": "/basic-scenario--manager-accesses-dashboard-and-exports-report",
+        "title": "Basic Scenario — Manager accesses dashboard and exports report",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      },
+      {
+        "sid": "/use-case-slices-features--uc-03",
+        "title": "Use Case Slices (Features) — UC-03",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      },
+      {
+        "sid": "/traceability--uc-03",
+        "title": "Traceability — UC-03",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      },
+      {
+        "sid": "/basic-scenario--continuous-data-write-and-protection-throughout-pilot",
+        "title": "Basic Scenario — Continuous data write and protection throughout pilot",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      },
+      {
+        "sid": "/use-case-slices-features--uc-04",
+        "title": "Use Case Slices (Features) — UC-04",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      },
+      {
+        "sid": "/traceability--uc-04",
+        "title": "Traceability — UC-04",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      },
+      {
+        "sid": "/basic-scenario--lead-researcher-edits-questionnaire-content-and-verifies-the-change-is-live",
+        "title": "Basic Scenario — Lead Researcher edits questionnaire content and verifies the change is live",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      },
+      {
+        "sid": "/use-case-slices-features--uc-05",
+        "title": "Use Case Slices (Features) — UC-05",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      },
+      {
+        "sid": "/traceability--uc-05",
+        "title": "Traceability — UC-05",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      },
+      {
+        "sid": "/basic-scenario--debrief-report-and-phase-2-decision",
+        "title": "Basic Scenario — Debrief report and Phase 2 decision",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      },
+      {
+        "sid": "/use-case-slices-features--uc-06",
+        "title": "Use Case Slices (Features) — UC-06",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      },
+      {
+        "sid": "/traceability--uc-06",
+        "title": "Traceability — UC-06",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      },
+      {
+        "sid": "/basic-scenario--continuous-deployment-and-monitoring-throughout-pilot",
+        "title": "Basic Scenario — Continuous deployment and monitoring throughout pilot",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      },
+      {
+        "sid": "/use-case-slices-features--uc-07",
+        "title": "Use Case Slices (Features) — UC-07",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      },
+      {
+        "sid": "/traceability--uc-07",
+        "title": "Traceability — UC-07",
+        "level": 2,
+        "parent": "/3-full-use-case-specifications",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/4-use-case--frnfr-master-traceability",
+    "title": "4. USE CASE ↔ FR/NFR MASTER TRACEABILITY",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/5-research-ethics-and-irb-path-analysis",
+    "title": "5. RESEARCH ETHICS AND IRB PATH ANALYSIS",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/51-research-classification",
+        "title": "5.1 Research Classification",
+        "level": 2,
+        "parent": "/5-research-ethics-and-irb-path-analysis",
+        "children": []
+      },
+      {
+        "sid": "/52-current-state-of-privacy-and-consent",
+        "title": "5.2 Current State of Privacy and Consent",
+        "level": 2,
+        "parent": "/5-research-ethics-and-irb-path-analysis",
+        "children": []
+      },
+      {
+        "sid": "/53-three-irb-path-scenarios",
+        "title": "5.3 Three IRB Path Scenarios",
+        "level": 2,
+        "parent": "/5-research-ethics-and-irb-path-analysis",
+        "children": []
+      },
+      {
+        "sid": "/54-recommendation",
+        "title": "5.4 Recommendation",
+        "level": 2,
+        "parent": "/5-research-ethics-and-irb-path-analysis",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/6-work-hierarchy--how-use-cases-become-backlog-stories",
+    "title": "6. WORK HIERARCHY — HOW USE CASES BECOME BACKLOG STORIES",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/7-version-update-log",
+    "title": "7. VERSION UPDATE LOG",
+    "level": 1,
+    "children": []
+  }
+]

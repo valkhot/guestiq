@@ -1,0 +1,86 @@
+[
+  {
+    "sid": "/1-purpose",
+    "title": "1. PURPOSE",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/2-raci-definitions",
+    "title": "2. RACI DEFINITIONS",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/3-stakeholder-reference",
+    "title": "3. STAKEHOLDER REFERENCE",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/4-raci-matrix--complete-activity-list",
+    "title": "4. RACI MATRIX — COMPLETE ACTIVITY LIST",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/5-accountability-audit--single-owner-verification",
+    "title": "5. ACCOUNTABILITY AUDIT — SINGLE OWNER VERIFICATION",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/6-key-observations-for-lead-researcher",
+    "title": "6. KEY OBSERVATIONS FOR LEAD RESEARCHER",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/61-your-accountabilities",
+        "title": "6.1 Your accountabilities",
+        "level": 2,
+        "parent": "/6-key-observations-for-lead-researcher",
+        "children": []
+      },
+      {
+        "sid": "/62-hotel-management-accountabilities",
+        "title": "6.2 Hotel Management accountabilities",
+        "level": 2,
+        "parent": "/6-key-observations-for-lead-researcher",
+        "children": []
+      },
+      {
+        "sid": "/63-front-desk-team-role",
+        "title": "6.3 Front desk team role",
+        "level": 2,
+        "parent": "/6-key-observations-for-lead-researcher",
+        "children": []
+      },
+      {
+        "sid": "/64-ai-developer-scope",
+        "title": "6.4 AI Developer scope",
+        "level": 2,
+        "parent": "/6-key-observations-for-lead-researcher",
+        "children": []
+      },
+      {
+        "sid": "/65-sentry-and-posthog",
+        "title": "6.5 Sentry and PostHog",
+        "level": 2,
+        "parent": "/6-key-observations-for-lead-researcher",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/7-version-update-log",
+    "title": "7. VERSION UPDATE LOG",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/version-update-log",
+    "title": "VERSION UPDATE LOG",
+    "level": 1,
+    "children": []
+  }
+]

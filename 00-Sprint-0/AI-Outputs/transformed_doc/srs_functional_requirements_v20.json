@@ -1,0 +1,282 @@
+[
+  {
+    "sid": "/version-20--change-summary",
+    "title": "VERSION 2.0 — CHANGE SUMMARY",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/1-introduction-and-scope",
+    "title": "1. INTRODUCTION AND SCOPE",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/11-purpose",
+        "title": "1.1 Purpose",
+        "level": 2,
+        "parent": "/1-introduction-and-scope",
+        "children": []
+      },
+      {
+        "sid": "/12-scope",
+        "title": "1.2 Scope",
+        "level": 2,
+        "parent": "/1-introduction-and-scope",
+        "children": []
+      },
+      {
+        "sid": "/13-requirement-priority-definitions",
+        "title": "1.3 Requirement Priority Definitions",
+        "level": 2,
+        "parent": "/1-introduction-and-scope",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/2-application-entry-and-welcome",
+    "title": "2. APPLICATION ENTRY AND WELCOME",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/21-application-entry",
+        "title": "2.1 Application Entry",
+        "level": 2,
+        "parent": "/2-application-entry-and-welcome",
+        "children": []
+      },
+      {
+        "sid": "/22-welcome-and-tier-selection-screen",
+        "title": "2.2 Welcome and Tier Selection Screen",
+        "level": 2,
+        "parent": "/2-application-entry-and-welcome",
+        "children": []
+      },
+      {
+        "sid": "/23-post-completion-expert-enrichment-screen",
+        "title": "2.3 Post-Completion Expert Enrichment Screen",
+        "level": 2,
+        "parent": "/2-application-entry-and-welcome",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/3-questionnaire-tense-routing--q0-qr1",
+    "title": "3. QUESTIONNAIRE TENSE ROUTING — Q0 (QR1)",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/4-questionnaire-delivery",
+    "title": "4. QUESTIONNAIRE DELIVERY",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/41-content-architecture--questionnairejs-structure",
+        "title": "4.1 Content Architecture — questionnaire.js Structure",
+        "level": 2,
+        "parent": "/4-questionnaire-delivery",
+        "children": []
+      },
+      {
+        "sid": "/42-question-rendering--all-types",
+        "title": "4.2 Question Rendering — All Types",
+        "level": 2,
+        "parent": "/4-questionnaire-delivery",
+        "children": []
+      },
+      {
+        "sid": "/43-tier-routing",
+        "title": "4.3 Tier Routing",
+        "level": 2,
+        "parent": "/4-questionnaire-delivery",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/5-module-5-branching-logic",
+    "title": "5. MODULE 5 BRANCHING LOGIC",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/6-episode-structure-and-gamification",
+    "title": "6. EPISODE STRUCTURE AND GAMIFICATION",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/61-episode-mapping",
+        "title": "6.1 Episode Mapping",
+        "level": 2,
+        "parent": "/6-episode-structure-and-gamification",
+        "children": []
+      },
+      {
+        "sid": "/62-progress-bar-and-episode-map",
+        "title": "6.2 Progress Bar and Episode Map",
+        "level": 2,
+        "parent": "/6-episode-structure-and-gamification",
+        "children": []
+      },
+      {
+        "sid": "/63-curiosity-hooks",
+        "title": "6.3 Curiosity Hooks",
+        "level": 2,
+        "parent": "/6-episode-structure-and-gamification",
+        "children": []
+      },
+      {
+        "sid": "/64-achievement-badges",
+        "title": "6.4 Achievement Badges",
+        "level": 2,
+        "parent": "/6-episode-structure-and-gamification",
+        "children": []
+      },
+      {
+        "sid": "/65-tier-upgrade-prompts",
+        "title": "6.5 Tier Upgrade Prompts",
+        "level": 2,
+        "parent": "/6-episode-structure-and-gamification",
+        "children": []
+      },
+      {
+        "sid": "/66-streak-mechanic",
+        "title": "6.6 Streak Mechanic",
+        "level": 2,
+        "parent": "/6-episode-structure-and-gamification",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/7-session-management",
+    "title": "7. SESSION MANAGEMENT",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/71-session-creation-and-storage",
+        "title": "7.1 Session Creation and Storage",
+        "level": 2,
+        "parent": "/7-session-management",
+        "children": []
+      },
+      {
+        "sid": "/72-session-resume",
+        "title": "7.2 Session Resume",
+        "level": 2,
+        "parent": "/7-session-management",
+        "children": []
+      },
+      {
+        "sid": "/73-supabase-connectivity-and-offline-queue",
+        "title": "7.3 Supabase Connectivity and Offline Queue",
+        "level": 2,
+        "parent": "/7-session-management",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/8-completion-and-results-screen",
+    "title": "8. COMPLETION AND RESULTS SCREEN",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/9-management-dashboard",
+    "title": "9. MANAGEMENT DASHBOARD",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/91-access-mechanism",
+        "title": "9.1 Access Mechanism",
+        "level": 2,
+        "parent": "/9-management-dashboard",
+        "children": []
+      },
+      {
+        "sid": "/92-dashboard-panels",
+        "title": "9.2 Dashboard Panels",
+        "level": 2,
+        "parent": "/9-management-dashboard",
+        "children": []
+      },
+      {
+        "sid": "/93-data-exports",
+        "title": "9.3 Data Exports",
+        "level": 2,
+        "parent": "/9-management-dashboard",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/10-content-management-requirements",
+    "title": "10. CONTENT MANAGEMENT REQUIREMENTS",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/101-phase-1a--questionnairejs-architecture",
+        "title": "10.1 Phase 1a — questionnaire.js Architecture",
+        "level": 2,
+        "parent": "/10-content-management-requirements",
+        "children": []
+      },
+      {
+        "sid": "/102-phase-1b--json-configuration-files",
+        "title": "10.2 Phase 1b — JSON Configuration Files",
+        "level": 2,
+        "parent": "/10-content-management-requirements",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/11-observability-requirements",
+    "title": "11. OBSERVABILITY REQUIREMENTS",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/111-sentry-initialization-and-error-capture",
+        "title": "11.1 Sentry Initialization and Error Capture",
+        "level": 2,
+        "parent": "/11-observability-requirements",
+        "children": []
+      },
+      {
+        "sid": "/112-posthog-initialization",
+        "title": "11.2 PostHog Initialization",
+        "level": 2,
+        "parent": "/11-observability-requirements",
+        "children": []
+      },
+      {
+        "sid": "/113-the-27-canonical-posthog-events",
+        "title": "11.3 The 27 Canonical PostHog Events",
+        "level": 2,
+        "parent": "/11-observability-requirements",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/12-production-readiness-requirements",
+    "title": "12. PRODUCTION-READINESS REQUIREMENTS",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/13-requirements-traceability-summary",
+    "title": "13. REQUIREMENTS TRACEABILITY SUMMARY",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/14-version-update-log",
+    "title": "14. VERSION UPDATE LOG",
+    "level": 1,
+    "children": []
+  }
+]

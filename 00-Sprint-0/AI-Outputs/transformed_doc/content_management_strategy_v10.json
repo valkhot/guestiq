@@ -1,0 +1,167 @@
+[
+  {
+    "sid": "/1-the-strangler-fig-pattern--rationale-and-approach",
+    "title": "1. The Strangler Fig Pattern — Rationale and Approach",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/11-why-not-start-with-json-files",
+        "title": "1.1 Why Not Start with JSON Files?",
+        "level": 2,
+        "parent": "/1-the-strangler-fig-pattern--rationale-and-approach",
+        "children": []
+      },
+      {
+        "sid": "/12-why-not-start-with-a-database",
+        "title": "1.2 Why Not Start with a Database?",
+        "level": 2,
+        "parent": "/1-the-strangler-fig-pattern--rationale-and-approach",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/2-phase-1a--questionnairejs-data-structure",
+    "title": "2. Phase 1a — questionnaire.js Data Structure",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/21-file-structure-overview",
+        "title": "2.1 File Structure Overview",
+        "level": 2,
+        "parent": "/2-phase-1a--questionnairejs-data-structure",
+        "children": []
+      },
+      {
+        "sid": "/22-question-object--13-required-fields",
+        "title": "2.2 Question Object — 13 Required Fields",
+        "level": 2,
+        "parent": "/2-phase-1a--questionnairejs-data-structure",
+        "children": []
+      },
+      {
+        "sid": "/23-annotated-example--single-question-object",
+        "title": "2.3 Annotated Example — Single Question Object",
+        "level": 2,
+        "parent": "/2-phase-1a--questionnairejs-data-structure",
+        "children": []
+      },
+      {
+        "sid": "/24-the-component-content-contract",
+        "title": "2.4 The Component Content Contract",
+        "level": 2,
+        "parent": "/2-phase-1a--questionnairejs-data-structure",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/3-phase-1b--json-configuration-files",
+    "title": "3. Phase 1b — JSON Configuration Files",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/31-the-6-configuration-files",
+        "title": "3.1 The 6 Configuration Files",
+        "level": 2,
+        "parent": "/3-phase-1b--json-configuration-files",
+        "children": []
+      },
+      {
+        "sid": "/32-configuration-validator",
+        "title": "3.2 Configuration Validator",
+        "level": 2,
+        "parent": "/3-phase-1b--json-configuration-files",
+        "children": []
+      },
+      {
+        "sid": "/33-identical-behavior-verification-sprint-3-step-s3-12",
+        "title": "3.3 Identical-Behavior Verification (Sprint 3 Step S3-12)",
+        "level": 2,
+        "parent": "/3-phase-1b--json-configuration-files",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/4-the-researchers-content-editing-journey-uc-05",
+    "title": "4. The Researcher's Content Editing Journey (UC-05)",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/41-editing-a-question--step-by-step",
+        "title": "4.1 Editing a Question — Step by Step",
+        "level": 2,
+        "parent": "/4-the-researchers-content-editing-journey-uc-05",
+        "children": []
+      },
+      {
+        "sid": "/42-what-to-edit-vs-what-not-to-edit",
+        "title": "4.2 What to Edit vs What Not to Edit",
+        "level": 2,
+        "parent": "/4-the-researchers-content-editing-journey-uc-05",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/5-phase-1b-migration-procedure-sprint-3-step-s3-11",
+    "title": "5. Phase 1b Migration Procedure (Sprint 3 Step S3-11)",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/51-migration-steps",
+        "title": "5.1 Migration Steps",
+        "level": 2,
+        "parent": "/5-phase-1b-migration-procedure-sprint-3-step-s3-11",
+        "children": []
+      },
+      {
+        "sid": "/52-migration-quality-checks",
+        "title": "5.2 Migration Quality Checks",
+        "level": 2,
+        "parent": "/5-phase-1b-migration-procedure-sprint-3-step-s3-11",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/6-phase-2--supabase-cms-and-visual-admin-interface",
+    "title": "6. Phase 2 — Supabase CMS and Visual Admin Interface",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/61-phase-2-feature-scope",
+        "title": "6.1 Phase 2 Feature Scope",
+        "level": 2,
+        "parent": "/6-phase-2--supabase-cms-and-visual-admin-interface",
+        "children": []
+      },
+      {
+        "sid": "/62-migration-path-from-phase-1b-to-phase-2",
+        "title": "6.2 Migration Path from Phase 1b to Phase 2",
+        "level": 2,
+        "parent": "/6-phase-2--supabase-cms-and-visual-admin-interface",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/7-risk-register-entries",
+    "title": "7. Risk Register Entries",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/8-content-management-sprint-timeline",
+    "title": "8. Content Management Sprint Timeline",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/9-version-log",
+    "title": "9. Version Log",
+    "level": 1,
+    "children": []
+  }
+]

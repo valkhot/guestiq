@@ -1,0 +1,97 @@
+[
+  {
+    "sid": "/1-purpose-and-scope",
+    "title": "1. PURPOSE AND SCOPE",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/2-risk-scoring-methodology",
+    "title": "2. RISK SCORING METHODOLOGY",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/21-probability",
+        "title": "2.1 Probability",
+        "level": 2,
+        "parent": "/2-risk-scoring-methodology",
+        "children": []
+      },
+      {
+        "sid": "/22-impact",
+        "title": "2.2 Impact",
+        "level": 2,
+        "parent": "/2-risk-scoring-methodology",
+        "children": []
+      },
+      {
+        "sid": "/23-risk-level-matrix",
+        "title": "2.3 Risk Level Matrix",
+        "level": 2,
+        "parent": "/2-risk-scoring-methodology",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/3-risk-summary-and-heatmap",
+    "title": "3. RISK SUMMARY AND HEATMAP",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/31-risk-summary-table--all-12-risks",
+        "title": "3.1 Risk Summary Table — All 12 Risks",
+        "level": 2,
+        "parent": "/3-risk-summary-and-heatmap",
+        "children": []
+      },
+      {
+        "sid": "/32-risk-heatmap",
+        "title": "3.2 Risk Heatmap",
+        "level": 2,
+        "parent": "/3-risk-summary-and-heatmap",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/4-risk-register--full-detail",
+    "title": "4. RISK REGISTER — FULL DETAIL",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/high-risks--require-active-mitigation-now",
+        "title": "HIGH RISKS — Require active mitigation now",
+        "level": 2,
+        "parent": "/4-risk-register--full-detail",
+        "children": []
+      },
+      {
+        "sid": "/medium-risks--monitor-actively-mitigations-in-place",
+        "title": "MEDIUM RISKS — Monitor actively; mitigations in place",
+        "level": 2,
+        "parent": "/4-risk-register--full-detail",
+        "children": []
+      },
+      {
+        "sid": "/low-risks--awareness-maintained-monitor-passively",
+        "title": "LOW RISKS — Awareness maintained; monitor passively",
+        "level": 2,
+        "parent": "/4-risk-register--full-detail",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/5-risk-register-update-process",
+    "title": "5. RISK REGISTER UPDATE PROCESS",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/6-version-update-log",
+    "title": "6. VERSION UPDATE LOG",
+    "level": 1,
+    "children": []
+  }
+]

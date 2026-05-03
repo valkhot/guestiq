@@ -1,0 +1,50 @@
+[
+  {
+    "sid": "/1-purpose-and-scope",
+    "title": "1. PURPOSE AND SCOPE",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/2-stakeholder-influence-and-interest-overview",
+    "title": "2. STAKEHOLDER INFLUENCE AND INTEREST OVERVIEW",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/3-stakeholder-profiles",
+    "title": "3. STAKEHOLDER PROFILES",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/4-raci-matrix",
+    "title": "4. RACI MATRIX",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/5-stakeholder-communication-plan",
+    "title": "5. STAKEHOLDER COMMUNICATION PLAN",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/6-issue-escalation-process",
+    "title": "6. ISSUE ESCALATION PROCESS",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/7-register-update-log",
+    "title": "7. REGISTER UPDATE LOG",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/version-update-log",
+    "title": "VERSION UPDATE LOG",
+    "level": 1,
+    "children": []
+  }
+]

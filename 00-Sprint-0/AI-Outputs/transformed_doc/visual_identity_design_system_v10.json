@@ -1,0 +1,188 @@
+[
+  {
+    "sid": "/1-visual-direction-and-design-philosophy",
+    "title": "1. Visual Direction and Design Philosophy",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/11-two-canvas-system",
+        "title": "1.1 Two-Canvas System",
+        "level": 2,
+        "parent": "/1-visual-direction-and-design-philosophy",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/2-application-name-and-wordmark",
+    "title": "2. Application Name and Wordmark",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/21-application-name",
+        "title": "2.1 Application Name",
+        "level": 2,
+        "parent": "/2-application-name-and-wordmark",
+        "children": []
+      },
+      {
+        "sid": "/22-wordmark-specifications",
+        "title": "2.2 Wordmark Specifications",
+        "level": 2,
+        "parent": "/2-application-name-and-wordmark",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/3-complete-color-token-system",
+    "title": "3. Complete Color Token System",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/31-canvas-tokens",
+        "title": "3.1 Canvas Tokens",
+        "level": 2,
+        "parent": "/3-complete-color-token-system",
+        "children": []
+      },
+      {
+        "sid": "/32-tier-color-system--complete-stops",
+        "title": "3.2 Tier Color System — Complete Stops",
+        "level": 2,
+        "parent": "/3-complete-color-token-system",
+        "children": [
+          {
+            "sid": "/amateur--green",
+            "title": "Amateur — Green",
+            "level": 3,
+            "parent": "/32-tier-color-system--complete-stops",
+            "children": []
+          },
+          {
+            "sid": "/professional--blue",
+            "title": "Professional — Blue",
+            "level": 3,
+            "parent": "/32-tier-color-system--complete-stops",
+            "children": []
+          },
+          {
+            "sid": "/expert--purple",
+            "title": "Expert — Purple",
+            "level": 3,
+            "parent": "/32-tier-color-system--complete-stops",
+            "children": []
+          }
+        ]
+      },
+      {
+        "sid": "/33-neutral-and-structural-tokens",
+        "title": "3.3 Neutral and Structural Tokens",
+        "level": 2,
+        "parent": "/3-complete-color-token-system",
+        "children": []
+      },
+      {
+        "sid": "/34-semantic-tokens",
+        "title": "3.4 Semantic Tokens",
+        "level": 2,
+        "parent": "/3-complete-color-token-system",
+        "children": []
+      },
+      {
+        "sid": "/35-dashboard-specific-tokens",
+        "title": "3.5 Dashboard-Specific Tokens",
+        "level": 2,
+        "parent": "/3-complete-color-token-system",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/4-typography-scale",
+    "title": "4. Typography Scale",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/5-tier-card-visual-identity",
+    "title": "5. Tier Card Visual Identity",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/51-tier-card-anatomy",
+        "title": "5.1 Tier Card Anatomy",
+        "level": 2,
+        "parent": "/5-tier-card-visual-identity",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/6-episode-visual-identity",
+    "title": "6. Episode Visual Identity",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/61-episode-map-and-node-specifications",
+        "title": "6.1 Episode Map and Node Specifications",
+        "level": 2,
+        "parent": "/6-episode-visual-identity",
+        "children": []
+      },
+      {
+        "sid": "/62-episode-identity-table",
+        "title": "6.2 Episode Identity Table",
+        "level": 2,
+        "parent": "/6-episode-visual-identity",
+        "children": []
+      },
+      {
+        "sid": "/63-curiosity-hook-screen",
+        "title": "6.3 Curiosity Hook Screen",
+        "level": 2,
+        "parent": "/6-episode-visual-identity",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/7-svg-achievement-badge-specifications",
+    "title": "7. SVG Achievement Badge Specifications",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/71-badge-system-rules",
+        "title": "7.1 Badge System Rules",
+        "level": 2,
+        "parent": "/7-svg-achievement-badge-specifications",
+        "children": []
+      },
+      {
+        "sid": "/72-badge-specifications--all-9-badges",
+        "title": "7.2 Badge Specifications — All 9 Badges",
+        "level": 2,
+        "parent": "/7-svg-achievement-badge-specifications",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/8-dashboard-color-encoding--12-intent-categories",
+    "title": "8. Dashboard Color Encoding — 12 Intent Categories",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/9-implementation-checklist-for-sprint-1",
+    "title": "9. Implementation Checklist for Sprint 1",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/10-version-log",
+    "title": "10. Version Log",
+    "level": 1,
+    "children": []
+  }
+]

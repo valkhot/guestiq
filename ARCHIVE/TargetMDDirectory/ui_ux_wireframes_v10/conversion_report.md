@@ -1,0 +1,151 @@
+# Conversion Report
+
+## Document Information
+- **Source File**: c:\GuestIQ Research Project\01-Sprint-1\AI-Outputs\ui_ux_wireframes_v10.docx
+- **File Type**: DOCX
+- **Output Directory**: c:\GuestIQ Research Project\TargetMDDirectory\ui_ux_wireframes_v10
+- **Images Directory**: c:\GuestIQ Research Project\TargetMDDirectory\ui_ux_wireframes_v10\images
+
+## Conversion Results
+- **Total Headings**: 133
+- **Images Extracted**: 0
+- **Issues Handled**: 0
+- **Status**: ✅ Completed Successfully
+
+## Extracted Images
+No images found or extracted.
+
+## Document Structure
+  - **UI / UX WIREFRAMES**
+  - **GuestIQ**** — All Screens · Low-Fidelity · Annotated**
+  - **Document ID**
+  - **Document Version**
+  - **Document Status**
+  - **Sprint**
+  - **Screens**
+  - **Fidelity**
+  - **PostHog**** Annotations**
+  - **Review Checklist**
+  - **Document Location**
+- Screen 1 — Welcome + Tier Selection
+  - **[SCR-01****]  ****Welcome**** + Tier Selection**
+  - **  ****GuestIQ**
+  - **  You know hotel guests.  What do they actually expect?**
+    - ***  ▶ PH: ******welcome_hook_viewed****** — fires on render***
+    - ***  ▶ PH: ******tier_selected****** (tier, ******property_******id******) —****** fires on tier card click***
+    - ***  ▶ SUP: ******createSession******(******) — fires immediately after tier click***
+    - ***  ▶ LS: ******guestiq_session_token****** written to ******localStorage***
+- Screen 2 — Disambiguation Screen
+  - **[SCR-02****]  ****Disambiguation**** Screen**
+  - **  ****GuestIQ**
+  - **  Welcome back**
+    - ***  ▶ PH: ******disambiguation_shown****** (******property_******id******) —****** fires on render***
+    - ***  ▶ PH: ******disambiguation_resumed****** — fires on Resume click***
+    - ***  ▶ PH: ******disambiguation_new_session****** — fires on Start Fresh click***
+    - ***  ▶ SUP: ******getIncompleteSession******(******token) —****** called before this screen renders***
+    - ***  ▶ LS: token cleared on Start Fresh; retained on Resume***
+- Screen 3 — Q0 Tense Routing Gate
+  - **[SCR-03****]  ****Q****0 — Tense Routing Gate**
+    - **  Are you completing this questionnaire about a hotel stay you have**
+    - **  recently experienced, or about a stay you are planning or**
+  - **  expecting to take?**
+    - ***  ▶ PH: ******episode_******started******(******1, 'Why You Stay', ******property_******id******) —****** fires on Q0 render***
+    - ***  ▶ PH: ******routing_gate_******answered******(******tense_frame******, ******answer_******option******) —****** fires on selection***
+    - ***  ▶ PH: ******question_******answered******(******QR1, ******answer_code******, ******tense_frame******, ******...) —****** fires on selection***
+    - ***  ▶ SUP: ******updateSession******(******tense_frame******) + ******insertResponse******(******QR1******) —****** fires after answer***
+- Screen 4 — Active Question (single_select)
+    - **[SCR-04****a]  ****Active**** Question — ****single_select**** example (Q1)**
+  - **  What was the main reason for this hotel stay?**
+    - ***  ▶ PH: ******question_******answered******(******Q1, ******answer_code******, ******module_number******, tier, ******...) —****** on selection***
+    - ***  ▶ PH: ******none_flag_******selected******(******Q1, ******...) —****** fires ADDITIONALLY if None option chosen***
+    - ***  ▶ SUP: ******insertResponse******(******Q1, ******answer_code******, ******tense_frame******, ******...) —****** fires on selection***
+    - ***  ▶ SUP: ******updateSession******(******intent_******category******) —****** fires after Q1 answer stored***
+  - Screen 4b — Active Question (multi_select)
+    - **[SCR-04****b]  ****Active**** Question — ****multi_select**** example (Q4)**
+    - **  What triggered the decision to stay at a hotel for this need?**
+  - Screen 4c — Active Question (scale_5)
+    - **[SCR-04c****]  ****Active**** Question — scale_5 example (Q12)**
+    - **  How important is it that the hotel acknowledges your booking**
+  - **  and ****communicates**** before arrival?**
+    - ***  ▶ SUP: ******insertScaleResponse******(******Q12, ******scale_value******=******4) —****** not ******insertResponse******(******)***
+- Screen 5 — Curiosity Hook + Badge Reveal
+    - **[SCR-05****]  ****Curiosity**** Hook + Badge Reveal (Episode 1 example)**
+  - **  ✦ First Step**
+  - **  ✦ Intent Locked**
+    - ***  ▶ PH: ******episode_******completed******(******1, 'Why You Stay', ******time_in_episode******, ******property_id******)***
+    - ***  ▶ PH: ******curiosity_hook_******viewed******(******1, tier, ******property_******id******) —****** fires on render***
+    - ***  ▶ PH: ******badge_******awarded******(******badge_name******, ******episode_number******, tier, ******property_id******) — per badge***
+- Screen 6 — Tier Upgrade Prompt
+    - **[SCR-06****]  ****Tier**** Upgrade Prompt (Amateur → Professional)**
+  - **  You're on a roll.**
+    - ***  ▶ PH: ******tier_upgrade_******prompted******(******current_tier******, ******target_tier******, ******property_id******)***
+    - ***  ▶ PH: ******tier_upgrade_******accepted******(******from, to, ******question_number******) OR ******tier_upgrade_declined***
+    - ***  ▶ SUP: ******updateSession******(tier='professional******') —****** fires on accept only***
+- Screen 7 — Module 5 Intent Selection (Q1 None Option Fallback)
+    - **[SCR-07****]  ****Module**** 5 Intent Selection — Q1 None Option Fallback**
+  - **  Your Kind of Stay**
+    - **  Which of ****these best**** describes the type of stay you have in mind?**
+- Screen 8 — Completion + Results Screen
+  - **[SCR-08****]  ****Completion**** + Results Screen**
+  - **  ****✦****  You**** did it!**
+  - **  Your Profile: Business Travel**
+    - ***  ▶ PH: ******session_******completed******(******tier, ******total_time_seconds******, ******intent_category******, ...)***
+    - ***  ▶ PH: ******results_******viewed******(******tier, ******intent_category******, ******property_id******)***
+    - ***  ▶ PH: ******aggregate_comparison_viewed******(******responses_in_******aggregate******) —****** if 3+ sessions***
+    - ***  ▶ LS: ******guestiq_session_token****** CLEARED — token removed from ******localStorage****** here***
+    - ***  ▶ SUP: ******updateSession******(******is_complete******=true, ******completed_******at******) —****** fires before this screen***
+- Screen 9 — Post-Completion Enrichment Screen
+  - **[SCR-09****]  ****Post****-Completion Enrichment Screen**
+  - **  One last thing — help us understand your expertise**
+    - ***  ▶ PH: ******credentials_enrichment_******completed******(******fields_answered******, ******...) —****** on Skip or Submit***
+    - ***  ▶ SUP: ******updateEnrichment******(******years, interactions, ******shift) —****** on Submit only***
+- Screen 10 — Management Dashboard Overlay (SHIFT+CTRL+A)
+  - **[SCR-10****]  ****Management**** Dashboard Overlay**
+    - **  ****GuestIQ**** Management                           ****   [****Esc to ****close]  ×**
+  - **  PANEL 1 — Response Overview**
+    - ***  ▶ PH: ******dashboard_opened******(******property_id******) — fires on SHIFT+CTRL+A***
+    - ***  ▶ PH: ******dashboard_panel_viewed******(******panel_******name******) —****** fires on each tab click***
+    - ***  ▶ PH: ******dashboard_exported_csv****** / ******dashboard_exported_pdf****** — on export click***
+    - ***  ▶ SUP: ******getDashboardData******(******propertyId******) —****** reads all 4 tables for panel data***
+- Screen 11 — Downtime Contingency Screen
+  - **[SCR-11****]  ****Downtime**** Contingency Screen**
+  - **  ****GuestIQ**
+  - **  ****GuestIQ**** is temporarily unavailable**
+    - ***  ▶ PH: ******supabase_downtime_******shown******(******question_number******, ******episode_number******, ******property_id******)***
+- Screen 12 — Configuration Error Screen
+    - **[SCR-12****]  ****Configuration**** Error Screen (Phase 1b+)**
+  - **  ****GuestIQ**
+    - **  Configuration error — ****questions.json**** is malformed.**
+    - ***  ▶ SEN: ******Sentry.captureException******() —****** fires with config error details BEFORE React renders***
+- Screen 13 — Sentry ErrorBoundary Fallback
+    - **[SCR-13****]  ****Sentry**** ****ErrorBoundary**** Fallback**
+  - **  ****GuestIQ**
+  - **  Something went wrong.**
+    - ***  ▶ SEN: ******Sentry.captureException******() —****** fires automatically via ******ErrorBoundary***
+- Screen 14 — Offline Queue Visual Indicator
+    - **[SCR-14****]  ****Offline**** Queue Visual Indicator (overlays active question)**
+    - ***  ▶ PH: ******offline_queue_activated****** — fires when queue starts***
+    - ***  ▶ PH: ******offline_queue_flushed****** — fires when all queued writes succeed***
+- Screen 15 — Phase 1b JSON Editing Workflow (Researcher Mental Model)
+  - **Phase 1b Content Editing Workflow — Researcher Journey**
+    - **⚠**** NEVER EDIT: id values (primary keys), option code values (A/B/C...), routes_module_5 field. These require developer review.**
+- Annotation Legend
+  - **Symbol**
+  - **Type**
+  - **Meaning**
+  - **▶ PH:**
+  - **PostHog**
+  - **▶ SUP:**
+  - **Supabase**
+  - **▶ SEN:**
+  - **Sentry**
+  - **▶ LS:**
+  - **localStorage**
+  - **ℹ**** Note:**
+  - **Design Note**
+- Version Log
+  - **Ver.**
+  - **Date**
+  - **By**
+  - **Change**
+  - **— END OF UI/UX WIREFRAMES v1.0 —**

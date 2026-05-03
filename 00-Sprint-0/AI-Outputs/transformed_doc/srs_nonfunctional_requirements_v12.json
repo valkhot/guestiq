@@ -1,0 +1,55 @@
+[
+  {
+    "sid": "/1-introduction",
+    "title": "1. INTRODUCTION",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/11-purpose",
+        "title": "1.1 Purpose",
+        "level": 2,
+        "parent": "/1-introduction",
+        "children": []
+      },
+      {
+        "sid": "/12-relationship-to-functional-requirements",
+        "title": "1.2 Relationship to Functional Requirements",
+        "level": 2,
+        "parent": "/1-introduction",
+        "children": []
+      },
+      {
+        "sid": "/13-how-to-read-this-document",
+        "title": "1.3 How to Read This Document",
+        "level": 2,
+        "parent": "/1-introduction",
+        "children": []
+      },
+      {
+        "sid": "/11-research-data-integrity",
+        "title": "11. Research Data Integrity",
+        "level": 2,
+        "parent": "/1-introduction",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/12-requirements-traceability-summary",
+    "title": "12. REQUIREMENTS TRACEABILITY SUMMARY",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/13-compliance-summary",
+    "title": "13. COMPLIANCE SUMMARY",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/14-version-update-log",
+    "title": "14. VERSION UPDATE LOG",
+    "level": 1,
+    "children": []
+  }
+]

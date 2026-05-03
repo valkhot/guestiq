@@ -1,0 +1,262 @@
+# Conversion Report
+
+## Document Information
+- **Source File**: c:\GuestIQ Research Project\01-Sprint-1\AI-Outputs\branching_logic_specification_v10.docx
+- **File Type**: DOCX
+- **Output Directory**: c:\GuestIQ Research Project\TargetMDDirectory\branching_logic_specification_v10
+- **Images Directory**: c:\GuestIQ Research Project\TargetMDDirectory\branching_logic_specification_v10\images
+
+## Conversion Results
+- **Total Headings**: 244
+- **Images Extracted**: 0
+- **Issues Handled**: 0
+- **Status**: ✅ Completed Successfully
+
+## Extracted Images
+No images found or extracted.
+
+## Document Structure
+  - **BRANCHING LOGIC SPECIFICATION**
+  - **with 84-Path Test Matrix**
+  - **GuestIQ — Hotel Guest Expectations Research Application**
+  - **Document ID**
+  - **Document Version**
+  - **Document Status**
+  - **Sprint**
+  - **Criticality**
+  - **Paths Documented**
+  - **Review Time Required**
+  - **Document Location**
+  - **Downstream Artifacts**
+  - **Related Documents**
+    - **CRITICAL:  This document is the developer contract for Sprint 3 Module 5 implementation. The AI Developer implements Module 5 branching strictly from this specification — no assumptions, no interpretation. Every routing decision in the application traces back to a specific row in the matrix in Section 7.**
+    - **WARN:  Sprint 2 gate condition: Branching Logic Specification explicitly approved. Sprint 2 CANNOT begin until this document is approved. This is stated in the MDT v5.0 Sprint 1 Gate checklist. No exceptions.**
+- 1. Tier Routing — Questions Per Tier
+  - 1.1 Tier Question Counts
+  - **Tier**
+  - **Time Estimate**
+  - **Question Count**
+  - **Modules Covered**
+  - **Module 5 Scope**
+  - **Amateur**
+  - **Professional**
+  - **Expert**
+  - 1.2 Module-by-Module Tier Coverage
+  - **Module / Section**
+  - **Questions**
+  - **Amateur (8Q)**
+  - **Professional (18Q)**
+  - **Expert (79Q)**
+  - **Q0 — Tense Routing Gate**
+  - **Module 1A — Primary Stay Purpose**
+  - **Module 1B — Trigger & Planning**
+  - **Module 1C — Party Configuration**
+  - **Module 1D — Duration**
+  - **Module 1E — Substitute Consideration**
+  - **Module 2 — Pre-Arrival Expectations**
+  - **Module 3 — Physical Environment**
+  - **Module 4 — Service & Interaction**
+  - **Module 5 — Intent-Specific (primary)**
+  - **Module 5 — Intent-Specific (secondary)**
+  - **Module 6 — Value & Pricing**
+  - **Module 7 — Post-Stay**
+- 2. Tense Routing — Q0 (QR1) Logic
+  - 2.1 Q0 Answer Code → Tense Frame Mapping
+  - **Code**
+  - **Q0 Answer Text**
+  - **tense_frame Value**
+  - **Stored In**
+  - **Implementation Note**
+  - **A**
+  - **retrospective**
+  - **B**
+  - **anticipatory**
+  - **C**
+  - **retrospective**
+  - **D**
+  - **retrospective**
+  - 2.2 Tense Frame Application Rule
+- 3. Module 5 Routing — Intent Category to Sub-section
+    - **CRITICAL:  This routing table is the developer contract for FR-029. The AI Developer implements this table as a lookup object (module5Routes) in questionnaire.js (Phase 1a) and branching.json (Phase 1b). Any deviation from this table is a Critical bug requiring immediate fix.**
+  - **Code**
+  - **Q1 Answer**
+  - **Taxonomy**
+  - **Module 5 Section**
+  - **Section Name**
+  - **Questions (Expert full set)**
+  - **A**
+  - **5A**
+  - **Work & Business**
+  - **B**
+  - **5A**
+  - **Work & Business**
+  - **C**
+  - **5A**
+  - **Work & Business**
+  - **D**
+  - **5B**
+  - **Leisure Stays**
+  - **E**
+  - **5B**
+  - **Leisure Stays**
+  - **F**
+  - **5B**
+  - **Leisure Stays**
+  - **G**
+  - **5C**
+  - **Displacement & Necessity**
+  - **H**
+  - **5C**
+  - **Displacement & Necessity**
+  - **I**
+  - **5D**
+  - **Medical & Health-Adjacent**
+  - **J**
+  - **5E**
+  - **Family Stays**
+  - **K**
+  - **5F**
+  - **Transit Stays**
+  - **L**
+  - **5G**
+  - **Local Escape**
+  - 3.1 Routing Implementation — Code Contract
+- 4. Secondary Purpose Routing — Q2 Logic
+    - **CRITICAL:  The same-sub-section skip rule is critical: if Q1=LEIS-PLAN (→5B) and Q2=E which maps to LEIS-EXP (→5B), then 5B is shown only ONCE. The application must compare the resolved sub-section codes, not the taxonomy codes. Both LEIS-PLAN and LEIS-EXP resolve to '5B' — identical → skip.**
+  - **Q2 Option**
+  - **Q2 Answer Text**
+  - **Triggers 2nd Sub-section?**
+  - **Taxonomy Code**
+  - **Rule**
+  - **A**
+  - **NO**
+  - **B**
+  - **YES — if personal sub-section differs**
+  - **C**
+  - **YES — if work sub-section differs**
+  - **D**
+  - **YES — if family sub-section differs**
+  - **E**
+  - **YES — if leisure sub-section differs**
+  - **F**
+  - **YES — if medical sub-section differs**
+  - **G (none option)**
+  - **NO**
+  - 4.1 Secondary Routing Algorithm
+- 5. Tier Upgrade Paths
+  - **Trigger Point**
+  - **From Tier**
+  - **To Tier**
+  - **Timing**
+  - **Branching Effect**
+- 6. Routing Edge Cases
+  - **Edge Case**
+  - **Scenario**
+  - **Expected Behaviour**
+  - **Test Path**
+- 7. 84-Path Test Matrix
+  - **Amateur paths (PATH-001 to PATH-036)**
+  - **Professional paths (PATH-013 to PATH-024)**
+  - **Expert paths (PATH-025 to PATH-036 + more)**
+  - **Retrospective tense paths**
+  - **Anticipatory tense paths**
+  - **Edge case paths**
+  - **Path ID**
+  - **Tier**
+  - **Intent Category**
+  - **Q1 Code**
+  - **Tense Frame**
+  - **Expected Mod 5**
+  - **2nd Sub-section**
+  - **Verification Step**
+  - **Pass/Fail**
+  - **PATH-001**
+  - **PATH-002**
+  - **PATH-003**
+  - **PATH-004**
+  - **PATH-005**
+  - **PATH-006**
+  - **PATH-007**
+  - **PATH-008**
+  - **PATH-009**
+  - **PATH-010**
+  - **PATH-011**
+  - **PATH-012**
+  - **PATH-013**
+  - **PATH-014**
+  - **PATH-015**
+  - **PATH-016**
+  - **PATH-017**
+  - **PATH-018**
+  - **PATH-019**
+  - **PATH-020**
+  - **PATH-021**
+  - **PATH-022**
+  - **PATH-023**
+  - **PATH-024**
+  - **PATH-025**
+  - **PATH-026**
+  - **PATH-027**
+  - **PATH-028**
+  - **PATH-029**
+  - **PATH-030**
+  - **PATH-031**
+  - **PATH-032**
+  - **PATH-033**
+  - **PATH-034**
+  - **PATH-035**
+  - **PATH-036**
+  - **PATH-037**
+  - **PATH-038**
+  - **PATH-039**
+  - **PATH-040**
+  - **PATH-041**
+  - **PATH-042**
+  - **PATH-043**
+  - **PATH-044**
+  - **PATH-045**
+  - **PATH-046**
+  - **PATH-047**
+  - **PATH-048**
+  - **PATH-049**
+  - **PATH-050**
+  - **PATH-051**
+  - **PATH-052**
+  - **PATH-053**
+  - **PATH-054**
+  - **PATH-055**
+  - **PATH-056**
+  - **PATH-057**
+  - **PATH-058**
+  - **PATH-059**
+  - **PATH-060**
+  - **PATH-061**
+  - **PATH-062**
+  - **PATH-063**
+  - **PATH-064**
+  - **PATH-065**
+  - **PATH-066**
+  - **PATH-079**
+  - **PATH-080**
+  - **PATH-081**
+  - **PATH-082**
+  - **PATH-083**
+  - **PATH-084**
+  - 7.1 Pass/Fail Recording Instructions
+- 8. S1-2.2 Review Checklist — 1.5 Hour Review
+    - **WARN:  This is the most critical review in the project. Do not rush. Block 1.5 hours. An error left here will surface during the pilot when real respondents are using the application.**
+  - **Check**
+  - **Verification Steps**
+  - **Check 1 — Tier question counts**
+  - **Check 2 — Q0 tense frame mapping**
+  - **Check 3 — All 12 Module 5 routing entries**
+  - **Check 4 — Q2 secondary purpose logic**
+  - **Check 5 — Tier upgrade paths**
+  - **Check 6 — Edge cases**
+  - **Check 7 — 10 random matrix rows**
+- 9. Version Log
+  - **Ver.**
+  - **Date**
+  - **By**
+  - **Change**
+  - **— END OF BRANCHING LOGIC SPECIFICATION v1.0 —**

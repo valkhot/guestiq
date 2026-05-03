@@ -1,0 +1,243 @@
+# Conversion Report
+
+## Document Information
+- **Source File**: c:\GuestIQ Research Project\01-Sprint-1\AI-Outputs\system_architecture_document_v10.docx
+- **File Type**: DOCX
+- **Output Directory**: c:\GuestIQ Research Project\TargetMDDirectory\system_architecture_document_v10
+- **Images Directory**: c:\GuestIQ Research Project\TargetMDDirectory\system_architecture_document_v10\images
+
+## Conversion Results
+- **Total Headings**: 225
+- **Images Extracted**: 0
+- **Issues Handled**: 0
+- **Status**: ✅ Completed Successfully
+
+## Extracted Images
+No images found or extracted.
+
+## Document Structure
+  - **SYSTEM ARCHITECTURE DOCUMENT**
+    - **GuestIQ**** — Hotel Guest Expectations Research Application**
+  - **Document ID**
+  - **Document Version**
+  - **Document Status**
+  - **Project**
+  - **Sprint**
+  - **Prepared By**
+  - **Date Prepared**
+  - **Review Checklist**
+  - **Related Documents**
+  - **Document Location**
+  - **Downstream Artifacts**
+    - **WARN****:  The**** three architectural disciplines that cannot be violated under any circumstances: (1) No component imports ****Supabase**** or ****PostHog**** directly — all calls go through service files. (2) No component contains hardcoded content strings — all text comes from props. (3) No credential appears in any committed file — all values ****in .env****.**
+- 1. Architecture Overview
+  - 1.1 Architecture Layers
+  - **Layer**
+  - **Description**
+  - **Layer 1 — Frontend**
+  - **Layer 2 — Backend**
+  - **Layer 3 — Hosting and CI/CD**
+  - **Observability layer**
+  - **Content management layer**
+  - 1.2 Request and Data Flow — Plain English
+- 2. Frontend Layer
+  - **  LAYER: FRONTEND  **** React 18 + Vite PWA**
+  - 2.1 Framework and Build Tooling
+  - **Technology**
+  - **Role**
+  - **React 18**
+  - **Vite**
+  - **Vite PWA Plugin**
+  - **Tailwind CSS**
+  - **Framer Motion**
+  - **Recharts**
+  - **Radix UI**
+  - **i18next**
+  - 2.2 Component Architecture — Key Principles
+  - **Principle**
+  - **Implementation**
+  - **Content via props only**
+  - **No direct external service calls**
+  - **No direct feature flag reads**
+  - 2.3 Key Hooks and Services
+  - **Component / File**
+  - **Technology**
+  - **Phase**
+  - **Purpose and Responsibility**
+  - **src****/hooks/useQuestionnaire.js**
+  - **src****/hooks/useSession.js**
+  - **src****/hooks/useOfflineQueue.js**
+  - **src****/services/supabase.js**
+  - **src****/services/analytics.js**
+  - **src****/config/features.js**
+  - **src****/config/configValidator.js**
+  - 2.4 Main Entry Point — src/main.jsx
+- 3. Backend Layer
+    - **  LAYER: BACKEND  **** ****Supabase**** — PostgreSQL + Auth + RLS + Migrations**
+  - 3.1 Database Schema — 4 Tables
+  - **Component / File**
+  - **Technology**
+  - **Phase**
+  - **Purpose and Responsibility**
+  - **sessions**
+  - **responses**
+  - **scale_responses**
+  - **none_flags**
+  - 3.2 Row Level Security
+  - **Policy**
+  - **Specification**
+  - **Anon key — INSERT**
+  - **Anon key — SELECT**
+  - **getDashboardData****(****) exception**
+  - **Service role key**
+  - 3.3 Authentication — Bypass Mode
+  - 3.4 Dashboard Data Access
+    - **WARN:  ****getDashboardData****(****) uses the anon key. The default RLS policy blocks SELECT with the anon key. A specific dashboard SELECT policy must be added during ****Supabase**** setup that allows aggregate reads for the ****property_id**** in the URL parameter. This policy is included in the migration file 20240101000005_rls_policies.sql. ****Verify**** this policy is active before testing the dashboard in Sprint 4.**
+  - 3.5 Supabase Migrations Structure
+  - **Path**
+  - **Contents and Purpose**
+  - **supabase****/migrations/**
+  - **20240101000001_create_sessions.sql**
+  - **20240101000002_create_responses.sql**
+  - **20240101000003_create_scale_responses.sql**
+  - **20240101000004_create_none_flags.sql**
+  - **20240101000005_rls_policies.sql**
+- 4. Hosting and CI/CD Layer
+    - **  LAYER: HOSTING / CI-CD  **** GitHub Pages + GitHub Actions**
+  - 4.1 GitHub Pages Configuration
+  - **Setting**
+  - **Value**
+  - **URL**
+  - **HTTPS**
+  - **CDN**
+  - **Source**
+  - **Permissions**
+  - **Environment**
+  - 4.2 GitHub Actions CI/CD Pipeline
+  - **Step**
+  - **Action**
+  - **Step 1 — Checkout**
+  - **Step 2 — Node.js setup**
+  - **Step 3 — Install dependencies**
+  - **Step 4 — ****ESLint**
+  - **Step 5 — Prettier check**
+  - **Step 6 — Vite build**
+  - **Step 7 — Playwright (Sprint 4+)**
+  - **Step 8 — Deploy**
+  - 4.3 Environment Configuration
+  - **Variable**
+  - **Source and ****Value**
+  - **VITE_SUPABASE_URL**
+  - **VITE_SUPABASE_ANON_KEY**
+  - **VITE_SENTRY_DSN**
+  - **VITE_POSTHOG_KEY**
+  - **VITE_APP_ENV**
+  - **VITE_APP_VERSION**
+  - **Flag**
+  - **Prototype Value**
+  - **VITE_FEATURE_AUTH_ENABLED**
+  - **VITE_FEATURE_MULTI_PROPERTY**
+  - **VITE_FEATURE_ADMIN_ENABLED**
+- 5. Observability Layer
+    - **  LAYER: OBSERVABILITY  **** Sentry + ****PostHog**** — external services**
+  - 5.1 Sentry — Error Tracking and Performance
+  - **Aspect**
+  - **Specification**
+  - **Purpose**
+  - **Initialization**
+  - **ErrorBoundary**
+  - **Service layer integration**
+  - **Alert routing**
+  - 5.2 PostHog — Product Analytics and Session Replay
+  - **Aspect**
+  - **Specification**
+  - **Purpose**
+  - **Initialization**
+  - **Analytics service**
+  - **property_id**** architecture**
+  - **27 canonical events**
+- 6. Content Management Layer
+    - **  LAYER: CONTENT  **** Strangler Fig — questionnaire.js to JSON to ****Supabase**** CMS**
+  - **Phase**
+  - **Content Source**
+  - **Phase 1a — questionnaire.js**
+  - **Phase 1b — 6 JSON files**
+  - **Phase 2 — ****Supabase**** CMS**
+  - 6.1 useQuestionnaire Hook — The Content Abstraction Boundary
+- 7. Complete Project Directory Structure
+  - **Path**
+  - **Contents and Purpose**
+  - **.env**
+  - **.****env****.example**
+  - **.****gitignore**
+  - **.eslintrc.js**
+  - **.****prettierrc**
+  - **vite.config.js**
+  - **tailwind.config.js**
+  - **package.json**
+  - **supabase****/migrations/**
+  - **src****/****main.jsx**
+  - **src****/****App.jsx**
+  - **src****/components/**
+  - **src****/components/screens/**
+  - **src****/components/question/**
+  - **src****/components/gamification/**
+  - **src****/components/dashboard/**
+  - **src****/hooks/**
+  - **src****/services/**
+  - **src****/services/supabase.js**
+  - **src****/services/analytics.js**
+  - **src****/config/**
+  - **src****/config/features.js**
+  - **src****/config/configValidator.js**
+  - **src****/data/**
+  - **src****/data/questionnaire.js**
+  - **src****/data/****questions.json**
+  - **src****/data/****episodes.json**
+  - **src****/data/****tiers.json**
+  - **src****/data/****ui-copy.json**
+  - **src****/data/****branching.json**
+  - **src****/data/****taxonomy.json**
+  - **src****/locales/****en.json**
+  - **src****/styles/**
+  - **dist****/**
+- 8. Multi-Property Architecture Foundation
+  - **Element**
+  - **Implementation**
+  - **URL parameter**
+  - **property_id**** in all records**
+  - **property_id**** in all events**
+  - **Phase 2 activation**
+- 9. NFR Compliance Summary
+  - **NFR**
+  - **Architecture Decision**
+  - **NFR-001/002 — LCP/TTI performance**
+  - **NFR-006 — Offline queue zero data loss**
+  - **NFR-010 — HTTPS everywhere**
+  - **NFR-011 — Credentials ****in .env**
+  - **NFR-012 — RLS on all tables**
+  - **NFR-019 — Radix UI for interactive elements**
+    - **NFR-030/031 — ****property_id**** and ****user_id**** scalability**
+  - **NFR-034 — Zero hardcoded strings**
+  - **NFR-037 — Service layer for all calls**
+    - **NFR-039/040 — Sentry 100% capture + 27 ****PostHog**** events**
+- 10. Component Introduction Schedule
+  - **Sprint**
+  - **Architecture Introduction**
+  - **Sprint 1 (now — design only)**
+  - **Sprint 2 — Core build**
+  - **Sprint 3 — Full questionnaire + gamification**
+  - **Sprint 4 — Dashboard + QA**
+  - **Sprint 5+ — Pilot and beyond**
+- 11. S1-1.2 Review Checklist
+  - **Checklist Item**
+  - **Where to Verify**
+  - **Check 1 — Service layer**
+  - **Check 2 — Feature flag system**
+    - **Check 3 — Sentry and ****PostHog**** as distinct services**
+- 12. Version Log
+  - **Ver.**
+  - **Date**
+  - **By**
+  - **Change**
+  - **— END OF SYSTEM ARCHITECTURE DOCUMENT v1.0 —**

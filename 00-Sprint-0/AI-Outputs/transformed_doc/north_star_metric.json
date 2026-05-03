@@ -1,0 +1,65 @@
+[
+  {
+    "sid": "/the-north-star-metric",
+    "title": "THE NORTH STAR METRIC",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/1-statement-annotation",
+    "title": "1. STATEMENT ANNOTATION",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/2-how-to-measure-it",
+    "title": "2. HOW TO MEASURE IT",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/21-the-sql-query",
+        "title": "2.1 The SQL Query",
+        "level": 2,
+        "parent": "/2-how-to-measure-it",
+        "children": []
+      },
+      {
+        "sid": "/22-where-to-find-it",
+        "title": "2.2 Where to Find It",
+        "level": 2,
+        "parent": "/2-how-to-measure-it",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/3-thresholds-and-what-they-mean",
+    "title": "3. THRESHOLDS AND WHAT THEY MEAN",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/4-relationship-to-okrs--project-charter-success-criteria",
+    "title": "4. RELATIONSHIP TO OKRs — PROJECT CHARTER SUCCESS CRITERIA",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/5-what-not-to-optimise-for",
+    "title": "5. WHAT NOT TO OPTIMISE FOR",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/6-input-metrics--the-nsm-diagnostic-system",
+    "title": "6. INPUT METRICS — THE NSM DIAGNOSTIC SYSTEM",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/7-version-update-log",
+    "title": "7. VERSION UPDATE LOG",
+    "level": 1,
+    "children": []
+  }
+]

@@ -1,0 +1,251 @@
+[
+  {
+    "sid": "/1-testing-strategy-and-philosophy",
+    "title": "1. Testing Strategy and Philosophy",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/11-the-three-primary-test-instruments",
+        "title": "1.1 The Three Primary Test Instruments",
+        "level": 2,
+        "parent": "/1-testing-strategy-and-philosophy",
+        "children": []
+      },
+      {
+        "sid": "/12-additional-test-types",
+        "title": "1.2 Additional Test Types",
+        "level": 2,
+        "parent": "/1-testing-strategy-and-philosophy",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/2-test-scope--in-and-out",
+    "title": "2. Test Scope — In and Out",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/21-in-scope",
+        "title": "2.1 In Scope",
+        "level": 2,
+        "parent": "/2-test-scope--in-and-out",
+        "children": []
+      },
+      {
+        "sid": "/22-out-of-scope",
+        "title": "2.2 Out of Scope",
+        "level": 2,
+        "parent": "/2-test-scope--in-and-out",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/3-bug-severity-model-and-defect-management",
+    "title": "3. Bug Severity Model and Defect Management",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/31-severity-definitions",
+        "title": "3.1 Severity Definitions",
+        "level": 2,
+        "parent": "/3-bug-severity-model-and-defect-management",
+        "children": []
+      },
+      {
+        "sid": "/32-bug-log",
+        "title": "3.2 Bug Log",
+        "level": 2,
+        "parent": "/3-bug-severity-model-and-defect-management",
+        "children": []
+      },
+      {
+        "sid": "/33-sprint-gate-bug-resolution-rule",
+        "title": "3.3 Sprint Gate Bug Resolution Rule",
+        "level": 2,
+        "parent": "/3-bug-severity-model-and-defect-management",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/4-84-path-branching-logic-test-matrix",
+    "title": "4. 84-Path Branching Logic Test Matrix",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/41-matrix-derivation--how-84-paths-are-calculated",
+        "title": "4.1 Matrix Derivation — How 84 Paths Are Calculated",
+        "level": 2,
+        "parent": "/4-84-path-branching-logic-test-matrix",
+        "children": []
+      },
+      {
+        "sid": "/42-matrix-structure--column-specification",
+        "title": "4.2 Matrix Structure — Column Specification",
+        "level": 2,
+        "parent": "/4-84-path-branching-logic-test-matrix",
+        "children": []
+      },
+      {
+        "sid": "/43-matrix-execution-procedure",
+        "title": "4.3 Matrix Execution Procedure",
+        "level": 2,
+        "parent": "/4-84-path-branching-logic-test-matrix",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/5-data-integrity-verification-protocol",
+    "title": "5. Data Integrity Verification Protocol",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/51-protocol--per-session-verification-steps",
+        "title": "5.1 Protocol — Per-Session Verification Steps",
+        "level": 2,
+        "parent": "/5-data-integrity-verification-protocol",
+        "children": []
+      },
+      {
+        "sid": "/52-session-mix-per-verification-pass",
+        "title": "5.2 Session Mix Per Verification Pass",
+        "level": 2,
+        "parent": "/5-data-integrity-verification-protocol",
+        "children": []
+      },
+      {
+        "sid": "/53-pass-criterion",
+        "title": "5.3 Pass Criterion",
+        "level": 2,
+        "parent": "/5-data-integrity-verification-protocol",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/6-offline-queue-connectivity-test",
+    "title": "6. Offline Queue Connectivity Test",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/61-test-procedure",
+        "title": "6.1 Test Procedure",
+        "level": 2,
+        "parent": "/6-offline-queue-connectivity-test",
+        "children": []
+      },
+      {
+        "sid": "/62-pass-criterion",
+        "title": "6.2 Pass Criterion",
+        "level": 2,
+        "parent": "/6-offline-queue-connectivity-test",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/7-playwright-visual-regression-testing",
+    "title": "7. Playwright Visual Regression Testing",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/71-baseline-screenshots--8-screens",
+        "title": "7.1 Baseline Screenshots — 8 Screens",
+        "level": 2,
+        "parent": "/7-playwright-visual-regression-testing",
+        "children": []
+      },
+      {
+        "sid": "/72-regression-detection",
+        "title": "7.2 Regression Detection",
+        "level": 2,
+        "parent": "/7-playwright-visual-regression-testing",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/8-accessibility-audit-procedure-wcag-21-aa",
+    "title": "8. Accessibility Audit Procedure (WCAG 2.1 AA)",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/81-automated-scan",
+        "title": "8.1 Automated Scan",
+        "level": 2,
+        "parent": "/8-accessibility-audit-procedure-wcag-21-aa",
+        "children": []
+      },
+      {
+        "sid": "/82-manual-keyboard-navigation-walkthrough",
+        "title": "8.2 Manual Keyboard Navigation Walkthrough",
+        "level": 2,
+        "parent": "/8-accessibility-audit-procedure-wcag-21-aa",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/9-performance-verification-procedure",
+    "title": "9. Performance Verification Procedure",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/91-nfr-performance-targets",
+        "title": "9.1 NFR Performance Targets",
+        "level": 2,
+        "parent": "/9-performance-verification-procedure",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/10-user-acceptance-testing--script-outline",
+    "title": "10. User Acceptance Testing — Script Outline",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/101-uat-participants",
+        "title": "10.1 UAT Participants",
+        "level": 2,
+        "parent": "/10-user-acceptance-testing--script-outline",
+        "children": []
+      },
+      {
+        "sid": "/102-uat-flow",
+        "title": "10.2 UAT Flow",
+        "level": 2,
+        "parent": "/10-user-acceptance-testing--script-outline",
+        "children": []
+      },
+      {
+        "sid": "/103-uat-finding-categories",
+        "title": "10.3 UAT Finding Categories",
+        "level": 2,
+        "parent": "/10-user-acceptance-testing--script-outline",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/11-nfr-to-test-traceability-schedule",
+    "title": "11. NFR-to-Test Traceability Schedule",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/12-sprint-by-sprint-testing-schedule",
+    "title": "12. Sprint-by-Sprint Testing Schedule",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/13-version-log",
+    "title": "13. Version Log",
+    "level": 1,
+    "children": []
+  }
+]

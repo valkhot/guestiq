@@ -1,0 +1,20 @@
+# .eslintignore
+# GuestIQ — ESLint ignore patterns
+
+# Build output — never lint compiled files
+dist/
+build/
+
+# Dependencies — never lint node_modules
+node_modules/
+
+# Content files — not JavaScript modules
+src/data/*.json
+src/locales/*.json
+
+# Supabase migration SQL files — not JavaScript
+supabase/migrations/
+
+# Playwright output
+playwright-report/
+test-results/

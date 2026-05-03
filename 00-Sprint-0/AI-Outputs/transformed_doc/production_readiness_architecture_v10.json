@@ -1,0 +1,318 @@
+[
+  {
+    "sid": "/1-what-is-production-readiness-and-why-does-it-matter-here",
+    "title": "1. What Is Production Readiness and Why Does It Matter Here?",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/11-the-7-gaps-at-a-glance",
+        "title": "1.1 The 7 Gaps at a Glance",
+        "level": 2,
+        "parent": "/1-what-is-production-readiness-and-why-does-it-matter-here",
+        "children": []
+      },
+      {
+        "sid": "/12-how-to-read-this-document",
+        "title": "1.2 How to Read This Document",
+        "level": 2,
+        "parent": "/1-what-is-production-readiness-and-why-does-it-matter-here",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/2-gap-1--authentication-infrastructure",
+    "title": "2. Gap 1 — Authentication Infrastructure",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/21-the-problem",
+        "title": "2.1 The Problem",
+        "level": 2,
+        "parent": "/2-gap-1--authentication-infrastructure",
+        "children": []
+      },
+      {
+        "sid": "/22-the-fix--auth-bypass-mode",
+        "title": "2.2 The Fix — Auth Bypass Mode",
+        "level": 2,
+        "parent": "/2-gap-1--authentication-infrastructure",
+        "children": []
+      },
+      {
+        "sid": "/23-implementation-cost",
+        "title": "2.3 Implementation Cost",
+        "level": 2,
+        "parent": "/2-gap-1--authentication-infrastructure",
+        "children": []
+      },
+      {
+        "sid": "/24-phase-2-activation",
+        "title": "2.4 Phase 2 Activation",
+        "level": 2,
+        "parent": "/2-gap-1--authentication-infrastructure",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/3-gap-2--environment-configuration",
+    "title": "3. Gap 2 — Environment Configuration",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/31-the-problem",
+        "title": "3.1 The Problem",
+        "level": 2,
+        "parent": "/3-gap-2--environment-configuration",
+        "children": []
+      },
+      {
+        "sid": "/32-the-fix--env-file-architecture",
+        "title": "3.2 The Fix — .env File Architecture",
+        "level": 2,
+        "parent": "/3-gap-2--environment-configuration",
+        "children": []
+      },
+      {
+        "sid": "/33-complete-env-variable-specification",
+        "title": "3.3 Complete .env Variable Specification",
+        "level": 2,
+        "parent": "/3-gap-2--environment-configuration",
+        "children": []
+      },
+      {
+        "sid": "/34-the-envexample-file",
+        "title": "3.4 The .env.example File",
+        "level": 2,
+        "parent": "/3-gap-2--environment-configuration",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/guestiq-environment-configuration",
+    "title": "GuestIQ Environment Configuration",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/copy-this-file-to-env-and-fill-in-values-from-credentials-files",
+    "title": "Copy this file to .env and fill in values from credentials files",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/never-commit-env-to-git",
+    "title": "NEVER commit .env to Git",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/feature-flags--set-to-true-to-activate-phase-2-features",
+    "title": "Feature flags — set to 'true' to activate Phase 2 features",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/35-phase-2-activation",
+        "title": "3.5 Phase 2 Activation",
+        "level": 2,
+        "parent": "/feature-flags--set-to-true-to-activate-phase-2-features",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/4-gap-3--feature-flag-system",
+    "title": "4. Gap 3 — Feature Flag System",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/41-the-problem",
+        "title": "4.1 The Problem",
+        "level": 2,
+        "parent": "/4-gap-3--feature-flag-system",
+        "children": []
+      },
+      {
+        "sid": "/42-the-fix--srcconfigfeaturesjs",
+        "title": "4.2 The Fix — src/config/features.js",
+        "level": 2,
+        "parent": "/4-gap-3--feature-flag-system",
+        "children": []
+      },
+      {
+        "sid": "/43-how-components-use-feature-flags",
+        "title": "4.3 How Components Use Feature Flags",
+        "level": 2,
+        "parent": "/4-gap-3--feature-flag-system",
+        "children": []
+      },
+      {
+        "sid": "/44-phase-2-activation",
+        "title": "4.4 Phase 2 Activation",
+        "level": 2,
+        "parent": "/4-gap-3--feature-flag-system",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/5-gap-4--structured-error-logging",
+    "title": "5. Gap 4 — Structured Error Logging",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/51-the-problem",
+        "title": "5.1 The Problem",
+        "level": 2,
+        "parent": "/5-gap-4--structured-error-logging",
+        "children": []
+      },
+      {
+        "sid": "/52-the-fix--sentry-from-sprint-2-day-one",
+        "title": "5.2 The Fix — Sentry from Sprint 2 Day One",
+        "level": 2,
+        "parent": "/5-gap-4--structured-error-logging",
+        "children": []
+      },
+      {
+        "sid": "/53-implementation-cost",
+        "title": "5.3 Implementation Cost",
+        "level": 2,
+        "parent": "/5-gap-4--structured-error-logging",
+        "children": []
+      },
+      {
+        "sid": "/54-phase-2-activation",
+        "title": "5.4 Phase 2 Activation",
+        "level": 2,
+        "parent": "/5-gap-4--structured-error-logging",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/6-gap-5--database-schema-versioning",
+    "title": "6. Gap 5 — Database Schema Versioning",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/61-the-problem",
+        "title": "6.1 The Problem",
+        "level": 2,
+        "parent": "/6-gap-5--database-schema-versioning",
+        "children": []
+      },
+      {
+        "sid": "/62-the-fix--supabase-migrations",
+        "title": "6.2 The Fix — Supabase Migrations",
+        "level": 2,
+        "parent": "/6-gap-5--database-schema-versioning",
+        "children": []
+      },
+      {
+        "sid": "/63-migration-file-structure",
+        "title": "6.3 Migration File Structure",
+        "level": 2,
+        "parent": "/6-gap-5--database-schema-versioning",
+        "children": []
+      },
+      {
+        "sid": "/64-phase-2-activation",
+        "title": "6.4 Phase 2 Activation",
+        "level": 2,
+        "parent": "/6-gap-5--database-schema-versioning",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/7-gap-6--api-service-layer",
+    "title": "7. Gap 6 — API Service Layer",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/71-the-problem",
+        "title": "7.1 The Problem",
+        "level": 2,
+        "parent": "/7-gap-6--api-service-layer",
+        "children": []
+      },
+      {
+        "sid": "/72-the-fix--srcservicessupabasejs",
+        "title": "7.2 The Fix — src/services/supabase.js",
+        "level": 2,
+        "parent": "/7-gap-6--api-service-layer",
+        "children": []
+      },
+      {
+        "sid": "/73-service-layer-function-contracts",
+        "title": "7.3 Service Layer Function Contracts",
+        "level": 2,
+        "parent": "/7-gap-6--api-service-layer",
+        "children": []
+      },
+      {
+        "sid": "/74-offline-queue-integration",
+        "title": "7.4 Offline Queue Integration",
+        "level": 2,
+        "parent": "/7-gap-6--api-service-layer",
+        "children": []
+      },
+      {
+        "sid": "/75-phase-2-activation",
+        "title": "7.5 Phase 2 Activation",
+        "level": 2,
+        "parent": "/7-gap-6--api-service-layer",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/8-gap-7--dashboard-query-caching",
+    "title": "8. Gap 7 — Dashboard Query Caching",
+    "level": 1,
+    "children": [
+      {
+        "sid": "/81-the-problem",
+        "title": "8.1 The Problem",
+        "level": 2,
+        "parent": "/8-gap-7--dashboard-query-caching",
+        "children": []
+      },
+      {
+        "sid": "/82-why-caching-is-not-implemented-in-phase-1",
+        "title": "8.2 Why Caching Is Not Implemented in Phase 1",
+        "level": 2,
+        "parent": "/8-gap-7--dashboard-query-caching",
+        "children": []
+      },
+      {
+        "sid": "/83-phase-2-implementation",
+        "title": "8.3 Phase 2 Implementation",
+        "level": 2,
+        "parent": "/8-gap-7--dashboard-query-caching",
+        "children": []
+      }
+    ]
+  },
+  {
+    "sid": "/9-sprint-4-architecture-review-checklist",
+    "title": "9. Sprint 4 Architecture Review Checklist",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/10-phase-2-activation-playbook",
+    "title": "10. Phase 2 Activation Playbook",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/11-version-log",
+    "title": "11. Version Log",
+    "level": 1,
+    "children": []
+  }
+]

@@ -1,0 +1,118 @@
+# Conversion Report
+
+## Document Information
+- **Source File**: c:\GuestIQ Research Project\01-Sprint-1\AI-Outputs\questionnaire_js_data_structure_v10.docx
+- **File Type**: DOCX
+- **Output Directory**: c:\GuestIQ Research Project\TargetMDDirectory\questionnaire_js_data_structure_v10
+- **Images Directory**: c:\GuestIQ Research Project\TargetMDDirectory\questionnaire_js_data_structure_v10\images
+
+## Conversion Results
+- **Total Headings**: 100
+- **Images Extracted**: 0
+- **Issues Handled**: 0
+- **Status**: ✅ Completed Successfully
+
+## Extracted Images
+No images found or extracted.
+
+## Document Structure
+  - **QUESTIONNAIRE.JS DATA STRUCTURE SPECIFICATION**
+    - **GuestIQ**** — Sprint 1 Developer Contract for Sprint 2 Build**
+  - **Document ID**
+  - **Document Version**
+  - **Document Status**
+  - **Sprint**
+  - **Criticality**
+  - **Fields Specified**
+  - **Phase Design**
+  - **Related Documents**
+  - **Document Location**
+    - **CRITICAL****:  This**** document is the developer contract for Sprint 2 step S2-2.2. The AI Developer creates questionnaire.js following this specification exactly. No fields may be added or removed without Lead Researcher approval. The Phase 1b Strangler Fig migration translates this structure directly into JSON — any deviation here creates migration debt in Sprint 3.**
+- 1. File Structure Overview
+  - 1.1 Top-Level Key Specification
+  - **Top-Level Key**
+  - **Type**
+  - **Phase 1b File**
+  - **Contents**
+  - **questions**
+  - **episodes**
+  - **tiers**
+  - **uiCopy**
+  - **branching**
+  - **taxonomy**
+- 2. Question Object — 13 Required Fields
+  - **Field**
+  - **Type**
+  - **Required**
+  - **Phase**
+  - **Description and Valid Values**
+  - **id**
+  - **String**
+  - **MUST**
+  - **module**
+  - **Integer**
+  - **MUST**
+  - **section**
+  - **String**
+  - **MUST**
+  - **tiers**
+  - **Array**
+  - **MUST**
+  - **type**
+  - **String**
+  - **MUST**
+  - **text**
+  - **Object**
+  - **MUST**
+  - **instruction**
+  - **String | null**
+  - **MUST**
+  - **options**
+  - **Array**
+  - **MUST**
+  - **has_none_option**
+  - **Boolean**
+  - **MUST**
+  - **max_selections**
+  - **Integer | null**
+  - **MUST**
+  - **researcher_note**
+  - **String | null**
+  - **MUST**
+  - **routes_module_5**
+  - **Boolean**
+  - **MUST**
+  - **module_5_code**
+  - **String | null**
+  - **MUST**
+    - **WARN****:  The**** options array for scale_5 questions uses option objects to define scale point labels — not answer choices. Each of the five option objects has: code ('1' through '5'), ****taxonomy_code**** (null), text (the label shown under that scale point, e.g. 'Not important'). The Question component renders these as column headers in the scale table.**
+- 3. Worked Examples — Three Complete Question Objects
+  - 3.1 Q0 — Tense Routing Gate (QR1)
+  - 3.2 Q1 — Primary Stay Purpose (Intent Capture)
+  - 3.3 Q12 — Scale Question Example
+- 4. episodes Array Specification
+- 5. tiers Object Specification
+- 6. uiCopy Object Specification
+- 7. branching Object Specification
+- 8. taxonomy Object Specification
+- 9. Migration Path — Phase 1a to Phase 1b to Phase 2
+  - **Phase**
+  - **Source**
+  - **Implementation**
+  - **Migration Effort**
+- 10. Review Checklist
+  - **Check**
+  - **Verification**
+  - **Check 1 — All 13 fields present**
+  - **Check 2 — Q0 worked example correct**
+  - **Check 3 — Q1 taxonomy codes match BLS**
+  - **Check 4 — Scale ****example**** correct**
+  - **Check 5 — module5Routes matches BLS**
+  - **Check 6 — Phase 1b file names**
+    - **Check 7 — ****uiCopy**** includes voluntary participation text**
+- 11. Version Log
+  - **Ver.**
+  - **Date**
+  - **By**
+  - **Change**
+    - **— END OF QUESTIONNAIRE.JS DATA STRUCTURE SPECIFICATION v1.0 —**

@@ -1,0 +1,150 @@
+# Conversion Report
+
+## Document Information
+- **Source File**: c:\GuestIQ Research Project\01-Sprint-1\AI-Outputs\information_architecture_diagram_v10.docx
+- **File Type**: DOCX
+- **Output Directory**: c:\GuestIQ Research Project\TargetMDDirectory\information_architecture_diagram_v10
+- **Images Directory**: c:\GuestIQ Research Project\TargetMDDirectory\information_architecture_diagram_v10\images
+
+## Conversion Results
+- **Total Headings**: 132
+- **Images Extracted**: 0
+- **Issues Handled**: 0
+- **Status**: ✅ Completed Successfully
+
+## Extracted Images
+No images found or extracted.
+
+## Document Structure
+  - **INFORMATION ARCHITECTURE DIAGRAM**
+    - **GuestIQ**** — Hotel Guest Expectations Research Application**
+  - **Document ID**
+  - **Document Version**
+  - **Document Status**
+  - **Sprint**
+  - **Screens Documented**
+  - **PostHog**** Coverage**
+  - **Review Instructions**
+  - **Document Location**
+- 1. Screen Type Legend
+  - **Entry Screens**
+  - **Question Screens**
+  - **Transition Screens**
+  - **Completion Screens**
+  - **Management**
+  - **Error / Edge**
+- 2. Primary Respondent Flow
+  - 2.1 System Entry and Session Routing
+  - **YES  →****  SCR-02 Disambiguation Screen**
+  - **NO  →****  SCR-01 Welcome + Tier Selection**
+    - **  ****↓  Resume****  ****→  restore**** last question ****position  ↓****  **
+    - **  ****↓  Tier**** ****selected  →****  session created in ****Supabase****  ↓****  **
+  - 2.2 Q0 — Tense Routing Gate
+    - **  ****↓  ****tense****_frame**** stored in session state + ****Supabase****  ↓****  **
+  - 2.3 Episodes 1–4 — Modules 1, 3, 2, 4
+  - **  ****↓  Episode**** 1 ****complete  ↓****  **
+  - **  ****↓  Continue**** to Episode ****2  ↓****  **
+  - **  ****↓  Episode**** 2 ****complete  ↓****  **
+  - **  ****↓  Continue**** to Episode ****3  ↓****  **
+  - **  ****↓  Episode**** 3 ****complete  ↓****  **
+  - **  ****↓  Continue**** to Episode ****4  ↓****  **
+  - **  ****↓  Episode**** 4 ****complete  ↓****  **
+    - **  ****↓  Continue**** to Episode 5 — Module ****5  ↓****  **
+  - 2.4 Episode 5 — Module 5 (12 Intent-Specific Branches)
+  - **Code**
+  - **Sub-section**
+  - **Screen**
+  - **Tier Scope**
+  - **Questions**
+  - **Badge**
+  - **  ****↓  Episode**** 5 ****complete  ↓****  **
+  - **  ****↓  Continue**** to Episode ****6  ↓****  **
+  - 2.5 Episodes 6–7 — Modules 6 and 7
+  - **  ****↓  Episode**** 6 ****complete  ↓****  **
+  - **  ****↓  Continue**** to Episode ****7  ↓****  **
+    - **  ****↓  session**** ****is_complete**** = ****true  →****  token cleared from ****localStorage****  ↓****  **
+  - 2.6 Completion and Enrichment
+    - **  ****↓  Optional**** — enrichment screen appears ****automatically  ↓****  **
+- 3. Session Edge Cases and Alternative Paths
+  - 3.1 Management Dashboard — Available on All Screens
+  - 3.2 Offline Queue and Supabase Connectivity
+  - **Write fails (network)**
+  - **Reconnects within 60s**
+  - **Still offline after 60s**
+  - 3.3 Session Pause and Resume
+  - **Browser close (****beforeunload**** event fired)**
+  - **Respondent returns to URL (same browser)**
+  - 3.4 Configuration Error and React ErrorBoundary
+  - 3.5 RLS Rejection
+  - **RLS Rejection (HTTP 403/400)**
+  - **Lead Researcher email alert within 60 seconds**
+- 4. Complete Screen Inventory
+  - **#**
+  - **Screen Name**
+  - **Type**
+  - **Sprint**
+  - **ID**
+  - **Key ****PostHog**** Events / Notes**
+  - **Entry**
+  - **SCR-01**
+  - **Entry**
+  - **SCR-02**
+  - **Question**
+  - **SCR-03**
+  - **Question**
+  - **SCR-04**
+  - **Question**
+  - **SCR-05**
+  - **Question**
+  - **SCR-06**
+  - **Question**
+  - **SCR-07**
+  - **Transition**
+  - **SCR-08**
+  - **Transition**
+  - **SCR-09**
+  - **Transition**
+  - **SCR-10**
+  - **Transition**
+  - **SCR-11**
+  - **Question**
+  - **SCR-12**
+  - **Question**
+  - **SCR-13**
+  - **Question**
+  - **SCR-14**
+  - **Question**
+  - **SCR-15**
+  - **Question**
+  - **SCR-16**
+  - **Question**
+  - **SCR-17**
+  - **Question**
+  - **SCR-18**
+  - **Question**
+  - **SCR-19**
+  - **Question**
+  - **SCR-20**
+  - **Completion**
+  - **SCR-21**
+  - **Completion**
+  - **SCR-22**
+  - **Management**
+  - **SCR-23**
+  - **Error/Edge**
+  - **SCR-24**
+  - **Error/Edge**
+  - **SCR-25**
+  - **Error/Edge**
+  - **SCR-26**
+- 5. PostHog Event to Screen Mapping
+  - **#**
+  - **Event Name**
+  - **Trigger Screen**
+  - **Verification Sprint**
+- 6. Version Log
+  - **Ver.**
+  - **Date**
+  - **By**
+  - **Change**
+  - **— END OF INFORMATION ARCHITECTURE DIAGRAM v1.0 —**

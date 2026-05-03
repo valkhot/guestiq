@@ -1,0 +1,188 @@
+# Conversion Report
+
+## Document Information
+- **Source File**: c:\GuestIQ Research Project\01-Sprint-1\AI-Outputs\application_state_diagram_v10.docx
+- **File Type**: DOCX
+- **Output Directory**: c:\GuestIQ Research Project\TargetMDDirectory\application_state_diagram_v10
+- **Images Directory**: c:\GuestIQ Research Project\TargetMDDirectory\application_state_diagram_v10\images
+
+## Conversion Results
+- **Total Headings**: 170
+- **Images Extracted**: 0
+- **Issues Handled**: 0
+- **Status**: ✅ Completed Successfully
+
+## Extracted Images
+No images found or extracted.
+
+## Document Structure
+  - **APPLICATION STATE DIAGRAM**
+    - **GuestIQ**** — Hotel Guest Expectations Research Application**
+  - **Document ID**
+  - **Document Version**
+  - **Document Status**
+  - **Sprint**
+  - **States**
+  - **Review Checklist**
+  - **Document Location**
+  - **v2.0 Additions**
+    - **WARN****:  The**** downtime state (S-21) and ****its**** retry transition are review checklist item 1. The disambiguation state (S-04) and its two transitions (resume / new session) are ****review**** checklist item 2. These two states are the most complex in the application — trace them carefully.**
+- 1. State Type Legend and Annotation Key
+  - **INIT**
+  - **ENTRY**
+  - **QUESTION**
+  - **TRANSITION**
+  - **COMPLETION**
+  - **ERROR**
+  - **PH:**
+  - **SEN:**
+  - **SUP:**
+  - **LS:**
+  - **[guard]**
+- 2. Primary Path — Application Boot to Session Complete
+  - **PHASE A — BOOT AND CONTENT LOADING**
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+  - **PHASE B — SESSION ROUTING**
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+  - **PHASE C — SESSION CREATION AND Q0**
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+  - **PHASE D — QUESTIONNAIRE EPISODES 1–7**
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+  - **PHASE E — COMPLETION AND ENRICHMENT**
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+  - **→ S-99 Session End**
+- 3. Offline Queue and Downtime States
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+- 4. Disambiguation State — Full Transition Detail
+  - **Path A — Resume**
+  - **Path B — New Session**
+- 5. Error and Edge States
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+- 6. Parallel States — Dashboard Overlay
+  - **entry /**
+  - **exit /**
+  - **transitions →**
+- 7. Complete State Catalogue
+  - **ID**
+  - **State Name**
+  - **Type**
+  - **Sprint**
+  - **Invariants and Notes**
+  - **S-00**
+  - **INIT**
+  - **S-01**
+  - **INIT**
+  - **S-02**
+  - **INIT**
+  - **S-03**
+  - **ENTRY**
+  - **S-04**
+  - **ENTRY**
+  - **S-05**
+  - **ENTRY**
+  - **S-06**
+  - **INIT**
+  - **S-07**
+  - **QUESTION**
+  - **S-08**
+  - **QUESTION**
+  - **S-09**
+  - **TRANSITION**
+  - **S-10**
+  - **TRANSITION**
+  - **S-11**
+  - **QUESTION**
+  - **S-12**
+  - **QUESTION**
+  - **S-13**
+  - **QUESTION**
+  - **S-20**
+  - **OVERLAY**
+  - **S-21**
+  - **ERROR**
+  - **S-17**
+  - **COMPLETION**
+  - **S-18**
+  - **COMPLETION**
+  - **S-19**
+  - **COMPLETION**
+  - **S-22**
+  - **MANAGEMENT**
+  - **S-23**
+  - **ERROR**
+  - **S-24**
+  - **ERROR**
+  - **S-25**
+  - **ERROR**
+  - **S-99**
+  - **TERMINAL**
+- 8. S1-1.10 Review Checklist
+  - **Check**
+  - **Verification**
+    - **Check 1 — Downtime state S-21 has clear ****retry**** path**
+  - **Check 2 — Disambiguation S-04 has both transitions**
+- 9. Version Log
+  - **Ver.**
+  - **Date**
+  - **By**
+  - **Change**
+  - **— END OF APPLICATION STATE DIAGRAM v1.0 —**

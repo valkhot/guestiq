@@ -1,0 +1,121 @@
+# Conversion Report
+
+## Document Information
+- **Source File**: c:\GuestIQ Research Project\01-Sprint-1\AI-Outputs\eslint_prettier_config_v10.docx
+- **File Type**: DOCX
+- **Output Directory**: c:\GuestIQ Research Project\TargetMDDirectory\eslint_prettier_config_v10
+- **Images Directory**: c:\GuestIQ Research Project\TargetMDDirectory\eslint_prettier_config_v10\images
+
+## Conversion Results
+- **Total Headings**: 103
+- **Images Extracted**: 0
+- **Issues Handled**: 0
+- **Status**: ✅ Completed Successfully
+
+## Extracted Images
+No images found or extracted.
+
+## Document Structure
+  - **ESLINT + PRETTIER CONFIGURATION**
+    - **GuestIQ**** — Hotel Guest Expectations Research Application**
+  - **Document ID**
+  - **Document Version**
+  - **Document Status**
+  - **Sprint**
+  - **Files Produced**
+  - **NFRs Satisfied**
+  - **Related Documents**
+  - **Document Location**
+  - **Sprint 2 Action**
+    - **WARN****:  ****ESLint**** runs automatically in the GitHub Actions CI/CD pipeline (Step 4 of the pipeline). Any ****ESLint**** error blocks deployment. Prettier check (Step 5) also blocks deployment on formatting differences. Zero-error requirement is enforced — not advisory.**
+- 1. .eslintrc.js — ESLint Configuration
+  - **.eslintrc.js**
+  - 1.1 ESLint Rule Rationale
+  - **Rule**
+  - **Severity**
+  - **Purpose and What It Catches**
+  - **react-hooks/rules-of-hooks**
+  - **react-hooks/exhaustive-deps**
+  - **jsx-a11y/recommended**
+  - **no-unused-vars**
+  - **no-restricted-imports (****Supabase****)**
+  - **no-restricted-imports (****PostHog****)**
+  - **import/order**
+  - **prefer-const**
+  - **eqeqeq**
+  - 1.2 Required ESLint Packages
+- 2. .prettierrc — Prettier Configuration
+  - **.****prettierrc**
+  - 2.1 Formatting Decision Rationale
+  - **Setting**
+  - **Value**
+  - **Rationale**
+  - **printWidth**
+  - **100**
+  - **singleQuote**
+  - **true**
+  - **trailingComma**
+  - **all**
+  - **semi**
+  - **true**
+  - **endOfLine**
+  - **lf**
+  - 2.2 Required Prettier Package
+- 3. Ignore Files
+  - **.****eslintignore**
+  - **.****prettierignore**
+- 4. package.json Script Additions
+  - **package.json**** — scripts section additions**
+  - 4.1 Developer Workflow
+  - **Command**
+  - **When to Use**
+  - **npm**** run format**
+  - **npm**** run ****lint:fix**
+  - **npm**** run lint**
+  - **npm**** run ****lint:all**
+  - **npm**** run dev**
+- 5. GitHub Actions Pipeline Integration
+  - **.****github****/workflows/****deploy.yml**
+- 6. .gitattributes — Line Ending Enforcement
+  - **.****gitattributes**
+- 7. Sprint 2 Setup Instructions
+  - **#**
+  - **Action**
+  - **Detail**
+  - **1**
+  - **Create project**
+  - **2**
+  - **Add .****eslintrc.js**
+  - **3**
+  - **Add .****prettierrc**
+  - **4**
+  - **Add ignore files**
+  - **5**
+  - **Add .****gitattributes**
+  - **6**
+  - **Install ****ESLint**** packages**
+  - **7**
+  - **Install Prettier**
+  - **8**
+  - **Add ****package.json**** scripts**
+  - **9**
+  - **Run first lint check**
+  - **10**
+  - **Run first format**
+  - **11**
+  - **Run ****format:check**
+  - **12**
+  - **Add GitHub Actions**
+  - **13**
+  - **Add repository secrets**
+  - **14**
+  - **Commit and push**
+  - **15**
+  - **Verify pipeline**
+    - **WARN****:  Step**** 9 may produce 'no-unused-vars' warnings for the Vite scaffold files (****App.jsx****, ****main.jsx****). This is expected — the scaffold contains unused imports. Do not attempt to fix them manually. When the AI Developer replaces scaffold files with ****GuestIQ**** application code in S2-2.2, these warnings disappear.**
+- 8. Version Log
+  - **Ver.**
+  - **Date**
+  - **By**
+  - **Change**
+  - **— END OF ESLINT + PRETTIER CONFIGURATION v1.0 —**

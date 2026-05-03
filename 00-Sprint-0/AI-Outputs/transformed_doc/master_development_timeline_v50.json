@@ -1,0 +1,38 @@
+[
+  {
+    "sid": "/version-50--change-log-cumulative-v10-through-v50",
+    "title": "VERSION 5.0 — CHANGE LOG (cumulative: v1.0 through v5.0)",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/how-to-use-this-document",
+    "title": "HOW TO USE THIS DOCUMENT",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/project-at-a-glance",
+    "title": "PROJECT AT A GLANCE",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/confirmed-technology-stack--complete-v20",
+    "title": "CONFIRMED TECHNOLOGY STACK — COMPLETE v2.0",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/complete-artifact-registry--all-44-documents",
+    "title": "COMPLETE ARTIFACT REGISTRY — ALL 44 DOCUMENTS",
+    "level": 1,
+    "children": []
+  },
+  {
+    "sid": "/master-decision-log--complete-and-final",
+    "title": "MASTER DECISION LOG — COMPLETE AND FINAL",
+    "level": 1,
+    "children": []
+  }
+]

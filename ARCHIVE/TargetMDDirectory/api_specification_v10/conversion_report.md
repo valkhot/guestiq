@@ -1,0 +1,349 @@
+# Conversion Report
+
+## Document Information
+- **Source File**: c:\GuestIQ Research Project\01-Sprint-1\AI-Outputs\api_specification_v10.docx
+- **File Type**: DOCX
+- **Output Directory**: c:\GuestIQ Research Project\TargetMDDirectory\api_specification_v10
+- **Images Directory**: c:\GuestIQ Research Project\TargetMDDirectory\api_specification_v10\images
+
+## Conversion Results
+- **Total Headings**: 331
+- **Images Extracted**: 0
+- **Issues Handled**: 0
+- **Status**: ✅ Completed Successfully
+
+## Extracted Images
+No images found or extracted.
+
+## Document Structure
+  - **API SPECIFICATION**
+    - **GuestIQ**** — Service Layer Contracts for supabase.js and analytics.js**
+  - **Document ID**
+  - **Document Version**
+  - **Document Status**
+  - **Sprint**
+  - **Supabase**** Functions**
+  - **PostHog**** Events**
+  - **Sentry**
+  - **Review Checklist**
+  - **Document Location**
+  - **NFR References**
+    - **WARN****:  The**** service layer pattern is non-negotiable. No React component may ****import**** ****from @****supabase/supabase-js or ****posthog-js**** directly. The ****ESLint**** no-restricted-imports rule (S1-1.11) enforces this in code. This document is the architectural specification that the ****ESLint**** rule implements.**
+  - **1. Service Layer Architecture**
+  - **File**
+  - **Imports From**
+  - **Exports To**
+  - **src****/services/supabase.js**
+  - **src****/services/analytics.js**
+  - **src****/****main.jsx**
+  - **1.1 File Skeleton — supabase.js**
+  - **1.2 File Skeleton — analytics.js**
+    - **2. ****Supabase**** Service Layer — ****src****/services/supabase.js**
+  - **2.1 Error Handling Pattern — Applied to Every Function**
+    - **WARN****:  RLS**** rejections (****error.code**** 42501 / ****error.status**** 403) must NOT be added to the offline queue. An RLS rejection means the database policy denied the request — retrying will produce the same rejection. Log to Sentry and return the error. The Lead Researcher email alert fires automatically from Sentry within 60 seconds.**
+  - **2.2 ****createSession**
+  - **Parameters**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **session_id**
+  - **required**
+  - **property_id**
+  - **required**
+  - **tier**
+  - **required**
+  - **tense_frame**
+  - **required**
+  - **intent_category**
+  - **required**
+  - **is_complete**
+  - **required**
+  - **created_at**
+  - **auto**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **session_id**
+  - **required**
+  - **property_id**
+  - **required**
+  - **tier**
+  - **required**
+  - **tense_frame**
+  - **required**
+  - **intent_category**
+  - **required**
+  - **is_complete**
+  - **required**
+  - **created_at**
+  - **auto**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **session_id**
+  - **required**
+  - **property_id**
+  - **required**
+  - **tier**
+  - **required**
+  - **tense_frame**
+  - **required**
+  - **intent_category**
+  - **required**
+  - **is_complete**
+  - **required**
+  - **created_at**
+  - **auto**
+  - **2.3 ****updateSession**
+  - **Parameters**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **sessionId**
+  - **required**
+  - **updates**
+  - **required**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **sessionId**
+  - **required**
+  - **updates**
+  - **required**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **sessionId**
+  - **required**
+  - **updates**
+  - **required**
+  - **2.4 ****insertResponse**
+  - **Parameters**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **session_id**
+  - **required**
+  - **question_id**
+  - **required**
+  - **answer_code**
+  - **required**
+  - **tense_frame**
+  - **required**
+  - **module_number**
+  - **required**
+  - **property_id**
+  - **required**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **session_id**
+  - **required**
+  - **question_id**
+  - **required**
+  - **answer_code**
+  - **required**
+  - **tense_frame**
+  - **required**
+  - **module_number**
+  - **required**
+  - **property_id**
+  - **required**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **session_id**
+  - **required**
+  - **question_id**
+  - **required**
+  - **answer_code**
+  - **required**
+  - **tense_frame**
+  - **required**
+  - **module_number**
+  - **required**
+  - **property_id**
+  - **required**
+  - **2.5 ****insertScaleResponse**
+  - **Parameters**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **session_id**
+  - **required**
+  - **question_id**
+  - **required**
+  - **scale_value**
+  - **required**
+  - **property_id**
+  - **required**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **session_id**
+  - **required**
+  - **question_id**
+  - **required**
+  - **scale_value**
+  - **required**
+  - **property_id**
+  - **required**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **session_id**
+  - **required**
+  - **question_id**
+  - **required**
+  - **scale_value**
+  - **required**
+  - **property_id**
+  - **required**
+  - **2.6 ****insertNoneFlag**
+  - **Parameters**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **session_id**
+  - **required**
+  - **question_id**
+  - **required**
+  - **property_id**
+  - **required**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **session_id**
+  - **required**
+  - **question_id**
+  - **required**
+  - **property_id**
+  - **required**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **session_id**
+  - **required**
+  - **question_id**
+  - **required**
+  - **property_id**
+  - **required**
+  - **2.7 ****getDashboardData**
+  - **Parameters**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **propertyId**
+  - **required**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **propertyId**
+  - **required**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **propertyId**
+  - **required**
+  - **2.8 ****getIncompleteSession**
+  - **Parameters**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **token**
+  - **required**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **token**
+  - **required**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **token**
+  - **required**
+  - **2.9 ****updateEnrichment**
+  - **Parameters**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **sessionId**
+  - **required**
+  - **enrichmentData**
+  - **required**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **sessionId**
+  - **required**
+  - **enrichmentData**
+  - **required**
+  - **Param**
+  - **Required**
+  - **Type**
+  - **Description**
+  - **sessionId**
+  - **required**
+  - **enrichmentData**
+  - **required**
+  - **3. Offline Queue — ****src****/services/offlineQueue.js**
+  - **4. Sentry Initialization and Error Capture**
+  - **4.1 Initialization — ****src****/****main.jsx**
+  - **4.2 ****Sentry.captureException**** Contexts**
+  - **Call Site**
+  - **Type Tag**
+  - **Context Captured**
+  - **supabase.js catch blocks**
+  - **SUPABASE_WRITE**
+  - **RLS rejection (403)**
+  - **RLS_REJECTION**
+  - **getDashboardData**** error**
+  - **DASHBOARD_READ**
+  - **getIncompleteSession**** error**
+  - **SESSION_LOOKUP**
+  - **ErrorBoundary**** (automatic)**
+  - **REACT_ERROR**
+  - **configValidator**** throw**
+  - **CONFIG_ERROR**
+    - **5. ****PostHog**** Events — ****src****/services/analytics.js**
+  - **5.1 Application Initialization and Entry**
+  - **5.2 Questionnaire Flow**
+  - **5.3 Session Management and Connectivity**
+  - **5.4 Completion and Results**
+  - **5.5 Management Dashboard**
+  - **6. Environment Variables ****— .env**
+    - **WARN****:  VITE****_SUPABASE_ANON_KEY is the anon/public key — NOT the ****service_role**** key. The ****service_role**** key bypasses all RLS policies and would give any respondent full read/write access to all data. Never use the ****service_role**** key in browser code. The ****anon**** key has limited INSERT-only access per the RLS policies in migration 20240101000005.**
+  - **7. S1-3.6 Review Checklist**
+  - **Check**
+  - **Verification**
+  - **Check 1 — Service layer explicit**
+  - **Check 2 — All 27 ****PostHog**** events present**
+  - **8. Version Log**
+  - **Ver.**
+  - **Date**
+  - **By**
+  - **Change**
+  - **— END OF API SPECIFICATION v1.0 —**
