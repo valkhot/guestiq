@@ -23,7 +23,7 @@ Sentry.init({
   integrations: [
     Sentry.browserTracingIntegration(),
     Sentry.replayIntegration({
-      maskAllInputs: true,   // No response text captured in replays
+      maskAllInputs: true, // No response text captured in replays
       blockAllMedia: false,
     }),
   ],
@@ -44,11 +44,11 @@ import posthog from 'posthog-js';
 
 posthog.init(import.meta.env.VITE_POSTHOG_KEY ?? '', {
   api_host: 'https://app.posthog.com',
-  autocapture: false,        // Only 27 canonical events — no auto-capture
-  capture_pageview: false,   // Managed manually via trackAppLoaded
-  ip: false,                 // IP anonymization enabled
-  persistence: 'memory',     // No localStorage for analytics data
-  person_profiles: 'never',  // No person profiles in Phase 1
+  autocapture: false, // Only 27 canonical events — no auto-capture
+  capture_pageview: false, // Managed manually via trackAppLoaded
+  ip: false, // IP anonymization enabled
+  persistence: 'memory', // No localStorage for analytics data
+  person_profiles: 'never', // No person profiles in Phase 1
   session_recording: {
     maskAllInputs: true,
   },
@@ -102,7 +102,15 @@ function ErrorFallback({ error }) {
         Refresh
       </button>
       {import.meta.env.DEV && error && (
-        <pre style={{ marginTop: '2rem', fontSize: '0.75rem', color: '#EF4444', maxWidth: '600px', overflow: 'auto' }}>
+        <pre
+          style={{
+            marginTop: '2rem',
+            fontSize: '0.75rem',
+            color: '#EF4444',
+            maxWidth: '600px',
+            overflow: 'auto',
+          }}
+        >
           {error.message}
         </pre>
       )}

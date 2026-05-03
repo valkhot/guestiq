@@ -85,9 +85,7 @@ function enqueue(name, fn, args, onOfflineActivated) {
 // ── Standard error handler ─────────────────────────────────────────────────
 function handleError(err, context) {
   const isRLS =
-    err?.code === '42501' ||
-    err?.status === 403 ||
-    err?.message?.includes('row-level security');
+    err?.code === '42501' || err?.status === 403 || err?.message?.includes('row-level security');
 
   Sentry.captureException(err, {
     extra: { ...context, type: isRLS ? 'RLS_REJECTION' : 'SUPABASE_WRITE' },
@@ -106,7 +104,10 @@ export async function createSession(sessionData, { onOffline } = {}) {
   try {
     const { data, error } = await supabase.from('sessions').insert(sessionData).select().single();
     if (error) {
-      const result = handleError(error, { function: 'createSession', session_id: sessionData.session_id });
+      const result = handleError(error, {
+        function: 'createSession',
+        session_id: sessionData.session_id,
+      });
       if (!result.isRLS) {
         enqueue('createSession', createSession, [sessionData], onOffline);
         return { success: false, queued: true };
@@ -153,7 +154,10 @@ export async function insertResponse(responseData, { onOffline } = {}) {
   try {
     const { error } = await supabase.from('responses').insert(responseData);
     if (error) {
-      const result = handleError(error, { function: 'insertResponse', session_id: responseData.session_id });
+      const result = handleError(error, {
+        function: 'insertResponse',
+        session_id: responseData.session_id,
+      });
       if (!result.isRLS) {
         enqueue('insertResponse', insertResponse, [responseData], onOffline);
         return { success: false, queued: true };
@@ -176,7 +180,10 @@ export async function insertScaleResponse(scaleData, { onOffline } = {}) {
   try {
     const { error } = await supabase.from('scale_responses').insert(scaleData);
     if (error) {
-      const result = handleError(error, { function: 'insertScaleResponse', session_id: scaleData.session_id });
+      const result = handleError(error, {
+        function: 'insertScaleResponse',
+        session_id: scaleData.session_id,
+      });
       if (!result.isRLS) {
         enqueue('insertScaleResponse', insertScaleResponse, [scaleData], onOffline);
         return { success: false, queued: true };
@@ -199,7 +206,10 @@ export async function insertNoneFlag(flagData, { onOffline } = {}) {
   try {
     const { error } = await supabase.from('none_flags').insert(flagData);
     if (error) {
-      const result = handleError(error, { function: 'insertNoneFlag', session_id: flagData.session_id });
+      const result = handleError(error, {
+        function: 'insertNoneFlag',
+        session_id: flagData.session_id,
+      });
       if (!result.isRLS) {
         enqueue('insertNoneFlag', insertNoneFlag, [flagData], onOffline);
         return { success: false, queued: true };
