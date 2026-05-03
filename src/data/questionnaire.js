@@ -1,16 +1,12 @@
 // src/data/questionnaire.js
-// GuestIQ — Phase 1a Content Source
+// GuestIQ Phase 1a Content Source
 // THE ONLY import point is src/hooks/useQuestionnaire.js.
-// No component imports this file directly.
-// Phase 1b: content extracted to 6 JSON files (same structure, same field names).
-// Phase 2: content moves to Supabase questions table (same field names).
+// Module 1 (Q1-Q9): COMPLETE
+// Modules 2-7 (Q10-Q79): stubs — full content added Sprint 3
 
 const questionnaire = {
-  // ── questions ────────────────────────────────────────────────────────────
-  // 80 question objects: Q0 (QR1, tense routing) + Q1–Q79 (instrument)
-  // Each object has exactly 13 required fields — see S1-2.3 for full spec.
   questions: [
-    // ── Q0 — Tense Routing Gate ─────────────────────────────────────────
+    // ── Q0 — Tense Routing Gate ──────────────────────────────────────────
     {
       id: 'QR1',
       module: 0,
@@ -45,12 +41,12 @@ const questionnaire = {
       has_none_option: false,
       max_selections: null,
       researcher_note:
-        'Q0 determines tense_frame for entire session. A/C/D → retrospective. B → anticipatory. Flag C and D sessions analytically.',
+        'Q0 determines tense_frame for entire session. A/C/D → retrospective. B → anticipatory.',
       routes_module_5: false,
       module_5_code: null,
     },
 
-    // ── Q1 — Primary Stay Purpose (Intent Capture) ──────────────────────
+    // ── MODULE 1A — Primary Stay Purpose ────────────────────────────────
     {
       id: 'Q1',
       module: 1,
@@ -130,12 +126,12 @@ const questionnaire = {
       has_none_option: true,
       max_selections: null,
       researcher_note:
-        'Q1 is the intent capture question. taxonomy_code stored as intent_category in sessions table — drives all Module 5 routing.',
+        'Q1 intent capture. taxonomy_code stored as intent_category in sessions. Drives Module 5 routing.',
       routes_module_5: true,
       module_5_code: 'taxonomy_code',
     },
 
-    // ── Q2 — Secondary Purpose ───────────────────────────────────────────
+    // ── Q2 — Secondary Purpose (Professional + Expert only) ──────────────
     {
       id: 'Q2',
       module: 1,
@@ -183,51 +179,340 @@ const questionnaire = {
       has_none_option: true,
       max_selections: null,
       researcher_note:
-        'Q2 shown to Professional and Expert only. None option or G = no secondary. Same sub-section as Q1 = skip secondary.',
+        'Q2 shown to Professional and Expert only. Drives secondary Module 5 routing.',
       routes_module_5: false,
       module_5_code: null,
     },
 
-    // ── Q3–Q79: Remaining questions ──────────────────────────────────────
-    // Sprint 3 builds out all remaining questions with full content.
-    // Placeholder objects below maintain array structure and allow
-    // tier routing logic to be tested in Sprint 2 with Q0 and Q1.
-    // Each placeholder has all 13 required fields.
-
-    ...Array.from({ length: 77 }, (_, i) => ({
-      id: `Q${i + 3}`,
-      module:
-        i + 3 <= 9
-          ? 1
-          : i + 3 <= 18
-            ? 2
-            : i + 3 <= 30
-              ? 3
-              : i + 3 <= 38
-                ? 4
-                : i + 3 <= 56
-                  ? 5
-                  : i + 3 <= 66
-                    ? 6
-                    : 7,
-      section: 'placeholder',
+    // ── MODULE 1B — Trigger & Planning Horizon ───────────────────────────
+    {
+      id: 'Q3',
+      module: 1,
+      section: '1B',
       tiers: ['amateur', 'professional', 'expert'],
       type: 'single_select',
       text: {
-        retrospective: `[Q${i + 3} — Full question text added in Sprint 3]`,
-        anticipatory: `[Q${i + 3} — Full question text added in Sprint 3]`,
+        retrospective: 'How far in advance did you book this stay?',
+        anticipatory: 'How far in advance will you book this stay?',
       },
       instruction: null,
       options: [
-        { code: 'A', taxonomy_code: null, text: 'Option A — Sprint 3' },
-        { code: 'B', taxonomy_code: null, text: 'Option B — Sprint 3' },
+        {
+          code: 'A',
+          taxonomy_code: 'UNPLANNED',
+          text: 'Same day or within 24 hours — it was entirely unplanned',
+        },
+        {
+          code: 'B',
+          taxonomy_code: 'UNPLANNED',
+          text: '1–3 days ahead — it came up with very little notice',
+        },
+        {
+          code: 'C',
+          taxonomy_code: 'SEMI-PLANNED',
+          text: '4–14 days ahead — relatively short notice',
+        },
+        {
+          code: 'D',
+          taxonomy_code: 'PLANNED',
+          text: '2–6 weeks ahead — moderate advance planning',
+        },
+        { code: 'E', taxonomy_code: 'PLANNED', text: '1–3 months ahead — planned well in advance' },
+        {
+          code: 'F',
+          taxonomy_code: 'LONG-LEAD',
+          text: 'More than 3 months ahead — long-range planning',
+        },
+        { code: 'G', taxonomy_code: null, text: 'Other – please specify' },
       ],
       has_none_option: true,
       max_selections: null,
-      researcher_note: `Placeholder for Q${i + 3}. Full content added Sprint 3.`,
+      researcher_note: 'A-B=UNPLANNED | C=SEMI-PLANNED | D-F=PLANNED | F=LONG-LEAD',
       routes_module_5: false,
       module_5_code: null,
-    })),
+    },
+
+    {
+      id: 'Q4',
+      module: 1,
+      section: '1B',
+      tiers: ['professional', 'expert'],
+      type: 'multi_select',
+      text: {
+        retrospective: 'What triggered the decision to stay at a hotel for this need?',
+        anticipatory: 'What is triggering the decision to stay at a hotel for this need?',
+      },
+      instruction: 'Select all that apply — rank your top two if possible.',
+      options: [
+        {
+          code: 'A',
+          taxonomy_code: 'FORCED-DISP',
+          text: 'My home or usual accommodation was unavailable',
+        },
+        {
+          code: 'B',
+          taxonomy_code: 'CONVENIENCE',
+          text: 'The hotel was the most convenient option given the location',
+        },
+        {
+          code: 'C',
+          taxonomy_code: 'PRIVACY',
+          text: 'I wanted privacy or separation from my usual environment',
+        },
+        {
+          code: 'D',
+          taxonomy_code: 'MANDATED',
+          text: 'Someone else arranged or required the hotel stay (employer, event organiser, family)',
+        },
+        {
+          code: 'E',
+          taxonomy_code: 'AMENITY-PULL',
+          text: "I wanted dedicated amenities I don't have at home",
+        },
+        {
+          code: 'F',
+          taxonomy_code: 'EXPERIENTIAL',
+          text: 'I wanted the experience itself — the hotel was part of the occasion',
+        },
+        {
+          code: 'G',
+          taxonomy_code: 'ECONOMIC',
+          text: 'Cost or availability made it the most practical choice',
+        },
+        {
+          code: 'H',
+          taxonomy_code: 'PROXIMITY',
+          text: 'I needed to be close to a specific person, place, or facility',
+        },
+        { code: 'I', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      researcher_note: null,
+      routes_module_5: false,
+      module_5_code: null,
+    },
+
+    // ── MODULE 1C — Party Configuration ─────────────────────────────────
+    {
+      id: 'Q5',
+      module: 1,
+      section: '1C',
+      tiers: ['amateur', 'professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'Who was staying with you on this trip?',
+        anticipatory: 'Who will be staying with you on this trip?',
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: 'SOLO', text: 'Just me — solo stay' },
+        { code: 'B', taxonomy_code: 'COUPLE', text: 'My partner or spouse — couple stay' },
+        { code: 'C', taxonomy_code: 'FAM-YOUNG', text: 'My family, including children under 12' },
+        { code: 'D', taxonomy_code: 'FAM-TEEN', text: 'My family, including teenagers (12–17)' },
+        { code: 'E', taxonomy_code: 'FRIEND-GRP', text: 'A group of friends or peers' },
+        { code: 'F', taxonomy_code: 'CORP-GRP', text: 'Colleagues or professional contacts' },
+        { code: 'G', taxonomy_code: 'MULTI-GEN', text: 'Extended family — multiple generations' },
+        { code: 'H', taxonomy_code: 'MIXED', text: 'A mix of personal and professional contacts' },
+        { code: 'I', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      researcher_note:
+        'SOLO | COUPLE | FAM-YOUNG | FAM-TEEN | FRIEND-GRP | CORP-GRP | MULTI-GEN | MIXED',
+      routes_module_5: false,
+      module_5_code: null,
+    },
+
+    {
+      id: 'Q6',
+      module: 1,
+      section: '1C',
+      tiers: ['professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'How many rooms did your party use?',
+        anticipatory: 'How many rooms will your party use?',
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'One room — everyone together' },
+        {
+          code: 'B',
+          taxonomy_code: null,
+          text: 'Two rooms — for privacy or different sleeping configurations',
+        },
+        { code: 'C', taxonomy_code: null, text: 'Three or more rooms — large group or family' },
+        { code: 'D', taxonomy_code: null, text: 'A suite or interconnecting rooms' },
+        { code: 'E', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      researcher_note: null,
+      routes_module_5: false,
+      module_5_code: null,
+    },
+
+    // ── MODULE 1D — Duration ─────────────────────────────────────────────
+    {
+      id: 'Q7',
+      module: 1,
+      section: '1D',
+      tiers: ['amateur', 'professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'How many nights did you stay?',
+        anticipatory: 'How many nights will you stay?',
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: 'DAY-USE', text: 'Day use only — no overnight' },
+        { code: 'B', taxonomy_code: 'SHORT-1', text: '1 night' },
+        { code: 'C', taxonomy_code: 'SHORT-3', text: '2–3 nights' },
+        { code: 'D', taxonomy_code: 'MID-WEEK', text: '4–7 nights' },
+        { code: 'E', taxonomy_code: 'EXT-STAY', text: '8–14 nights — extended stay' },
+        {
+          code: 'F',
+          taxonomy_code: 'LONG-PROJ',
+          text: '15–30 nights — long-term project or assignment',
+        },
+        { code: 'G', taxonomy_code: 'RELO', text: 'More than 30 nights' },
+        { code: 'H', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      researcher_note: 'DAY-USE | SHORT-1 | SHORT-3 | MID-WEEK | EXT-STAY | LONG-PROJ | RELO',
+      routes_module_5: false,
+      module_5_code: null,
+    },
+
+    // ── MODULE 1E — Substitute Consideration ────────────────────────────
+    {
+      id: 'Q8',
+      module: 1,
+      section: '1E',
+      tiers: ['professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective:
+          'Before choosing a hotel, what other accommodation options did you seriously consider?',
+        anticipatory:
+          'Before choosing a hotel, what other accommodation options are you seriously considering?',
+      },
+      instruction: null,
+      options: [
+        {
+          code: 'A',
+          taxonomy_code: 'NO-ALT',
+          text: 'None — the hotel was the obvious choice from the start',
+        },
+        {
+          code: 'B',
+          taxonomy_code: 'STR',
+          text: 'A short-term rental apartment (e.g. Airbnb, VRBO, serviced apartment)',
+        },
+        { code: 'C', taxonomy_code: 'SOCIAL', text: 'Staying with friends or family' },
+        {
+          code: 'D',
+          taxonomy_code: 'CORP-HOUSING',
+          text: 'A company-managed or employer-provided apartment',
+        },
+        {
+          code: 'E',
+          taxonomy_code: 'BUDGET-LODGE',
+          text: 'A hostel, guesthouse, or budget lodging',
+        },
+        { code: 'F', taxonomy_code: 'HOTEL-SWITCH', text: 'A different hotel or hotel category' },
+        {
+          code: 'G',
+          taxonomy_code: 'AVOIDED-TRAVEL',
+          text: 'Not traveling at all — managing the situation another way',
+        },
+        { code: 'H', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      researcher_note:
+        'NO-ALT | STR | SOCIAL | CORP-HOUSING | BUDGET-LODGE | HOTEL-SWITCH | AVOIDED-TRAVEL',
+      routes_module_5: false,
+      module_5_code: null,
+    },
+
+    {
+      id: 'Q9',
+      module: 1,
+      section: '1E',
+      tiers: ['professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'What made you choose a hotel over those alternatives?',
+        anticipatory: 'What is making you choose a hotel over those alternatives?',
+      },
+      instruction: null,
+      options: [
+        {
+          code: 'A',
+          taxonomy_code: null,
+          text: 'Reliability and consistency — I knew what I was getting',
+        },
+        { code: 'B', taxonomy_code: null, text: 'Location — the hotel was where I needed to be' },
+        {
+          code: 'C',
+          taxonomy_code: null,
+          text: 'Amenities or services I required (gym, F&B, meeting space, etc.)',
+        },
+        { code: 'D', taxonomy_code: null, text: 'Privacy and professionalism of the environment' },
+        {
+          code: 'E',
+          taxonomy_code: null,
+          text: 'Ease of booking and flexibility (check-in, cancellation, extension)',
+        },
+        {
+          code: 'F',
+          taxonomy_code: null,
+          text: 'Loyalty points, corporate rate, or someone else was paying',
+        },
+        {
+          code: 'G',
+          taxonomy_code: null,
+          text: 'It was the only practical option available at the time',
+        },
+        { code: 'H', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      researcher_note: null,
+      routes_module_5: false,
+      module_5_code: null,
+    },
+
+    // ── MODULES 2–7 (Q10–Q79) — Stubs: full content Sprint 3 ────────────
+    ...Array.from({ length: 70 }, (_, i) => {
+      const qNum = i + 10;
+      const module =
+        qNum <= 18 ? 2 : qNum <= 30 ? 3 : qNum <= 38 ? 4 : qNum <= 56 ? 5 : qNum <= 66 ? 6 : 7;
+      return {
+        id: `Q${qNum}`,
+        module,
+        section: 'placeholder',
+        tiers: ['amateur', 'professional', 'expert'],
+        type: 'single_select',
+        text: {
+          retrospective: `[Q${qNum} — Full question text added in Sprint 3]`,
+          anticipatory: `[Q${qNum} — Full question text added in Sprint 3]`,
+        },
+        instruction: null,
+        options: [
+          { code: 'A', taxonomy_code: null, text: 'Option A — Sprint 3' },
+          { code: 'B', taxonomy_code: null, text: 'Option B — Sprint 3' },
+        ],
+        has_none_option: true,
+        max_selections: null,
+        researcher_note: `Placeholder for Q${qNum}. Full content Sprint 3.`,
+        routes_module_5: false,
+        module_5_code: null,
+      };
+    }),
   ],
 
   // ── episodes ─────────────────────────────────────────────────────────────
@@ -341,8 +626,6 @@ const questionnaire = {
 
   // ── branching ─────────────────────────────────────────────────────────────
   branching: {
-    // Module 5 routing: taxonomy code → sub-section ID
-    // Must match Branching Logic Specification exactly (S1-2.1)
     module5Routes: {
       'WORK-TRANS': '5A',
       'WORK-EVENT': '5A',
@@ -357,7 +640,6 @@ const questionnaire = {
       TRANSIT: '5F',
       'LOC-ESC': '5G',
     },
-    // Q2 secondary purpose routing: Q2 answer code → taxonomy code
     q2Routes: {
       A: null,
       B: 'LEIS-PLAN',
