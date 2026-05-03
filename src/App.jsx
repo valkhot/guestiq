@@ -1,5 +1,6 @@
 // src/App.jsx
 // GuestIQ — Root React Component
+// Session router: disambiguation → welcome → question screens
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 
@@ -7,64 +8,72 @@ import { useEffect, useState } from 'react';
 
 import { trackAppLoaded, trackSessionPaused } from './services/analytics';
 import { getIncompleteSession } from './services/supabase';
+import { useQuestionnaire } from './hooks/useQuestionnaire';
+import WelcomeScreen from './components/screens/WelcomeScreen';
 
-function WelcomeScreen({ onTierSelected }) {
-  const propertyId = new URLSearchParams(window.location.search).get('property') || 'PROP001';
-
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8">
-      <div className="max-w-2xl w-full text-center">
-        <h1 className="text-heading-lg font-bold text-professional-400 mb-4">GuestIQ</h1>
-        <p className="text-body text-secondary mb-8">Hotel Guest Expectations Research</p>
-        <p className="text-caption text-muted mb-12">Property: {propertyId}</p>
-        <div className="grid grid-cols-3 gap-4">
-          {['amateur', 'professional', 'expert'].map((tier) => (
-            <button
-              key={tier}
-              type="button"
-              onClick={() => onTierSelected(tier)}
-              className="p-6 rounded-card border transition-colors"
-              style={{ borderColor: `var(--tier-${tier})44` }}
-            >
-              <span
-                className="block text-heading-sm font-medium capitalize mb-2"
-                style={{ color: `var(--tier-${tier})` }}
-              >
-                {tier}
-              </span>
-              <span className="text-caption text-secondary">
-                {tier === 'amateur' ? '~5 min' : tier === 'professional' ? '~8 min' : '~16 min'}
-              </span>
-            </button>
-          ))}
-        </div>
-        <p className="text-caption text-muted mt-8">
-          Sprint 2 scaffold — full welcome screen built in S2-2.2
-        </p>
-      </div>
-    </div>
-  );
-}
-
+// ── Placeholder screens — replaced in later sprint steps ─────────────────
 function DisambiguationScreen({ onResume, onNewSession }) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8">
-      <div className="max-w-lg w-full bg-canvas-surface rounded-card p-8">
-        <h2 className="text-heading-md font-medium mb-2">Welcome back</h2>
-        <p className="text-body text-secondary mb-8">
+    <div
+      style={{
+        minHeight: '100vh',
+        background: '#0D0D12',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '2rem',
+        fontFamily: 'system-ui, sans-serif',
+      }}
+    >
+      <div
+        style={{
+          maxWidth: '480px',
+          width: '100%',
+          background: '#161620',
+          borderRadius: '12px',
+          padding: '2rem',
+        }}
+      >
+        <h2
+          style={{ color: '#F8FAFC', fontSize: '1.25rem', fontWeight: 500, marginBottom: '0.5rem' }}
+        >
+          Welcome back
+        </h2>
+        <p style={{ color: '#94A3B8', fontSize: '0.9375rem', marginBottom: '2rem' }}>
           It looks like you started a session earlier.
         </p>
         <button
           type="button"
           onClick={onResume}
-          className="w-full p-4 bg-professional-400/10 border border-professional-400 rounded-lg text-professional-400 text-heading-sm mb-4 hover:bg-professional-400/20 transition-colors"
+          style={{
+            display: 'block',
+            width: '100%',
+            padding: '1rem',
+            background: 'rgba(96, 165, 250, 0.1)',
+            border: '1px solid #60A5FA',
+            borderRadius: '8px',
+            color: '#60A5FA',
+            fontSize: '0.9375rem',
+            cursor: 'pointer',
+            marginBottom: '0.75rem',
+          }}
         >
           Resume my session — pick up where I left off
         </button>
         <button
           type="button"
           onClick={onNewSession}
-          className="w-full p-4 border border-white/10 rounded-lg text-secondary text-heading-sm hover:border-white/20 transition-colors"
+          style={{
+            display: 'block',
+            width: '100%',
+            padding: '1rem',
+            background: 'transparent',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '8px',
+            color: '#94A3B8',
+            fontSize: '0.9375rem',
+            cursor: 'pointer',
+          }}
         >
           Start fresh — I am someone new
         </button>
@@ -75,15 +84,31 @@ function DisambiguationScreen({ onResume, onNewSession }) {
 
 function QuestionScreen({ tier }) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8">
-      <div className="max-w-2xl w-full text-center">
-        <p className="text-heading-sm text-secondary mb-4">
-          Tier:{' '}
-          <span className="capitalize" style={{ color: `var(--tier-${tier})` }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        background: '#0D0D12',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: 'system-ui, sans-serif',
+      }}
+    >
+      <div style={{ textAlign: 'center', color: '#94A3B8' }}>
+        <p style={{ fontSize: '0.9375rem', marginBottom: '0.5rem' }}>
+          Tier selected:{' '}
+          <span
+            style={{
+              color:
+                tier === 'amateur' ? '#4ADE80' : tier === 'professional' ? '#60A5FA' : '#A78BFA',
+              textTransform: 'capitalize',
+              fontWeight: 500,
+            }}
+          >
             {tier}
           </span>
         </p>
-        <p className="text-body text-muted">Question screens built in S2-2.3 and S2-2.4</p>
+        <p style={{ fontSize: '0.875rem', color: '#475569' }}>Q0 tense routing built in S2-2.3</p>
       </div>
     </div>
   );
@@ -95,48 +120,83 @@ function DashboardOverlay({ onClose }) {
       role="dialog"
       aria-modal="true"
       aria-label="Management Dashboard"
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ background: 'rgba(0,0,0,0.7)' }}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 50,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'rgba(0,0,0,0.7)',
+      }}
     >
       <div
-        className="w-full max-w-4xl h-3/4 rounded-card p-8 overflow-auto"
-        style={{ background: 'var(--canvas-dashboard)' }}
+        style={{
+          width: '100%',
+          maxWidth: '64rem',
+          height: '75vh',
+          background: '#0B1120',
+          borderRadius: '12px',
+          padding: '2rem',
+          overflow: 'auto',
+          fontFamily: 'system-ui, sans-serif',
+        }}
       >
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-heading-md font-medium" style={{ color: '#E2E8F0' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '1.5rem',
+          }}
+        >
+          <h2 style={{ color: '#E2E8F0', fontSize: '1.25rem', fontWeight: 500 }}>
             GuestIQ Management
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="text-caption text-secondary hover:text-primary transition-colors"
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#94A3B8',
+              cursor: 'pointer',
+              fontSize: '0.8125rem',
+            }}
           >
             Esc to close ×
           </button>
         </div>
-        <p className="text-body" style={{ color: '#94A3B8' }}>
-          Dashboard overlay — full implementation in Sprint 4
+        <p style={{ color: '#94A3B8', fontSize: '0.9375rem' }}>
+          Dashboard — full implementation in Sprint 4
         </p>
       </div>
     </div>
   );
 }
 
+// ── Screen states ────────────────────────────────────────────────────────
 const SCREEN = {
   LOADING: 'LOADING',
   DISAMBIGUATION: 'DISAMBIGUATION',
   WELCOME: 'WELCOME',
   QUESTION: 'QUESTION',
+  EXITED: 'EXITED',
 };
 
+// ── Root App ─────────────────────────────────────────────────────────────
 export default function App() {
   const [screen, setScreen] = useState(SCREEN.LOADING);
   const [tier, setTier] = useState(null);
   const [incompleteSession, setIncompleteSession] = useState(null);
   const [dashboardOpen, setDashboardOpen] = useState(false);
 
+  // Get all content from the questionnaire hook
+  const { uiCopy, tiers } = useQuestionnaire();
+
   const propertyId = new URLSearchParams(window.location.search).get('property') || 'PROP001';
 
+  // ── Initialization ──────────────────────────────────────────────────
   useEffect(() => {
     async function init() {
       trackAppLoaded({
@@ -159,6 +219,7 @@ export default function App() {
     init();
   }, [propertyId]);
 
+  // ── SHIFT+CTRL+A dashboard shortcut ────────────────────────────────
   useEffect(() => {
     function handleKeyDown(e) {
       if (e.shiftKey && e.ctrlKey && e.key === 'A') {
@@ -172,6 +233,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [dashboardOpen]);
 
+  // ── Session pause on browser close ─────────────────────────────────
   useEffect(() => {
     function handleBeforeUnload() {
       if (screen === SCREEN.QUESTION) {
@@ -182,9 +244,15 @@ export default function App() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [screen, tier, propertyId]);
 
+  // ── Handlers ────────────────────────────────────────────────────────
   function handleTierSelected(selectedTier) {
     setTier(selectedTier);
     setScreen(SCREEN.QUESTION);
+  }
+
+  // AC4: Not now — no session created, no localStorage token written
+  function handleNotNow() {
+    setScreen(SCREEN.EXITED);
   }
 
   function handleResume() {
@@ -200,10 +268,58 @@ export default function App() {
     setScreen(SCREEN.WELCOME);
   }
 
+  // ── Render ──────────────────────────────────────────────────────────
   if (screen === SCREEN.LOADING) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-caption text-muted">Loading...</div>
+      <div
+        style={{
+          minHeight: '100vh',
+          background: '#0D0D12',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <div
+          style={{ color: '#475569', fontSize: '0.8125rem', fontFamily: 'system-ui, sans-serif' }}
+        >
+          Loading...
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === SCREEN.EXITED) {
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          background: '#0D0D12',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: 'system-ui, sans-serif',
+        }}
+      >
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ color: '#94A3B8', fontSize: '0.9375rem', marginBottom: '1rem' }}>
+            Thank you. You can close this page.
+          </p>
+          <button
+            type="button"
+            onClick={() => setScreen(SCREEN.WELCOME)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#475569',
+              fontSize: '0.8125rem',
+              cursor: 'pointer',
+              textDecoration: 'underline',
+            }}
+          >
+            Changed your mind? Go back
+          </button>
+        </div>
       </div>
     );
   }
@@ -213,7 +329,15 @@ export default function App() {
       {screen === SCREEN.DISAMBIGUATION && (
         <DisambiguationScreen onResume={handleResume} onNewSession={handleNewSession} />
       )}
-      {screen === SCREEN.WELCOME && <WelcomeScreen onTierSelected={handleTierSelected} />}
+      {screen === SCREEN.WELCOME && (
+        <WelcomeScreen
+          uiCopy={uiCopy}
+          tiers={tiers}
+          onTierSelected={handleTierSelected}
+          onNotNow={handleNotNow}
+          propertyId={propertyId}
+        />
+      )}
       {screen === SCREEN.QUESTION && <QuestionScreen tier={tier} />}
       {dashboardOpen && <DashboardOverlay onClose={() => setDashboardOpen(false)} />}
     </>
