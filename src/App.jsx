@@ -10,8 +10,9 @@ import { trackAppLoaded, trackSessionPaused } from './services/analytics';
 import { getIncompleteSession } from './services/supabase';
 import { useQuestionnaire } from './hooks/useQuestionnaire';
 import WelcomeScreen from './components/screens/WelcomeScreen';
+import QuestionScreen from './components/screens/QuestionScreen';
 
-// ── Placeholder screens — replaced in later sprint steps ─────────────────
+// ── Disambiguation screen ─────────────────────────────────────────────────
 function DisambiguationScreen({ onResume, onNewSession }) {
   return (
     <div
@@ -35,7 +36,12 @@ function DisambiguationScreen({ onResume, onNewSession }) {
         }}
       >
         <h2
-          style={{ color: '#F8FAFC', fontSize: '1.25rem', fontWeight: 500, marginBottom: '0.5rem' }}
+          style={{
+            color: '#F8FAFC',
+            fontSize: '1.25rem',
+            fontWeight: 500,
+            marginBottom: '0.5rem',
+          }}
         >
           Welcome back
         </h2>
@@ -82,38 +88,7 @@ function DisambiguationScreen({ onResume, onNewSession }) {
   );
 }
 
-function QuestionScreen({ tier }) {
-  return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: '#0D0D12',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontFamily: 'system-ui, sans-serif',
-      }}
-    >
-      <div style={{ textAlign: 'center', color: '#94A3B8' }}>
-        <p style={{ fontSize: '0.9375rem', marginBottom: '0.5rem' }}>
-          Tier selected:{' '}
-          <span
-            style={{
-              color:
-                tier === 'amateur' ? '#4ADE80' : tier === 'professional' ? '#60A5FA' : '#A78BFA',
-              textTransform: 'capitalize',
-              fontWeight: 500,
-            }}
-          >
-            {tier}
-          </span>
-        </p>
-        <p style={{ fontSize: '0.875rem', color: '#475569' }}>Q0 tense routing built in S2-2.3</p>
-      </div>
-    </div>
-  );
-}
-
+// ── Dashboard overlay ─────────────────────────────────────────────────────
 function DashboardOverlay({ onClose }) {
   return (
     <div
@@ -175,7 +150,7 @@ function DashboardOverlay({ onClose }) {
   );
 }
 
-// ── Screen states ────────────────────────────────────────────────────────
+// ── Screen states ─────────────────────────────────────────────────────────
 const SCREEN = {
   LOADING: 'LOADING',
   DISAMBIGUATION: 'DISAMBIGUATION',
@@ -184,19 +159,18 @@ const SCREEN = {
   EXITED: 'EXITED',
 };
 
-// ── Root App ─────────────────────────────────────────────────────────────
+// ── Root App ──────────────────────────────────────────────────────────────
 export default function App() {
   const [screen, setScreen] = useState(SCREEN.LOADING);
   const [tier, setTier] = useState(null);
   const [incompleteSession, setIncompleteSession] = useState(null);
   const [dashboardOpen, setDashboardOpen] = useState(false);
 
-  // Get all content from the questionnaire hook
   const { uiCopy, tiers } = useQuestionnaire();
 
   const propertyId = new URLSearchParams(window.location.search).get('property') || 'PROP001';
 
-  // ── Initialization ──────────────────────────────────────────────────
+  // ── Initialization ────────────────────────────────────────────────
   useEffect(() => {
     async function init() {
       trackAppLoaded({
@@ -219,7 +193,7 @@ export default function App() {
     init();
   }, [propertyId]);
 
-  // ── SHIFT+CTRL+A dashboard shortcut ────────────────────────────────
+  // ── SHIFT+CTRL+A dashboard shortcut ──────────────────────────────
   useEffect(() => {
     function handleKeyDown(e) {
       if (e.shiftKey && e.ctrlKey && e.key === 'A') {
@@ -233,7 +207,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [dashboardOpen]);
 
-  // ── Session pause on browser close ─────────────────────────────────
+  // ── Session pause on browser close ───────────────────────────────
   useEffect(() => {
     function handleBeforeUnload() {
       if (screen === SCREEN.QUESTION) {
@@ -244,13 +218,12 @@ export default function App() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [screen, tier, propertyId]);
 
-  // ── Handlers ────────────────────────────────────────────────────────
+  // ── Handlers ─────────────────────────────────────────────────────
   function handleTierSelected(selectedTier) {
     setTier(selectedTier);
     setScreen(SCREEN.QUESTION);
   }
 
-  // AC4: Not now — no session created, no localStorage token written
   function handleNotNow() {
     setScreen(SCREEN.EXITED);
   }
@@ -268,7 +241,7 @@ export default function App() {
     setScreen(SCREEN.WELCOME);
   }
 
-  // ── Render ──────────────────────────────────────────────────────────
+  // ── Render ────────────────────────────────────────────────────────
   if (screen === SCREEN.LOADING) {
     return (
       <div
@@ -338,7 +311,14 @@ export default function App() {
           propertyId={propertyId}
         />
       )}
-      {screen === SCREEN.QUESTION && <QuestionScreen tier={tier} />}
+      {screen === SCREEN.QUESTION && (
+        <QuestionScreen
+          tier={tier}
+          propertyId={propertyId}
+          onComplete={() => setScreen(SCREEN.EXITED)}
+          resumedSession={incompleteSession}
+        />
+      )}
       {dashboardOpen && <DashboardOverlay onClose={() => setDashboardOpen(false)} />}
     </>
   );
