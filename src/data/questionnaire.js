@@ -1,8 +1,10 @@
 // src/data/questionnaire.js
 // GuestIQ Phase 1a Content Source
-// THE ONLY import point is src/hooks/useQuestionnaire.js.
-// Module 1 (Q1-Q9): COMPLETE
-// Modules 2-7 (Q10-Q79): stubs — full content added Sprint 3
+// Module 1 (Q1–Q9): COMPLETE
+// Module 2 (Q10–Q18): COMPLETE
+// Module 3 (Q19–Q30): COMPLETE
+// Module 4 (Q31–Q38): COMPLETE
+// Modules 5–7 (Q39–Q79): stubs — full content Sprint 3
 
 const questionnaire = {
   questions: [
@@ -40,13 +42,15 @@ const questionnaire = {
       ],
       has_none_option: false,
       max_selections: null,
-      researcher_note:
-        'Q0 determines tense_frame for entire session. A/C/D → retrospective. B → anticipatory.',
       routes_module_5: false,
       module_5_code: null,
+      researcher_note: 'Q0 determines tense_frame. A/C/D → retrospective. B → anticipatory.',
     },
 
-    // ── MODULE 1A — Primary Stay Purpose ────────────────────────────────
+    // ══════════════════════════════════════════════════════════════════════
+    // MODULE 1 — STAY INTENT & CONTEXT
+    // ══════════════════════════════════════════════════════════════════════
+
     {
       id: 'Q1',
       module: 1,
@@ -125,13 +129,11 @@ const questionnaire = {
       ],
       has_none_option: true,
       max_selections: null,
-      researcher_note:
-        'Q1 intent capture. taxonomy_code stored as intent_category in sessions. Drives Module 5 routing.',
       routes_module_5: true,
       module_5_code: 'taxonomy_code',
+      researcher_note:
+        'Q1 intent capture. taxonomy_code → intent_category in sessions. Drives Module 5 routing.',
     },
-
-    // ── Q2 — Secondary Purpose (Professional + Expert only) ──────────────
     {
       id: 'Q2',
       module: 1,
@@ -178,13 +180,10 @@ const questionnaire = {
       ],
       has_none_option: true,
       max_selections: null,
-      researcher_note:
-        'Q2 shown to Professional and Expert only. Drives secondary Module 5 routing.',
       routes_module_5: false,
       module_5_code: null,
+      researcher_note: 'Professional + Expert only. Drives secondary Module 5 routing.',
     },
-
-    // ── MODULE 1B — Trigger & Planning Horizon ───────────────────────────
     {
       id: 'Q3',
       module: 1,
@@ -227,11 +226,10 @@ const questionnaire = {
       ],
       has_none_option: true,
       max_selections: null,
-      researcher_note: 'A-B=UNPLANNED | C=SEMI-PLANNED | D-F=PLANNED | F=LONG-LEAD',
       routes_module_5: false,
       module_5_code: null,
+      researcher_note: 'A-B=UNPLANNED | C=SEMI-PLANNED | D-F=PLANNED | F=LONG-LEAD',
     },
-
     {
       id: 'Q4',
       module: 1,
@@ -288,12 +286,10 @@ const questionnaire = {
       ],
       has_none_option: true,
       max_selections: null,
-      researcher_note: null,
       routes_module_5: false,
       module_5_code: null,
+      researcher_note: null,
     },
-
-    // ── MODULE 1C — Party Configuration ─────────────────────────────────
     {
       id: 'Q5',
       module: 1,
@@ -318,12 +314,11 @@ const questionnaire = {
       ],
       has_none_option: true,
       max_selections: null,
-      researcher_note:
-        'SOLO | COUPLE | FAM-YOUNG | FAM-TEEN | FRIEND-GRP | CORP-GRP | MULTI-GEN | MIXED',
       routes_module_5: false,
       module_5_code: null,
+      researcher_note:
+        'SOLO | COUPLE | FAM-YOUNG | FAM-TEEN | FRIEND-GRP | CORP-GRP | MULTI-GEN | MIXED',
     },
-
     {
       id: 'Q6',
       module: 1,
@@ -348,12 +343,10 @@ const questionnaire = {
       ],
       has_none_option: true,
       max_selections: null,
-      researcher_note: null,
       routes_module_5: false,
       module_5_code: null,
+      researcher_note: null,
     },
-
-    // ── MODULE 1D — Duration ─────────────────────────────────────────────
     {
       id: 'Q7',
       module: 1,
@@ -381,12 +374,10 @@ const questionnaire = {
       ],
       has_none_option: true,
       max_selections: null,
-      researcher_note: 'DAY-USE | SHORT-1 | SHORT-3 | MID-WEEK | EXT-STAY | LONG-PROJ | RELO',
       routes_module_5: false,
       module_5_code: null,
+      researcher_note: 'DAY-USE | SHORT-1 | SHORT-3 | MID-WEEK | EXT-STAY | LONG-PROJ | RELO',
     },
-
-    // ── MODULE 1E — Substitute Consideration ────────────────────────────
     {
       id: 'Q8',
       module: 1,
@@ -432,12 +423,10 @@ const questionnaire = {
       ],
       has_none_option: true,
       max_selections: null,
-      researcher_note:
-        'NO-ALT | STR | SOCIAL | CORP-HOUSING | BUDGET-LODGE | HOTEL-SWITCH | AVOIDED-TRAVEL',
       routes_module_5: false,
       module_5_code: null,
+      researcher_note: null,
     },
-
     {
       id: 'Q9',
       module: 1,
@@ -481,16 +470,1122 @@ const questionnaire = {
       ],
       has_none_option: true,
       max_selections: null,
-      researcher_note: null,
       routes_module_5: false,
       module_5_code: null,
+      researcher_note: null,
     },
 
-    // ── MODULES 2–7 (Q10–Q79) — Stubs: full content Sprint 3 ────────────
-    ...Array.from({ length: 70 }, (_, i) => {
-      const qNum = i + 10;
-      const module =
-        qNum <= 18 ? 2 : qNum <= 30 ? 3 : qNum <= 38 ? 4 : qNum <= 56 ? 5 : qNum <= 66 ? 6 : 7;
+    // ══════════════════════════════════════════════════════════════════════
+    // MODULE 2 — PRE-ARRIVAL EXPECTATIONS
+    // ══════════════════════════════════════════════════════════════════════
+
+    {
+      id: 'Q10',
+      module: 2,
+      section: '2A',
+      tiers: ['professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'How did you find the hotel for this stay?',
+        anticipatory: 'How did you find / will you find the hotel for this stay?',
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'Hotel brand website or app directly' },
+        {
+          code: 'B',
+          taxonomy_code: null,
+          text: 'Online travel agency (e.g. Booking.com, Expedia, Hotels.com)',
+        },
+        {
+          code: 'C',
+          taxonomy_code: null,
+          text: 'Recommendation from someone I trust — colleague, friend, or family',
+        },
+        {
+          code: 'D',
+          taxonomy_code: null,
+          text: "My company's travel management system or travel agent",
+        },
+        {
+          code: 'E',
+          taxonomy_code: null,
+          text: 'Loyalty programme — I always stay within this brand',
+        },
+        {
+          code: 'F',
+          taxonomy_code: null,
+          text: 'Search engine or review site (e.g. TripAdvisor, Google)',
+        },
+        { code: 'G', taxonomy_code: null, text: 'Social media or influencer content' },
+        {
+          code: 'H',
+          taxonomy_code: null,
+          text: 'I have stayed here before and returned by choice',
+        },
+        { code: 'I', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q11',
+      module: 2,
+      section: '2A',
+      tiers: ['professional', 'expert'],
+      type: 'multi_select',
+      text: {
+        retrospective: 'What information mattered most when deciding which hotel to book?',
+        anticipatory: 'What information matters most when deciding which hotel to book?',
+      },
+      instruction: 'Select up to three.',
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'Guest reviews and ratings' },
+        { code: 'B', taxonomy_code: null, text: 'Room photos and virtual tours' },
+        { code: 'C', taxonomy_code: null, text: 'Price and rate transparency — no hidden fees' },
+        { code: 'D', taxonomy_code: null, text: 'Location relative to where I needed to be' },
+        {
+          code: 'E',
+          taxonomy_code: null,
+          text: 'Specific amenities listed (gym, pool, restaurant, workspace)',
+        },
+        { code: 'F', taxonomy_code: null, text: 'Cancellation and flexibility policies' },
+        {
+          code: 'G',
+          taxonomy_code: null,
+          text: 'Brand reputation or loyalty programme affiliation',
+        },
+        { code: 'H', taxonomy_code: null, text: 'Sustainability or ethical credentials' },
+        { code: 'I', taxonomy_code: null, text: 'Accessibility features' },
+        { code: 'J', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: 3,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q12',
+      module: 2,
+      section: '2A',
+      tiers: ['expert'],
+      type: 'scale_5',
+      text: {
+        retrospective:
+          'How important is it that the hotel acknowledges your booking and communicates before arrival?',
+        anticipatory:
+          'How important is it that the hotel acknowledges your booking and communicates before arrival?',
+      },
+      instruction: null,
+      scale_labels: [
+        'Not important',
+        'Slightly important',
+        'Moderately important',
+        'Very important',
+        'Essential',
+      ],
+      options: [],
+      has_none_option: false,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q13',
+      module: 2,
+      section: '2A',
+      tiers: ['expert'],
+      type: 'multi_select',
+      text: {
+        retrospective: 'What pre-arrival communication would you find most valuable?',
+        anticipatory: 'What pre-arrival communication would you find most valuable?',
+      },
+      instruction: 'Select up to two.',
+      options: [
+        {
+          code: 'A',
+          taxonomy_code: null,
+          text: 'Booking confirmation with all key details clearly summarised',
+        },
+        {
+          code: 'B',
+          taxonomy_code: null,
+          text: 'Information about check-in options — time, digital key, express',
+        },
+        { code: 'C', taxonomy_code: null, text: 'Directions and transport options to the hotel' },
+        {
+          code: 'D',
+          taxonomy_code: null,
+          text: 'Offers to pre-arrange services — dining, transfers, special setups',
+        },
+        {
+          code: 'E',
+          taxonomy_code: null,
+          text: "Information about the hotel's amenities and how to access them",
+        },
+        {
+          code: 'F',
+          taxonomy_code: null,
+          text: 'Local area guide — restaurants, attractions, practicalities',
+        },
+        { code: 'G', taxonomy_code: null, text: 'A reminder close to arrival with any updates' },
+        {
+          code: 'H',
+          taxonomy_code: null,
+          text: 'I prefer no pre-arrival contact beyond a booking confirmation',
+        },
+        { code: 'I', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: 2,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q14',
+      module: 2,
+      section: '2B',
+      tiers: ['amateur', 'professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'What time did you typically arrive at the hotel?',
+        anticipatory: 'What time do you typically arrive at a hotel?',
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'Before noon — I often arrive early' },
+        { code: 'B', taxonomy_code: null, text: '12:00–15:00 — standard check-in window' },
+        { code: 'C', taxonomy_code: null, text: '15:00–18:00 — standard afternoon arrival' },
+        {
+          code: 'D',
+          taxonomy_code: null,
+          text: '18:00–22:00 — evening arrival after work or travel',
+        },
+        { code: 'E', taxonomy_code: null, text: 'After 22:00 — late-night arrival' },
+        { code: 'F', taxonomy_code: null, text: 'It varies significantly depending on the trip' },
+        { code: 'G', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q15',
+      module: 2,
+      section: '2B',
+      tiers: ['professional', 'expert'],
+      type: 'scale_5',
+      text: {
+        retrospective: 'How important is guaranteed early check-in (before standard time)?',
+        anticipatory: 'How important is guaranteed early check-in (before standard time)?',
+      },
+      instruction: null,
+      scale_labels: [
+        'Not important',
+        'Nice to have',
+        'Moderately important',
+        'Very important',
+        'I require it',
+      ],
+      options: [],
+      has_none_option: false,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q16',
+      module: 2,
+      section: '2B',
+      tiers: ['amateur', 'professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'What was your preferred check-in method?',
+        anticipatory: 'What is your preferred check-in method?',
+      },
+      instruction: null,
+      options: [
+        {
+          code: 'A',
+          taxonomy_code: null,
+          text: 'Traditional front desk check-in — I want to be welcomed personally',
+        },
+        {
+          code: 'B',
+          taxonomy_code: null,
+          text: 'Express front desk — fast and efficient, minimal conversation',
+        },
+        {
+          code: 'C',
+          taxonomy_code: null,
+          text: 'Digital / mobile check-in — completed before arrival, key on my phone',
+        },
+        { code: 'D', taxonomy_code: null, text: 'Self-service kiosk in the lobby' },
+        { code: 'E', taxonomy_code: null, text: 'No strong preference — whatever is fastest' },
+        { code: 'F', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q17',
+      module: 2,
+      section: '2B',
+      tiers: ['professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'How did you typically get to the hotel for this type of stay?',
+        anticipatory: 'How do you typically get to the hotel for this type of stay?',
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'Private car, taxi, or ride-hailing' },
+        { code: 'B', taxonomy_code: null, text: 'Public transport' },
+        { code: 'C', taxonomy_code: null, text: 'Hotel shuttle or pre-arranged transfer' },
+        {
+          code: 'D',
+          taxonomy_code: null,
+          text: 'On foot — the hotel is very close to my destination',
+        },
+        { code: 'E', taxonomy_code: null, text: 'I drive and need on-site parking' },
+        { code: 'F', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q18',
+      module: 2,
+      section: '2C',
+      tiers: ['expert'],
+      type: 'single_select',
+      text: {
+        retrospective:
+          'How easy was it to communicate any special requirements to the hotel before arrival?',
+        anticipatory:
+          'How easy do you expect it to be to communicate any special requirements to the hotel before arrival?',
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'Very easy — the booking process made it simple' },
+        {
+          code: 'B',
+          taxonomy_code: null,
+          text: 'Somewhat easy — I found a way to communicate my needs',
+        },
+        {
+          code: 'C',
+          taxonomy_code: null,
+          text: 'Neutral — I had no special requirements to communicate',
+        },
+        { code: 'D', taxonomy_code: null, text: 'Somewhat difficult — it required extra effort' },
+        {
+          code: 'E',
+          taxonomy_code: null,
+          text: 'Very difficult — the hotel made it hard to convey what I needed',
+        },
+        { code: 'F', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note:
+        'Surfaces accessibility friction without asking about the nature of the requirement.',
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // MODULE 3 — PHYSICAL ENVIRONMENT EXPECTATIONS
+    // ══════════════════════════════════════════════════════════════════════
+
+    {
+      id: 'Q19',
+      module: 3,
+      section: '3A',
+      tiers: ['amateur', 'professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'For this stay, which type of room did you ideally want?',
+        anticipatory: 'For this stay, which type of room would you ideally want?',
+      },
+      instruction: null,
+      options: [
+        {
+          code: 'A',
+          taxonomy_code: null,
+          text: 'Standard room — clean, functional, no frills needed',
+        },
+        {
+          code: 'B',
+          taxonomy_code: null,
+          text: 'A room with a workspace that genuinely works — desk, good lighting, outlets',
+        },
+        { code: 'C', taxonomy_code: null, text: 'A room with a dedicated sitting or lounge area' },
+        {
+          code: 'D',
+          taxonomy_code: null,
+          text: 'A suite or larger room — I need space to spread out or entertain',
+        },
+        {
+          code: 'E',
+          taxonomy_code: null,
+          text: 'A room configured for two people with appropriate sleeping arrangements',
+        },
+        { code: 'F', taxonomy_code: null, text: 'A family room or interconnecting rooms' },
+        {
+          code: 'G',
+          taxonomy_code: null,
+          text: 'A long-stay or apartment-style room with kitchen facilities',
+        },
+        {
+          code: 'H',
+          taxonomy_code: null,
+          text: 'A room with a specific view or physical characteristic',
+        },
+        { code: 'I', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q20',
+      module: 3,
+      section: '3A',
+      tiers: ['professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'How important was the floor level or room position within the hotel?',
+        anticipatory: 'How important is the floor level or room position within the hotel?',
+      },
+      instruction: null,
+      options: [
+        {
+          code: 'A',
+          taxonomy_code: null,
+          text: 'Very important — I have a strong preference (high floor, quiet side, corner, etc.)',
+        },
+        {
+          code: 'B',
+          taxonomy_code: null,
+          text: 'Somewhat important — I would prefer but will not insist',
+        },
+        {
+          code: 'C',
+          taxonomy_code: null,
+          text: 'Indifferent — room quality matters more than position',
+        },
+        {
+          code: 'D',
+          taxonomy_code: null,
+          text: 'I prefer lower floors — easier access, less dependent on lifts',
+        },
+        { code: 'E', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q21',
+      module: 3,
+      section: '3B',
+      tiers: ['amateur', 'professional', 'expert'],
+      type: 'multi_select',
+      text: {
+        retrospective: 'Which aspects of cleanliness were non-negotiable for you?',
+        anticipatory: 'Which aspects of cleanliness are non-negotiable for you?',
+      },
+      instruction: 'Select up to three.',
+      options: [
+        {
+          code: 'A',
+          taxonomy_code: null,
+          text: 'Bedding and linen — visibly clean and freshly laundered',
+        },
+        {
+          code: 'B',
+          taxonomy_code: null,
+          text: 'Bathroom hygiene — toilet, shower, and surfaces spotless',
+        },
+        { code: 'C', taxonomy_code: null, text: 'No visible evidence of previous guests' },
+        {
+          code: 'D',
+          taxonomy_code: null,
+          text: 'Air quality — no musty, chemical, or unpleasant odours',
+        },
+        { code: 'E', taxonomy_code: null, text: 'Floor and carpet cleanliness' },
+        {
+          code: 'F',
+          taxonomy_code: null,
+          text: 'High-touch surfaces — remote controls, door handles, phones',
+        },
+        { code: 'G', taxonomy_code: null, text: 'Minibar, coffee area, and glassware hygiene' },
+        {
+          code: 'H',
+          taxonomy_code: null,
+          text: 'Overall sense of freshness upon entering the room',
+        },
+        { code: 'I', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: 3,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q22',
+      module: 3,
+      section: '3B',
+      tiers: ['professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'How did you feel about housekeeping visiting your room during your stay?',
+        anticipatory: 'How do you feel about housekeeping visiting your room during your stay?',
+      },
+      instruction: null,
+      options: [
+        {
+          code: 'A',
+          taxonomy_code: null,
+          text: 'I want daily full housekeeping — it is part of what I am paying for',
+        },
+        {
+          code: 'B',
+          taxonomy_code: null,
+          text: 'I want housekeeping every other day — a reasonable balance',
+        },
+        {
+          code: 'C',
+          taxonomy_code: null,
+          text: 'I prefer minimal housekeeping — only when I explicitly request it',
+        },
+        {
+          code: 'D',
+          taxonomy_code: null,
+          text: 'I do not want anyone entering my room unless absolutely necessary',
+        },
+        {
+          code: 'E',
+          taxonomy_code: null,
+          text: 'I want full control over when and how often housekeeping comes',
+        },
+        { code: 'F', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q23',
+      module: 3,
+      section: '3C',
+      tiers: ['amateur', 'professional', 'expert'],
+      type: 'scale_5',
+      text: {
+        retrospective: 'How sensitive are you to noise when sleeping in a hotel?',
+        anticipatory: 'How sensitive are you to noise when sleeping in a hotel?',
+      },
+      instruction: null,
+      scale_labels: [
+        'Not sensitive — I sleep through anything',
+        'Slightly sensitive',
+        'Moderately sensitive',
+        'Very sensitive',
+        'Extremely sensitive — noise ruins my stay',
+      ],
+      options: [],
+      has_none_option: false,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q24',
+      module: 3,
+      section: '3C',
+      tiers: ['professional', 'expert'],
+      type: 'multi_select',
+      text: {
+        retrospective: 'Which noise sources concerned you most?',
+        anticipatory: 'Which noise sources concern you most?',
+      },
+      instruction: 'Select all that apply.',
+      options: [
+        {
+          code: 'A',
+          taxonomy_code: null,
+          text: 'Noise from other guests — corridors, adjacent rooms, above/below',
+        },
+        { code: 'B', taxonomy_code: null, text: 'Street noise — traffic, construction, nightlife' },
+        {
+          code: 'C',
+          taxonomy_code: null,
+          text: 'HVAC systems — air conditioning or heating noise',
+        },
+        { code: 'D', taxonomy_code: null, text: 'Elevator or mechanical sounds' },
+        { code: 'E', taxonomy_code: null, text: 'Early morning deliveries or staff activity' },
+        { code: 'F', taxonomy_code: null, text: 'Noise is not a concern for me' },
+        { code: 'G', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q25',
+      module: 3,
+      section: '3C',
+      tiers: ['expert'],
+      type: 'scale_5',
+      text: {
+        retrospective: 'How important is natural light in your hotel room?',
+        anticipatory: 'How important is natural light in your hotel room?',
+      },
+      instruction: null,
+      scale_labels: [
+        'Not important',
+        'Slightly important',
+        'Moderately important',
+        'Very important',
+        'Essential',
+      ],
+      options: [],
+      has_none_option: false,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q26',
+      module: 3,
+      section: '3C',
+      tiers: ['expert'],
+      type: 'scale_5',
+      text: {
+        retrospective: 'How important is the ability to control your room temperature precisely?',
+        anticipatory: 'How important is the ability to control your room temperature precisely?',
+      },
+      instruction: null,
+      scale_labels: [
+        'Not important',
+        'Slightly important',
+        'Moderately important',
+        'Very important',
+        'Significantly affects my sleep / wellbeing',
+      ],
+      options: [],
+      has_none_option: false,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q27',
+      module: 3,
+      section: '3D',
+      tiers: ['amateur', 'professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'How critical was reliable, fast Wi-Fi to your stay?',
+        anticipatory: 'How critical is reliable, fast Wi-Fi to your stay?',
+      },
+      instruction: null,
+      options: [
+        {
+          code: 'A',
+          taxonomy_code: null,
+          text: 'Essential and a dealbreaker if unreliable — I depend on it professionally',
+        },
+        {
+          code: 'B',
+          taxonomy_code: null,
+          text: 'Very important — I use it heavily for personal and professional needs',
+        },
+        {
+          code: 'C',
+          taxonomy_code: null,
+          text: 'Moderately important — I use it for streaming and browsing',
+        },
+        {
+          code: 'D',
+          taxonomy_code: null,
+          text: 'Somewhat important — I check messages and emails',
+        },
+        { code: 'E', taxonomy_code: null, text: 'Not important — I use my own mobile data' },
+        { code: 'F', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q28',
+      module: 3,
+      section: '3D',
+      tiers: ['professional', 'expert'],
+      type: 'multi_select',
+      text: {
+        retrospective: 'What in-room technology features mattered most to you?',
+        anticipatory: 'What in-room technology features matter most to you?',
+      },
+      instruction: 'Select up to three.',
+      options: [
+        {
+          code: 'A',
+          taxonomy_code: null,
+          text: 'Sufficient power outlets and USB ports near the bed and desk',
+        },
+        {
+          code: 'B',
+          taxonomy_code: null,
+          text: 'Smart TV with streaming apps or ability to cast from my device',
+        },
+        {
+          code: 'C',
+          taxonomy_code: null,
+          text: 'In-room controls for lighting, temperature, and blackout blinds',
+        },
+        { code: 'D', taxonomy_code: null, text: 'A Bluetooth speaker or good audio system' },
+        {
+          code: 'E',
+          taxonomy_code: null,
+          text: 'A landline phone for easy room-to-hotel communication',
+        },
+        {
+          code: 'F',
+          taxonomy_code: null,
+          text: 'In-room tablet or control panel for hotel services',
+        },
+        { code: 'G', taxonomy_code: null, text: 'I care very little about in-room technology' },
+        { code: 'H', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: 3,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q29',
+      module: 3,
+      section: '3E',
+      tiers: ['expert'],
+      type: 'scale_5',
+      text: {
+        retrospective: 'How important were visible safety and security features to your comfort?',
+        anticipatory: 'How important are visible safety and security features to your comfort?',
+      },
+      instruction: null,
+      scale_labels: [
+        'Not important',
+        'Slightly important',
+        'Moderately important',
+        'Very important',
+        'A major factor in my hotel choice',
+      ],
+      options: [],
+      has_none_option: false,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q30',
+      module: 3,
+      section: '3E',
+      tiers: ['expert'],
+      type: 'multi_select',
+      text: {
+        retrospective: 'Which security features mattered most to you?',
+        anticipatory: 'Which security features matter most to you?',
+      },
+      instruction: 'Select up to two.',
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'In-room safe for valuables' },
+        {
+          code: 'B',
+          taxonomy_code: null,
+          text: 'Electronic or digital door locks with no visible compromise',
+        },
+        {
+          code: 'C',
+          taxonomy_code: null,
+          text: 'Controlled access to guest floors — key card barriers',
+        },
+        { code: 'D', taxonomy_code: null, text: '24-hour visible security or front desk presence' },
+        {
+          code: 'E',
+          taxonomy_code: null,
+          text: 'Privacy features — do not disturb signage, door reinforcement',
+        },
+        { code: 'F', taxonomy_code: null, text: 'CCTV coverage in public areas' },
+        { code: 'G', taxonomy_code: null, text: 'Security is not a factor I actively consider' },
+        { code: 'H', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: 2,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // MODULE 4 — SERVICE & HUMAN INTERACTION EXPECTATIONS
+    // ══════════════════════════════════════════════════════════════════════
+
+    {
+      id: 'Q31',
+      module: 4,
+      section: '4A',
+      tiers: ['amateur', 'professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective:
+          'How much human interaction did you want from hotel staff during this type of stay?',
+        anticipatory:
+          'How much human interaction do you want from hotel staff during this type of stay?',
+      },
+      instruction: null,
+      options: [
+        {
+          code: 'A',
+          taxonomy_code: 'HIGH-TOUCH',
+          text: 'High-touch — I enjoy being recognised, greeted warmly, and engaged throughout',
+        },
+        {
+          code: 'B',
+          taxonomy_code: 'ATTENTIVE',
+          text: 'Professional and attentive — available when I need them, not intrusive',
+        },
+        {
+          code: 'C',
+          taxonomy_code: 'EFFICIENT',
+          text: 'Minimal and efficient — handle my needs quickly, otherwise leave me alone',
+        },
+        {
+          code: 'D',
+          taxonomy_code: 'INVISIBLE',
+          text: 'Invisible — I prefer technology-mediated service and minimal human contact',
+        },
+        {
+          code: 'E',
+          taxonomy_code: 'CONTEXT-DEP',
+          text: 'It depends strongly on the time of day and what I am doing',
+        },
+        { code: 'F', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: 'HIGH-TOUCH | ATTENTIVE | EFFICIENT | INVISIBLE | CONTEXT-DEP',
+    },
+    {
+      id: 'Q32',
+      module: 4,
+      section: '4A',
+      tiers: ['professional', 'expert'],
+      type: 'scale_5',
+      text: {
+        retrospective:
+          'How important was it that staff recognised you and recalled preferences from previous stays?',
+        anticipatory:
+          'How important is it that staff recognise you and recall preferences from previous stays?',
+      },
+      instruction: null,
+      scale_labels: [
+        'Unimportant — I prefer anonymity',
+        'Slightly important',
+        'Moderately important',
+        'Very important',
+        'One of the most important service qualities',
+      ],
+      options: [],
+      has_none_option: false,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q33',
+      module: 4,
+      section: '4A',
+      tiers: ['expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'How did you prefer to make service requests during your stay?',
+        anticipatory: 'How do you prefer to make service requests during your stay?',
+      },
+      instruction: null,
+      options: [
+        {
+          code: 'A',
+          taxonomy_code: null,
+          text: 'Calling the front desk or a dedicated service line',
+        },
+        { code: 'B', taxonomy_code: null, text: 'Messaging via hotel app on my phone' },
+        { code: 'C', taxonomy_code: null, text: 'Speaking to staff in person' },
+        { code: 'D', taxonomy_code: null, text: 'Using an in-room device or smart screen' },
+        {
+          code: 'E',
+          taxonomy_code: null,
+          text: 'I prefer not to request anything — I like things to be pre-arranged',
+        },
+        { code: 'F', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q34',
+      module: 4,
+      section: '4B',
+      tiers: ['amateur', 'professional', 'expert'],
+      type: 'multi_select',
+      text: {
+        retrospective: 'Which staff qualities mattered most to you?',
+        anticipatory: 'Which staff qualities matter most to you?',
+      },
+      instruction: 'Select up to three.',
+      options: [
+        {
+          code: 'A',
+          taxonomy_code: null,
+          text: 'Speed and efficiency — they get things done without delay',
+        },
+        { code: 'B', taxonomy_code: null, text: 'Genuine warmth and friendliness' },
+        {
+          code: 'C',
+          taxonomy_code: null,
+          text: 'Local knowledge — can advise on the area, restaurants, transport',
+        },
+        {
+          code: 'D',
+          taxonomy_code: null,
+          text: 'Discretion — they respect my privacy and do not over-engage',
+        },
+        {
+          code: 'E',
+          taxonomy_code: null,
+          text: 'Problem-solving ability — handles issues without over-complicating them',
+        },
+        {
+          code: 'F',
+          taxonomy_code: null,
+          text: 'Language ability — communicates clearly in my language',
+        },
+        {
+          code: 'G',
+          taxonomy_code: null,
+          text: 'Attentiveness without being asked — they anticipate my needs',
+        },
+        { code: 'H', taxonomy_code: null, text: 'Professionalism in appearance and manner' },
+        { code: 'I', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: 3,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q35',
+      module: 4,
+      section: '4C',
+      tiers: ['amateur', 'professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective:
+          'When something went wrong during a stay, what mattered most in how the hotel responded?',
+        anticipatory:
+          'When something goes wrong during a stay, what matters most in how the hotel responds?',
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'Speed of response — fix it immediately' },
+        {
+          code: 'B',
+          taxonomy_code: null,
+          text: 'A genuine apology and acknowledgment that something went wrong',
+        },
+        { code: 'C', taxonomy_code: null, text: 'A concrete solution, not just words' },
+        {
+          code: 'D',
+          taxonomy_code: null,
+          text: 'Compensation or goodwill gesture proportionate to the problem',
+        },
+        {
+          code: 'E',
+          taxonomy_code: null,
+          text: 'Evidence it will not happen again — systemic fix, not just a patch',
+        },
+        {
+          code: 'F',
+          taxonomy_code: null,
+          text: 'I do not have to repeat myself or escalate to get results',
+        },
+        { code: 'G', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q36',
+      module: 4,
+      section: '4C',
+      tiers: ['professional', 'expert'],
+      type: 'scale_5',
+      text: {
+        retrospective:
+          'How likely were you to give the hotel a second chance if a problem was handled exceptionally well?',
+        anticipatory:
+          'How likely are you to give the hotel a second chance if a problem was handled exceptionally well?',
+      },
+      instruction: null,
+      scale_labels: [
+        'Very unlikely',
+        'Unlikely',
+        'Neutral',
+        'Likely',
+        'Very likely — good recovery builds loyalty',
+      ],
+      options: [],
+      has_none_option: false,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q37',
+      module: 4,
+      section: '4D',
+      tiers: ['professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective:
+          'How much did you want the hotel to personalise your experience based on your history or stated preferences?',
+        anticipatory:
+          'How much do you want the hotel to personalise your experience based on your history or stated preferences?',
+      },
+      instruction: null,
+      options: [
+        {
+          code: 'A',
+          taxonomy_code: null,
+          text: 'Extensively — I want to feel known and individually catered for',
+        },
+        {
+          code: 'B',
+          taxonomy_code: null,
+          text: 'Moderately — acknowledge my preferences without making it feel intrusive',
+        },
+        {
+          code: 'C',
+          taxonomy_code: null,
+          text: 'Minimally — just remember the basics (room type, dietary needs)',
+        },
+        {
+          code: 'D',
+          taxonomy_code: null,
+          text: 'Not at all — I prefer each stay to be treated independently',
+        },
+        { code: 'E', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+    {
+      id: 'Q38',
+      module: 4,
+      section: '4D',
+      tiers: ['expert'],
+      type: 'single_select',
+      text: {
+        retrospective:
+          'How comfortable were you with the hotel storing your personal preferences to improve future stays?',
+        anticipatory:
+          'How comfortable are you with the hotel storing your personal preferences to improve future stays?',
+      },
+      instruction: null,
+      options: [
+        {
+          code: 'A',
+          taxonomy_code: null,
+          text: 'Fully comfortable — the more they know, the better my experience',
+        },
+        {
+          code: 'B',
+          taxonomy_code: null,
+          text: 'Comfortable with basic operational preferences only (room type, dietary needs)',
+        },
+        { code: 'C', taxonomy_code: null, text: 'Neutral — I have not thought about this' },
+        {
+          code: 'D',
+          taxonomy_code: null,
+          text: 'Slightly uncomfortable — I prefer minimal data storage',
+        },
+        {
+          code: 'E',
+          taxonomy_code: null,
+          text: 'Very uncomfortable — I do not want my preferences stored',
+        },
+        { code: 'F', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true,
+      max_selections: null,
+      routes_module_5: false,
+      module_5_code: null,
+      researcher_note: null,
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // MODULES 5–7 (Q39–Q79) — Stubs: full content Sprint 3
+    // ══════════════════════════════════════════════════════════════════════
+    ...Array.from({ length: 41 }, (_, i) => {
+      const qNum = i + 39;
+      const module = qNum <= 56 ? 5 : qNum <= 66 ? 6 : 7;
       return {
         id: `Q${qNum}`,
         module,
@@ -508,14 +1603,13 @@ const questionnaire = {
         ],
         has_none_option: true,
         max_selections: null,
-        researcher_note: `Placeholder for Q${qNum}. Full content Sprint 3.`,
         routes_module_5: false,
         module_5_code: null,
+        researcher_note: `Placeholder for Q${qNum}. Full content Sprint 3.`,
       };
     }),
   ],
 
-  // ── episodes ─────────────────────────────────────────────────────────────
   episodes: [
     {
       number: 1,
@@ -568,7 +1662,6 @@ const questionnaire = {
     },
   ],
 
-  // ── tiers ─────────────────────────────────────────────────────────────────
   tiers: {
     amateur: {
       name: 'Amateur',
@@ -596,7 +1689,6 @@ const questionnaire = {
     },
   },
 
-  // ── uiCopy ────────────────────────────────────────────────────────────────
   uiCopy: {
     welcomeHookText: 'You know hotel guests. What do they actually expect?',
     welcomeContextStatement:
@@ -624,7 +1716,6 @@ const questionnaire = {
     enrichmentShiftLabel: 'Primary shift',
   },
 
-  // ── branching ─────────────────────────────────────────────────────────────
   branching: {
     module5Routes: {
       'WORK-TRANS': '5A',
@@ -652,7 +1743,6 @@ const questionnaire = {
     sameSectionSkipEnabled: true,
   },
 
-  // ── taxonomy ──────────────────────────────────────────────────────────────
   taxonomy: {
     'WORK-TRANS': {
       name: 'Business Travel',

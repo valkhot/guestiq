@@ -1,27 +1,21 @@
 // src/components/question/Question.jsx
 // GuestIQ — Standard Question Component (orchestrator)
 // S2-07: Q0 (QR1) rendered by this component — identical to Q1-Q79
+// S2-10: scale_5 type added
 // Renders the correct sub-component based on question.type.
 // Receives ALL content as props — zero hardcoded strings.
 
 import SingleSelectQuestion from './SingleSelectQuestion';
+import ScaleQuestion from './ScaleQuestion';
 
 // Question types to sub-components map
-// scale_5 and multi_select added in Sprint 3
 const QUESTION_RENDERERS = {
   single_select: SingleSelectQuestion,
   multi_select: SingleSelectQuestion,
+  scale_5: ScaleQuestion,
 };
 
-export default function Question({
-  question, // full question object from questionnaire.js
-  tenseFrame, // 'retrospective' | 'anticipatory' — determines text variant
-  onAnswer, // fn(answerCode, taxonomyCode, extraText?) — called on selection
-  questionNumber, // e.g. "Q0 / 8" for progress display
-  episodeName, // e.g. "Why You Stay"
-}) {
-  // Select correct text variant based on tense frame
-  // Defaults to retrospective if tenseFrame not yet set (Q0 itself)
+export default function Question({ question, tenseFrame, onAnswer, questionNumber, episodeName }) {
   const questionText = question.text[tenseFrame || 'retrospective'] || question.text.retrospective;
 
   const Renderer = QUESTION_RENDERERS[question.type];
@@ -44,7 +38,7 @@ export default function Question({
         fontFamily: 'system-ui, -apple-system, sans-serif',
       }}
     >
-      {/* Progress bar area — placeholder for Sprint 3 gamification */}
+      {/* Progress bar area */}
       <div
         style={{
           padding: '1rem 1.5rem 0',
@@ -64,7 +58,6 @@ export default function Question({
           <span style={{ fontSize: '0.8125rem', color: '#475569' }}>{questionNumber}</span>
           <span style={{ fontSize: '0.8125rem', color: '#475569' }}>{episodeName}</span>
         </div>
-        {/* Progress bar track */}
         <div
           style={{
             maxWidth: '720px',
@@ -86,7 +79,6 @@ export default function Question({
           padding: '2.5rem 1.5rem',
         }}
       >
-        {/* Question text */}
         <h2
           style={{
             fontSize: 'clamp(1.1rem, 2.5vw, 1.25rem)',
@@ -99,7 +91,6 @@ export default function Question({
           {questionText}
         </h2>
 
-        {/* Instruction line */}
         {question.instruction && (
           <p
             style={{
@@ -113,7 +104,6 @@ export default function Question({
           </p>
         )}
 
-        {/* Options rendered by sub-component */}
         <Renderer question={question} onAnswer={onAnswer} />
       </div>
     </div>
