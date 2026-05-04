@@ -77,8 +77,8 @@ export function useSession(propertyId) {
         session_id: id,
         property_id: propertyId,
         tier: selectedTier,
-        tense_frame: null,       // set after Q0
-        intent_category: null,   // set after Q1
+        tense_frame: null, // set after Q0
+        intent_category: null, // set after Q1
         is_complete: false,
       };
 
