@@ -26,8 +26,7 @@ export default function Question({
   episodeName,
   tier,
 }) {
-  const questionText =
-    question.text[tenseFrame || 'retrospective'] || question.text.retrospective;
+  const questionText = question.text[tenseFrame || 'retrospective'] || question.text.retrospective;
 
   const Renderer = QUESTION_RENDERERS[question.type];
   const tierColor = TIER_COLORS[tier] || TIER_COLORS.professional;
