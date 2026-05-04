@@ -1,18 +1,23 @@
 // src/components/question/ScaleQuestion.jsx
 // GuestIQ — Scale (Likert) Question Renderer
-// Handles scale_5 type questions — 5-point scale with labeled endpoints and midpoint.
-// Fires onAnswer with scale value 1-5 on selection.
+// S3-NEW-UX: Two-step interaction — click scale point to select, then Continue to advance.
+// AC4: Continue button appears immediately after a scale point is clicked.
+// AC6: No disabled states.
 
 import { useState } from 'react';
 
-export default function ScaleQuestion({ question, onAnswer }) {
+export default function ScaleQuestion({ question, onAnswer, tierColor = '#60A5FA' }) {
   const [selected, setSelected] = useState(null);
   const labels = question.scale_labels || ['1', '2', '3', '4', '5'];
 
   function handleSelect(value) {
     setSelected(value);
-    // Scale value is 1-indexed (1=leftmost, 5=rightmost)
-    onAnswer(`SCALE_${value}`, null, null);
+    // Two-step: clicking sets state only, Continue fires onAnswer
+  }
+
+  function handleContinue() {
+    if (selected === null) return;
+    onAnswer(`SCALE_${selected}`, null, null);
   }
 
   return (
@@ -35,9 +40,9 @@ export default function ScaleQuestion({ question, onAnswer }) {
               onClick={() => handleSelect(val)}
               style={{
                 padding: '1rem 0.5rem',
-                background: isSelected ? 'rgba(96, 165, 250, 0.15)' : 'rgba(255,255,255,0.02)',
+                background: isSelected ? `${tierColor}26` : 'rgba(255,255,255,0.02)',
                 border: isSelected
-                  ? '1px solid rgba(96, 165, 250, 0.6)'
+                  ? `1px solid ${tierColor}99`
                   : '1px solid rgba(255,255,255,0.08)',
                 borderRadius: '8px',
                 cursor: 'pointer',
@@ -49,7 +54,7 @@ export default function ScaleQuestion({ question, onAnswer }) {
               }}
               onMouseEnter={(e) => {
                 if (!isSelected) {
-                  e.currentTarget.style.borderColor = 'rgba(96, 165, 250, 0.3)';
+                  e.currentTarget.style.borderColor = `${tierColor}4D`;
                   e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
                 }
               }}
@@ -66,16 +71,15 @@ export default function ScaleQuestion({ question, onAnswer }) {
                   width: '28px',
                   height: '28px',
                   borderRadius: '50%',
-                  border: isSelected ? '7px solid #60A5FA' : '2px solid rgba(255,255,255,0.2)',
+                  border: isSelected ? `7px solid ${tierColor}` : '2px solid rgba(255,255,255,0.2)',
                   transition: 'border 0.12s ease',
                 }}
               />
-              {/* Numeric value */}
               <span
                 style={{
                   fontSize: '0.8125rem',
                   fontWeight: 600,
-                  color: isSelected ? '#60A5FA' : '#64748B',
+                  color: isSelected ? tierColor : '#64748B',
                 }}
               >
                 {val}
@@ -91,9 +95,12 @@ export default function ScaleQuestion({ question, onAnswer }) {
           display: 'flex',
           justifyContent: 'space-between',
           padding: '0 0.25rem',
+          marginBottom: '1.5rem',
         }}
       >
-        <span style={{ fontSize: '0.75rem', color: '#475569', maxWidth: '35%', lineHeight: 1.3 }}>
+        <span
+          style={{ fontSize: '0.75rem', color: '#475569', maxWidth: '35%', lineHeight: 1.3 }}
+        >
           {labels[0]}
         </span>
         <span
@@ -108,6 +115,29 @@ export default function ScaleQuestion({ question, onAnswer }) {
           {labels[4]}
         </span>
       </div>
+
+      {/* Continue button — appears immediately after scale point clicked (AC4) */}
+      {selected !== null && (
+        <button
+          type="button"
+          onClick={handleContinue}
+          style={{
+            padding: '0.875rem 2rem',
+            background: tierColor,
+            color: '#0D0D12',
+            border: 'none',
+            borderRadius: '8px',
+            fontSize: '0.9375rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'opacity 0.12s ease',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.88')}
+          onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+        >
+          Continue →
+        </button>
+      )}
     </div>
   );
 }

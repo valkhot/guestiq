@@ -1,24 +1,36 @@
 // src/components/question/Question.jsx
 // GuestIQ — Standard Question Component (orchestrator)
-// S2-07: Q0 (QR1) rendered by this component — identical to Q1-Q79
-// S2-10: scale_5 type added
-// Renders the correct sub-component based on question.type.
-// Receives ALL content as props — zero hardcoded strings.
+// Passes tierColor to sub-components so Continue button uses correct tier colour.
 
 import SingleSelectQuestion from './SingleSelectQuestion';
 import ScaleQuestion from './ScaleQuestion';
 
-// Question types to sub-components map
+// Tier colour map — matches Visual Identity Document (locked values)
+const TIER_COLORS = {
+  amateur: '#4ADE80',
+  professional: '#60A5FA',
+  expert: '#A78BFA',
+};
+
 const QUESTION_RENDERERS = {
   single_select: SingleSelectQuestion,
   multi_select: SingleSelectQuestion,
   scale_5: ScaleQuestion,
 };
 
-export default function Question({ question, tenseFrame, onAnswer, questionNumber, episodeName }) {
-  const questionText = question.text[tenseFrame || 'retrospective'] || question.text.retrospective;
+export default function Question({
+  question,
+  tenseFrame,
+  onAnswer,
+  questionNumber,
+  episodeName,
+  tier,
+}) {
+  const questionText =
+    question.text[tenseFrame || 'retrospective'] || question.text.retrospective;
 
   const Renderer = QUESTION_RENDERERS[question.type];
+  const tierColor = TIER_COLORS[tier] || TIER_COLORS.professional;
 
   if (!Renderer) {
     return (
@@ -58,6 +70,7 @@ export default function Question({ question, tenseFrame, onAnswer, questionNumbe
           <span style={{ fontSize: '0.8125rem', color: '#475569' }}>{questionNumber}</span>
           <span style={{ fontSize: '0.8125rem', color: '#475569' }}>{episodeName}</span>
         </div>
+        {/* Progress bar track */}
         <div
           style={{
             maxWidth: '720px',
@@ -104,7 +117,7 @@ export default function Question({ question, tenseFrame, onAnswer, questionNumbe
           </p>
         )}
 
-        <Renderer question={question} onAnswer={onAnswer} />
+        <Renderer question={question} onAnswer={onAnswer} tierColor={tierColor} />
       </div>
     </div>
   );
