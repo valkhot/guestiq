@@ -23,6 +23,49 @@ export function useSession(propertyId) {
   const [isComplete, setIsComplete] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
+  // ── PHASE 2 — Back Navigation Extension Point ────────────────────────────
+  // Back navigation was deferred to Phase 2 (Sprint 2 Review decision).
+  // All the infrastructure needed is already in place. To implement:
+  //
+  // 1. ADD state here (directly below this comment):
+  //      const [answerHistory, setAnswerHistory] = useState([]);
+  //      // Shape: [{ questionId: 'Q1', answerCode: 'A', taxonomyCode: 'WORK-TRANS', scaleValue: null }]
+  //
+  // 2. ADD recordAnswer() — call this from QuestionScreen after every answer:
+  //      const recordAnswer = useCallback((questionId, answerCode, taxonomyCode, scaleValue = null) => {
+  //        setAnswerHistory(prev => {
+  //          const existing = prev.findIndex(a => a.questionId === questionId);
+  //          const entry = { questionId, answerCode, taxonomyCode, scaleValue };
+  //          if (existing >= 0) {
+  //            const updated = [...prev];
+  //            updated[existing] = entry;
+  //            return updated;
+  //          }
+  //          return [...prev, entry];
+  //        });
+  //      }, []);
+  //
+  // 3. ADD getPreviousAnswer() — call this in QuestionScreen to pre-select answers:
+  //      const getPreviousAnswer = useCallback((questionId) => {
+  //        return answerHistory.find(a => a.questionId === questionId) || null;
+  //      }, [answerHistory]);
+  //
+  // 4. ADD to return object: answerHistory, recordAnswer, getPreviousAnswer
+  //
+  // 5. ADD goBack() to QuestionScreen.jsx — decrement currentIndex:
+  //      function handleGoBack() {
+  //        setCurrentIndex(prev => Math.max(0, prev - 1));
+  //      }
+  //
+  // 6. ADD updateResponse() to src/services/supabase.js:
+  //      export async function updateResponse(responseId, updates) { ... }
+  //    This overwrites an existing response if the respondent changes their answer after going back.
+  //    Match the error handling pattern of all other service functions.
+  //
+  // No database schema changes required — responses table already has response_id as primary key.
+  // No new files required — all changes slot into existing files listed above.
+  // ── END PHASE 2 PLACEHOLDER ─────────────────────────────────────────────
+
   // Called when respondent clicks a tier CTA button
   // Creates session in Supabase and writes token to localStorage
   const startSession = useCallback(
@@ -34,8 +77,8 @@ export function useSession(propertyId) {
         session_id: id,
         property_id: propertyId,
         tier: selectedTier,
-        tense_frame: null, // set after Q0
-        intent_category: null, // set after Q1
+        tense_frame: null,       // set after Q0
+        intent_category: null,   // set after Q1
         is_complete: false,
       };
 
