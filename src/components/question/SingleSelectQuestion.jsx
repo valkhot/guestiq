@@ -116,8 +116,7 @@ export default function SingleSelectQuestion({ question, onAnswer, tierColor = '
   // Continue is ready when:
   // - A non-Other option is selected, OR
   // - The Other option is selected AND text field has content
-  const continueReady =
-    selectedCode !== null && (!selectedIsOther || otherText.trim().length > 0);
+  const continueReady = selectedCode !== null && (!selectedIsOther || otherText.trim().length > 0);
 
   function handleSelect(option) {
     setSelectedCode(option.code);

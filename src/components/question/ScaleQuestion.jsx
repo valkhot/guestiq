@@ -98,9 +98,7 @@ export default function ScaleQuestion({ question, onAnswer, tierColor = '#60A5FA
           marginBottom: '1.5rem',
         }}
       >
-        <span
-          style={{ fontSize: '0.75rem', color: '#475569', maxWidth: '35%', lineHeight: 1.3 }}
-        >
+        <span style={{ fontSize: '0.75rem', color: '#475569', maxWidth: '35%', lineHeight: 1.3 }}>
           {labels[0]}
         </span>
         <span
