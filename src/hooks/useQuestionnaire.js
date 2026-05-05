@@ -8,18 +8,18 @@ import questionnaire from '../data/questionnaire.js';
 
 // Module 5 routing map — intent_category → section code
 const MODULE5_ROUTES = {
-  'WORK-TRANS':  '5A',
-  'WORK-EVENT':  '5A',
-  'WORK-EXT':    '5A',
-  'LEIS-PLAN':   '5B',
-  'LEIS-SOC':    '5B',
-  'LEIS-EXP':    '5B',
-  'DISP-HOME':   '5C',
-  'DISP-TRANS':  '5C',
-  'MED':         '5D',
-  'FAM':         '5E',
-  'TRANSIT':     '5F',
-  'LOC-ESC':     '5G',
+  'WORK-TRANS': '5A',
+  'WORK-EVENT': '5A',
+  'WORK-EXT': '5A',
+  'LEIS-PLAN': '5B',
+  'LEIS-SOC': '5B',
+  'LEIS-EXP': '5B',
+  'DISP-HOME': '5C',
+  'DISP-TRANS': '5C',
+  MED: '5D',
+  FAM: '5E',
+  TRANSIT: '5F',
+  'LOC-ESC': '5G',
 };
 
 // Secondary purpose Q2 routing map — Q2 answer code → intent_category
