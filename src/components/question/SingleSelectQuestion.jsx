@@ -110,7 +110,6 @@ function OptionRow({ option, isSelected, onSelect, tierColor, compact = false })
 function Q1Layout({
   options,
   selectedCode,
-  selectedOption,
   onSelect,
   tierColor,
   otherText,
@@ -347,7 +346,6 @@ export default function SingleSelectQuestion({ question, onAnswer, tierColor = '
         <Q1Layout
           options={regularOptions}
           selectedCode={selectedCode}
-          selectedOption={selectedOption}
           onSelect={handleSelect}
           tierColor={tierColor}
           otherText={otherText}

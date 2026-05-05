@@ -8,7 +8,11 @@ import { useState, useEffect } from 'react';
 import { useQuestionnaire } from '../../hooks/useQuestionnaire';
 import { useSession } from '../../hooks/useSession';
 import Question from '../question/Question';
-import { insertResponse, insertScaleResponse, insertNoneFlag } from '../../services/supabase';
+import {
+  insertResponse,
+  insertScaleResponse,
+  insertNoneFlag,
+} from '../../services/supabase';
 import {
   trackRoutingGateAnswered,
   trackEpisodeStarted,
@@ -61,7 +65,8 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
 
   async function handleAnswer(answerCode, taxonomyCode, extraText) {
     const activeSessionId = session.sessionId || resumedSession?.session_id;
-    const activeTenseFrame = session.tenseFrame || resumedSession?.tense_frame || 'retrospective';
+    const activeTenseFrame =
+      session.tenseFrame || resumedSession?.tense_frame || 'retrospective';
 
     if (!activeSessionId) return;
 
@@ -88,7 +93,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         ...(extraText ? { qr1_other_text: extraText } : {}),
       });
 
-      // ── Scale response ─────────────────────────────────────────────────
+    // ── Scale response ─────────────────────────────────────────────────
     } else if (isScaleAnswer) {
       const scaleValue = parseInt(answerCode.replace('SCALE_', ''), 10);
       await insertScaleResponse({
@@ -107,7 +112,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         property_id: propertyId,
       });
 
-      // ── Q1 — Intent category capture ───────────────────────────────────
+    // ── Q1 — Intent category capture ───────────────────────────────────
     } else if (currentQuestion.id === 'Q1' && !isNoneOption) {
       await session.setIntentCategoryAndPersist(taxonomyCode);
       await insertResponse({
@@ -128,7 +133,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         property_id: propertyId,
       });
 
-      // ── All other questions ────────────────────────────────────────────
+    // ── All other questions ────────────────────────────────────────────
     } else {
       await insertResponse({
         response_id: crypto.randomUUID(),
@@ -212,6 +217,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
 
   return (
     <Question
+      key={currentQuestion.id}
       tier={tier}
       question={currentQuestion}
       tenseFrame={session.tenseFrame || resumedSession?.tense_frame}
