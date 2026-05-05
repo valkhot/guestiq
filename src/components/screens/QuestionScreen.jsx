@@ -75,8 +75,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
 
   async function handleAnswer(answerCode, taxonomyCode, extraText) {
     const activeSessionId = session.sessionId || resumedSession?.session_id;
-    const activeTenseFrame =
-      session.tenseFrame || resumedSession?.tense_frame || 'retrospective';
+    const activeTenseFrame = session.tenseFrame || resumedSession?.tense_frame || 'retrospective';
 
     if (!activeSessionId) return;
 
@@ -103,7 +102,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         ...(extraText ? { qr1_other_text: extraText } : {}),
       });
 
-    // ── Q1 — Intent category capture ───────────────────────────────────
+      // ── Q1 — Intent category capture ───────────────────────────────────
     } else if (currentQuestion.id === 'Q1' && !isNoneOption) {
       await session.setIntentCategoryAndPersist(taxonomyCode);
       await insertResponse({
@@ -124,7 +123,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         property_id: propertyId,
       });
 
-    // ── Q2 — Secondary intent capture (AC3) ────────────────────────────
+      // ── Q2 — Secondary intent capture (AC3) ────────────────────────────
     } else if (currentQuestion.id === 'Q2' && !isNoneOption && answerCode !== 'A') {
       const secondaryIntent = getSecondaryIntentFromQ2Answer(answerCode);
       if (secondaryIntent && secondaryIntent !== intentCategory) {
@@ -155,7 +154,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         property_id: propertyId,
       });
 
-    // ── Scale response ─────────────────────────────────────────────────
+      // ── Scale response ─────────────────────────────────────────────────
     } else if (isScaleAnswer) {
       const scaleValue = parseInt(answerCode.replace('SCALE_', ''), 10);
       await insertScaleResponse({
@@ -174,7 +173,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         property_id: propertyId,
       });
 
-    // ── All other questions ────────────────────────────────────────────
+      // ── All other questions ────────────────────────────────────────────
     } else if (!isNoneOption) {
       await insertResponse({
         response_id: crypto.randomUUID(),
