@@ -1,8 +1,6 @@
 // src/components/question/ScaleQuestion.jsx
 // GuestIQ — Scale (Likert) Question Renderer
-// S3-NEW-UX: Two-step interaction — click scale point to select, then Continue to advance.
-// AC4: Continue button appears immediately after a scale point is clicked.
-// AC6: No disabled states.
+// S3-NEW-UX (final): Sticky Continue bar matches SingleSelectQuestion pattern.
 
 import { useState } from 'react';
 
@@ -12,7 +10,6 @@ export default function ScaleQuestion({ question, onAnswer, tierColor = '#60A5FA
 
   function handleSelect(value) {
     setSelected(value);
-    // Two-step: clicking sets state only, Continue fires onAnswer
   }
 
   function handleContinue() {
@@ -21,7 +18,7 @@ export default function ScaleQuestion({ question, onAnswer, tierColor = '#60A5FA
   }
 
   return (
-    <div>
+    <div style={{ paddingBottom: '5rem' }}>
       {/* Scale buttons */}
       <div
         style={{
@@ -65,13 +62,14 @@ export default function ScaleQuestion({ question, onAnswer, tierColor = '#60A5FA
                 }
               }}
             >
-              {/* Circle indicator */}
               <div
                 style={{
                   width: '28px',
                   height: '28px',
                   borderRadius: '50%',
-                  border: isSelected ? `7px solid ${tierColor}` : '2px solid rgba(255,255,255,0.2)',
+                  border: isSelected
+                    ? `7px solid ${tierColor}`
+                    : '2px solid rgba(255,255,255,0.2)',
                   transition: 'border 0.12s ease',
                 }}
               />
@@ -98,7 +96,14 @@ export default function ScaleQuestion({ question, onAnswer, tierColor = '#60A5FA
           marginBottom: '1.5rem',
         }}
       >
-        <span style={{ fontSize: '0.75rem', color: '#475569', maxWidth: '35%', lineHeight: 1.3 }}>
+        <span
+          style={{
+            fontSize: '0.75rem',
+            color: '#475569',
+            maxWidth: '35%',
+            lineHeight: 1.3,
+          }}
+        >
           {labels[0]}
         </span>
         <span
@@ -114,28 +119,59 @@ export default function ScaleQuestion({ question, onAnswer, tierColor = '#60A5FA
         </span>
       </div>
 
-      {/* Continue button — appears immediately after scale point clicked (AC4) */}
-      {selected !== null && (
-        <button
-          type="button"
-          onClick={handleContinue}
-          style={{
-            padding: '0.875rem 2rem',
-            background: tierColor,
-            color: '#0D0D12',
-            border: 'none',
-            borderRadius: '8px',
-            fontSize: '0.9375rem',
-            fontWeight: 600,
-            cursor: 'pointer',
-            transition: 'opacity 0.12s ease',
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.88')}
-          onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
-        >
-          Continue →
-        </button>
-      )}
+      {/* Sticky Continue — same pattern as SingleSelectQuestion */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          padding: '1rem 1.5rem 1.5rem',
+          background: 'linear-gradient(to top, #0D0D12 70%, transparent)',
+          zIndex: 10,
+          maxWidth: '720px',
+          margin: '0 auto',
+        }}
+      >
+        {selected !== null ? (
+          <button
+            type="button"
+            onClick={handleContinue}
+            style={{
+              width: '100%',
+              padding: '0.875rem',
+              background: tierColor,
+              color: '#0D0D12',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '0.9375rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'opacity 0.12s ease',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.88')}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+          >
+            Continue →
+          </button>
+        ) : (
+          <div
+            style={{
+              width: '100%',
+              padding: '0.875rem',
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: '8px',
+              fontSize: '0.9375rem',
+              color: '#334155',
+              textAlign: 'center',
+              userSelect: 'none',
+            }}
+          >
+            Select a point on the scale above to continue
+          </div>
+        )}
+      </div>
     </div>
   );
 }
