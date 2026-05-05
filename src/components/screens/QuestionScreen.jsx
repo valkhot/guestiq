@@ -1,11 +1,12 @@
 // src/components/screens/QuestionScreen.jsx
 // GuestIQ — Question Screen
-// S2-09: All Module 1 questions with tier routing, intent_category write, none_flag write
-// S2-10: Modules 2-4 added. scale_5 responses via insertScaleResponse.
+// S3-01: Module 5 branching engine integrated.
+// filterQuestionsForSession() from useQuestionnaire builds the correct
+// question sequence based on tier + intent_category + secondary intent.
 
 import { useState, useEffect } from 'react';
 
-import { useQuestionnaire } from '../../hooks/useQuestionnaire';
+import { useQuestionnaire, getSecondaryIntentFromQ2Answer } from '../../hooks/useQuestionnaire';
 import { useSession } from '../../hooks/useSession';
 import Question from '../question/Question';
 import { insertResponse, insertScaleResponse, insertNoneFlag } from '../../services/supabase';
@@ -14,6 +15,7 @@ import {
   trackEpisodeStarted,
   trackQuestionAnswered,
   trackNoneFlagSelected,
+  trackPurposeExpert,
 } from '../../services/analytics';
 
 function getTenseFrame(answerCode) {
@@ -21,14 +23,25 @@ function getTenseFrame(answerCode) {
 }
 
 export default function QuestionScreen({ tier, propertyId, onComplete, resumedSession }) {
-  const { questions, episodes } = useQuestionnaire();
+  const { filterQuestionsForSession, episodes } = useQuestionnaire();
   const session = useSession(propertyId);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [sessionReady, setSessionReady] = useState(false);
+  // Secondary intent category — set when Q2 is answered
+  const [secondaryIntentCategory, setSecondaryIntentCategory] = useState(null);
 
-  // Filter questions for this tier
-  const tierQuestions = questions.filter((q) => q.tiers.includes(tier));
+  // Build the question list for this session.
+  // Re-computed whenever intent_category or secondary intent changes.
+  // This is the core of the branching engine — the question list is dynamic.
+  const intentCategory = session.intentCategory || resumedSession?.intent_category || null;
+
+  const tierQuestions = filterQuestionsForSession({
+    tier,
+    intentCategory,
+    secondaryIntentCategory,
+  });
+
   const currentQuestion = tierQuestions[currentIndex];
 
   const getEpisodeName = (moduleNum) => {
@@ -36,6 +49,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
     return ep?.name || 'GuestIQ';
   };
 
+  // Session initialization
   useEffect(() => {
     async function init() {
       if (resumedSession) {
@@ -61,7 +75,8 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
 
   async function handleAnswer(answerCode, taxonomyCode, extraText) {
     const activeSessionId = session.sessionId || resumedSession?.session_id;
-    const activeTenseFrame = session.tenseFrame || resumedSession?.tense_frame || 'retrospective';
+    const activeTenseFrame =
+      session.tenseFrame || resumedSession?.tense_frame || 'retrospective';
 
     if (!activeSessionId) return;
 
@@ -88,26 +103,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         ...(extraText ? { qr1_other_text: extraText } : {}),
       });
 
-      // ── Scale response ─────────────────────────────────────────────────
-    } else if (isScaleAnswer) {
-      const scaleValue = parseInt(answerCode.replace('SCALE_', ''), 10);
-      await insertScaleResponse({
-        scale_response_id: crypto.randomUUID(),
-        session_id: activeSessionId,
-        question_id: currentQuestion.id,
-        scale_value: scaleValue,
-        property_id: propertyId,
-      });
-      trackQuestionAnswered({
-        question_id: currentQuestion.id,
-        answer_code: answerCode,
-        module_number: currentQuestion.module,
-        tier,
-        tense_frame: activeTenseFrame,
-        property_id: propertyId,
-      });
-
-      // ── Q1 — Intent category capture ───────────────────────────────────
+    // ── Q1 — Intent category capture ───────────────────────────────────
     } else if (currentQuestion.id === 'Q1' && !isNoneOption) {
       await session.setIntentCategoryAndPersist(taxonomyCode);
       await insertResponse({
@@ -128,8 +124,58 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         property_id: propertyId,
       });
 
-      // ── All other questions ────────────────────────────────────────────
-    } else {
+    // ── Q2 — Secondary intent capture (AC3) ────────────────────────────
+    } else if (currentQuestion.id === 'Q2' && !isNoneOption && answerCode !== 'A') {
+      const secondaryIntent = getSecondaryIntentFromQ2Answer(answerCode);
+      if (secondaryIntent && secondaryIntent !== intentCategory) {
+        setSecondaryIntentCategory(secondaryIntent);
+        // AC5: purpose_expert PostHog event fires when secondary sub-section triggered
+        trackPurposeExpert({
+          primary_intent: intentCategory,
+          secondary_intent: secondaryIntent,
+          tier,
+          property_id: propertyId,
+        });
+      }
+      await insertResponse({
+        response_id: crypto.randomUUID(),
+        session_id: activeSessionId,
+        question_id: 'Q2',
+        answer_code: answerCode,
+        tense_frame: activeTenseFrame,
+        module_number: 1,
+        property_id: propertyId,
+      });
+      trackQuestionAnswered({
+        question_id: 'Q2',
+        answer_code: answerCode,
+        module_number: 1,
+        tier,
+        tense_frame: activeTenseFrame,
+        property_id: propertyId,
+      });
+
+    // ── Scale response ─────────────────────────────────────────────────
+    } else if (isScaleAnswer) {
+      const scaleValue = parseInt(answerCode.replace('SCALE_', ''), 10);
+      await insertScaleResponse({
+        scale_response_id: crypto.randomUUID(),
+        session_id: activeSessionId,
+        question_id: currentQuestion.id,
+        scale_value: scaleValue,
+        property_id: propertyId,
+      });
+      trackQuestionAnswered({
+        question_id: currentQuestion.id,
+        answer_code: answerCode,
+        module_number: currentQuestion.module,
+        tier,
+        tense_frame: activeTenseFrame,
+        property_id: propertyId,
+      });
+
+    // ── All other questions ────────────────────────────────────────────
+    } else if (!isNoneOption) {
       await insertResponse({
         response_id: crypto.randomUUID(),
         session_id: activeSessionId,
@@ -149,7 +195,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
       });
     }
 
-    // None flag write (AC4) — on every question except scale and Q0
+    // None flag write — on every question except scale and Q0
     if (isNoneOption) {
       await insertNoneFlag({
         none_flag_id: crypto.randomUUID(),
@@ -165,7 +211,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
       });
     }
 
-    // Advance
+    // Advance to next question
     const nextIndex = currentIndex + 1;
     if (nextIndex >= tierQuestions.length) {
       if (onComplete) onComplete();
@@ -174,6 +220,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
     }
   }
 
+  // Loading
   if (!sessionReady) {
     return (
       <div
@@ -204,7 +251,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         }}
       >
         <div style={{ color: '#94A3B8', fontSize: '0.9375rem' }}>
-          Session complete — results screen coming in Sprint 3.
+          Session complete — results screen coming in S3-08.
         </div>
       </div>
     );
