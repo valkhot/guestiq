@@ -58,9 +58,7 @@ function OptionRow({ option, isSelected, onSelect, tierColor, compact = false })
           e.currentTarget.style.borderColor = isNone
             ? 'rgba(255,255,255,0.04)'
             : 'rgba(255,255,255,0.07)';
-          e.currentTarget.style.background = isNone
-            ? 'transparent'
-            : 'rgba(255,255,255,0.02)';
+          e.currentTarget.style.background = isNone ? 'transparent' : 'rgba(255,255,255,0.02)';
         }
       }}
     >
@@ -107,14 +105,7 @@ function OptionRow({ option, isSelected, onSelect, tierColor, compact = false })
 }
 
 // Q1-specific progressive disclosure layout
-function Q1Layout({
-  options,
-  selectedCode,
-  onSelect,
-  tierColor,
-  otherText,
-  onOtherChange,
-}) {
+function Q1Layout({ options, selectedCode, onSelect, tierColor, otherText, onOtherChange }) {
   const [extended, setExtended] = useState(false);
 
   const byCode = Object.fromEntries(options.map((o) => [o.code, o]));
@@ -135,11 +126,7 @@ function Q1Layout({
               tierColor={tierColor}
             />
             {isOther && isSelected && (
-              <OtherInput
-                tierColor={tierColor}
-                value={otherText}
-                onChange={onOtherChange}
-              />
+              <OtherInput tierColor={tierColor} value={otherText} onChange={onOtherChange} />
             )}
           </div>
         );
@@ -316,8 +303,7 @@ export default function SingleSelectQuestion({ question, onAnswer, tierColor = '
     selectedOption.text &&
     selectedOption.text.toLowerCase().includes('please specify');
 
-  const continueReady =
-    selectedCode !== null && (!selectedIsOther || otherText.trim().length > 0);
+  const continueReady = selectedCode !== null && (!selectedIsOther || otherText.trim().length > 0);
 
   function handleSelect(option) {
     setSelectedCode(option.code);
@@ -364,11 +350,7 @@ export default function SingleSelectQuestion({ question, onAnswer, tierColor = '
                 tierColor={tierColor}
               />
               {isOther && isSelected && (
-                <OtherInput
-                  tierColor={tierColor}
-                  value={otherText}
-                  onChange={setOtherText}
-                />
+                <OtherInput tierColor={tierColor} value={otherText} onChange={setOtherText} />
               )}
             </div>
           );

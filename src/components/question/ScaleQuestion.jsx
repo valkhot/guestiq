@@ -67,9 +67,7 @@ export default function ScaleQuestion({ question, onAnswer, tierColor = '#60A5FA
                   width: '28px',
                   height: '28px',
                   borderRadius: '50%',
-                  border: isSelected
-                    ? `7px solid ${tierColor}`
-                    : '2px solid rgba(255,255,255,0.2)',
+                  border: isSelected ? `7px solid ${tierColor}` : '2px solid rgba(255,255,255,0.2)',
                   transition: 'border 0.12s ease',
                 }}
               />
