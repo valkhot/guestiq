@@ -1,18 +1,21 @@
 // src/components/screens/QuestionScreen.jsx
 // GuestIQ — Question Screen
-// S3-01: Module 5 branching engine integrated.
-// filterQuestionsForSession() from useQuestionnaire builds the correct
-// question sequence based on tier + intent_category + secondary intent.
+// S3-04: Episode tracking — current episode, progress within episode,
+// episode_started and episode_completed PostHog events.
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-import { useQuestionnaire, getSecondaryIntentFromQ2Answer } from '../../hooks/useQuestionnaire';
+import {
+  useQuestionnaire,
+  getSecondaryIntentFromQ2Answer,
+} from '../../hooks/useQuestionnaire';
 import { useSession } from '../../hooks/useSession';
 import Question from '../question/Question';
 import { insertResponse, insertScaleResponse, insertNoneFlag } from '../../services/supabase';
 import {
   trackRoutingGateAnswered,
   trackEpisodeStarted,
+  trackEpisodeCompleted,
   trackQuestionAnswered,
   trackNoneFlagSelected,
   trackPurposeExpert,
@@ -22,18 +25,45 @@ function getTenseFrame(answerCode) {
   return answerCode === 'B' ? 'anticipatory' : 'retrospective';
 }
 
+// Derive which episode a question belongs to
+function getEpisodeForQuestion(question, episodes) {
+  if (!question || !episodes) return null;
+  return episodes.find((ep) => ep.moduleMappings.includes(question.module)) || null;
+}
+
+// Compute progress within the current episode (0.0–1.0)
+function computeEpisodeProgress(currentIndex, tierQuestions, episodes) {
+  const currentQ = tierQuestions[currentIndex];
+  if (!currentQ || !episodes) return 0;
+
+  const currentEp = getEpisodeForQuestion(currentQ, episodes);
+  if (!currentEp) return 0;
+
+  // Find all questions in this episode for this tier's question list
+  const epQuestions = tierQuestions.filter((q) =>
+    currentEp.moduleMappings.includes(q.module)
+  );
+  if (epQuestions.length === 0) return 0;
+
+  // Index of current question within the episode
+  const posInEp = epQuestions.findIndex((q) => q.id === currentQ.id);
+  if (posInEp < 0) return 0;
+
+  // Return proportion answered (not including current)
+  return posInEp / epQuestions.length;
+}
+
 export default function QuestionScreen({ tier, propertyId, onComplete, resumedSession }) {
   const { filterQuestionsForSession, episodes } = useQuestionnaire();
   const session = useSession(propertyId);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [sessionReady, setSessionReady] = useState(false);
-  // Secondary intent category — set when Q2 is answered
   const [secondaryIntentCategory, setSecondaryIntentCategory] = useState(null);
 
-  // Build the question list for this session.
-  // Re-computed whenever intent_category or secondary intent changes.
-  // This is the core of the branching engine — the question list is dynamic.
+  // Track last episode to detect transitions
+  const lastEpisodeRef = useRef(null);
+
   const intentCategory = session.intentCategory || resumedSession?.intent_category || null;
 
   const tierQuestions = filterQuestionsForSession({
@@ -44,10 +74,50 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
 
   const currentQuestion = tierQuestions[currentIndex];
 
+  // Compute episode state
+  const currentEpisode = currentQuestion
+    ? getEpisodeForQuestion(currentQuestion, episodes)
+    : null;
+
+  const currentEpisodeNumber = currentEpisode?.number || 1;
+
+  const progressWithinEpisode = computeEpisodeProgress(
+    currentIndex,
+    tierQuestions,
+    episodes
+  );
+
   const getEpisodeName = (moduleNum) => {
     const ep = episodes.find((e) => e.moduleMappings.includes(moduleNum));
     return ep?.name || 'GuestIQ';
   };
+
+  // Fire episode events when episode changes
+  useEffect(() => {
+    if (!sessionReady || !currentEpisode) return;
+
+    const lastEp = lastEpisodeRef.current;
+
+    // Episode completed — fired when leaving an episode
+    if (lastEp && lastEp.number !== currentEpisode.number) {
+      trackEpisodeCompleted({
+        episode_number: lastEp.number,
+        episode_name: lastEp.name,
+        tier,
+        property_id: propertyId,
+      });
+
+      // Episode started — fired when entering a new episode
+      trackEpisodeStarted({
+        episode_number: currentEpisode.number,
+        episode_name: currentEpisode.name,
+        tier,
+        property_id: propertyId,
+      });
+    }
+
+    lastEpisodeRef.current = currentEpisode;
+  }, [currentEpisodeNumber, sessionReady, currentEpisode, tier, propertyId]);
 
   // Session initialization
   useEffect(() => {
@@ -60,13 +130,18 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
       } else {
         await session.startSession(tier);
         setSessionReady(true);
+
+        // Fire episode_started for Episode 1
         const ep1 = episodes.find((e) => e.number === 1);
-        trackEpisodeStarted({
-          episode_number: 1,
-          episode_name: ep1?.name || 'Episode 1',
-          tier,
-          property_id: propertyId,
-        });
+        if (ep1) {
+          trackEpisodeStarted({
+            episode_number: 1,
+            episode_name: ep1.name,
+            tier,
+            property_id: propertyId,
+          });
+          lastEpisodeRef.current = ep1;
+        }
       }
     }
     init();
@@ -75,7 +150,8 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
 
   async function handleAnswer(answerCode, taxonomyCode, extraText) {
     const activeSessionId = session.sessionId || resumedSession?.session_id;
-    const activeTenseFrame = session.tenseFrame || resumedSession?.tense_frame || 'retrospective';
+    const activeTenseFrame =
+      session.tenseFrame || resumedSession?.tense_frame || 'retrospective';
 
     if (!activeSessionId) return;
 
@@ -102,7 +178,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         ...(extraText ? { qr1_other_text: extraText } : {}),
       });
 
-      // ── Q1 — Intent category capture ───────────────────────────────────
+    // ── Q1 — Intent category ───────────────────────────────────────────
     } else if (currentQuestion.id === 'Q1' && !isNoneOption) {
       await session.setIntentCategoryAndPersist(taxonomyCode);
       await insertResponse({
@@ -123,12 +199,11 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         property_id: propertyId,
       });
 
-      // ── Q2 — Secondary intent capture (AC3) ────────────────────────────
+    // ── Q2 — Secondary intent ──────────────────────────────────────────
     } else if (currentQuestion.id === 'Q2' && !isNoneOption && answerCode !== 'A') {
       const secondaryIntent = getSecondaryIntentFromQ2Answer(answerCode);
       if (secondaryIntent && secondaryIntent !== intentCategory) {
         setSecondaryIntentCategory(secondaryIntent);
-        // AC5: purpose_expert PostHog event fires when secondary sub-section triggered
         trackPurposeExpert({
           primary_intent: intentCategory,
           secondary_intent: secondaryIntent,
@@ -154,7 +229,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         property_id: propertyId,
       });
 
-      // ── Scale response ─────────────────────────────────────────────────
+    // ── Scale response ─────────────────────────────────────────────────
     } else if (isScaleAnswer) {
       const scaleValue = parseInt(answerCode.replace('SCALE_', ''), 10);
       await insertScaleResponse({
@@ -173,7 +248,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         property_id: propertyId,
       });
 
-      // ── All other questions ────────────────────────────────────────────
+    // ── All other questions ────────────────────────────────────────────
     } else if (!isNoneOption) {
       await insertResponse({
         response_id: crypto.randomUUID(),
@@ -194,7 +269,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
       });
     }
 
-    // None flag write — on every question except scale and Q0
+    // None flag
     if (isNoneOption) {
       await insertNoneFlag({
         none_flag_id: crypto.randomUUID(),
@@ -210,16 +285,24 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
       });
     }
 
-    // Advance to next question
+    // Advance
     const nextIndex = currentIndex + 1;
     if (nextIndex >= tierQuestions.length) {
+      // Fire episode_completed for final episode
+      if (currentEpisode) {
+        trackEpisodeCompleted({
+          episode_number: currentEpisode.number,
+          episode_name: currentEpisode.name,
+          tier,
+          property_id: propertyId,
+        });
+      }
       if (onComplete) onComplete();
     } else {
       setCurrentIndex(nextIndex);
     }
   }
 
-  // Loading
   if (!sessionReady) {
     return (
       <div
@@ -264,7 +347,10 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
       tenseFrame={session.tenseFrame || resumedSession?.tense_frame}
       onAnswer={handleAnswer}
       questionNumber={`${currentQuestion.id} / ${tierQuestions.length}`}
-      episodeName={getEpisodeName(currentQuestion.module)}
+      episodeName={currentEpisode?.name || getEpisodeName(currentQuestion.module)}
+      episodes={episodes}
+      currentEpisode={currentEpisodeNumber}
+      progressWithinEpisode={progressWithinEpisode}
     />
   );
 }
