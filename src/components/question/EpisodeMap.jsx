@@ -103,8 +103,6 @@ export default function EpisodeMap({
         {episodes.map((ep) => {
           const isCompleted = ep.number < currentEpisode;
           const isCurrent = ep.number === currentEpisode;
-          const isFuture = ep.number > currentEpisode;
-
           return (
             <div
               key={ep.number}
