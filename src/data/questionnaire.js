@@ -1174,34 +1174,498 @@ const questionnaire = {
     },
 
     // ══════════════════════════════════════════════════════════════════════
-    // MODULES 6–7 (Q57–Q79) — Stubs: full content Sprint 3 (S3-03)
+    // MODULE 6 — VALUE, PRICING & SUBSTITUTION PERCEPTION (S3-03 COMPLETE)
     // ══════════════════════════════════════════════════════════════════════
-    ...Array.from({ length: 23 }, (_, i) => {
-      const qNum = i + 57;
-      const module = qNum <= 66 ? 6 : 7;
-      return {
-        id: `Q${qNum}`,
-        module,
-        section: 'placeholder',
-        intent_codes: [],
-        tiers: ['amateur', 'professional', 'expert'],
-        type: 'single_select',
-        text: {
-          retrospective: `[Q${qNum} — Full question text added in S3-03]`,
-          anticipatory:  `[Q${qNum} — Full question text added in S3-03]`,
-        },
-        instruction: null,
-        options: [
-          { code: 'A', taxonomy_code: null, text: 'Option A — S3-03' },
-          { code: 'B', taxonomy_code: null, text: 'Option B — S3-03' },
-        ],
-        has_none_option: true,
-        max_selections: null,
-        routes_module_5: false,
-        module_5_code: null,
-        researcher_note: `Placeholder for Q${qNum}. Full content S3-03.`,
-      };
-    }),
+
+    // ── 6A — Value Framework ─────────────────────────────────────────────
+    {
+      id: 'Q57', module: 6, section: '6A',
+      intent_codes: [],
+      tiers: ['amateur', 'professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'When deciding whether a stay was good value, what were you primarily comparing it against?',
+        anticipatory:  'When deciding whether a stay would be good value, what would you primarily compare it against?',
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: 'PRICE-MATCH',       text: 'What I paid and whether the experience matched or exceeded that price' },
+        { code: 'B', taxonomy_code: 'COMPETITIVE',       text: 'Other hotels I have stayed in at a similar price point' },
+        { code: 'C', taxonomy_code: 'ALT-COMP',          text: 'What I could have spent on a different type of accommodation' },
+        { code: 'D', taxonomy_code: 'OPPORTUNITY-COST',  text: 'What it would cost not to stay — time, inconvenience, lost productivity' },
+        { code: 'E', taxonomy_code: 'FAIRNESS',          text: 'A general sense of whether the price felt fair for what was delivered' },
+        { code: 'F', taxonomy_code: null,                 text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: null, routes_module_5: false, module_5_code: null,
+      researcher_note: 'PRICE-MATCH | COMPETITIVE | ALT-COMP | OPPORTUNITY-COST | FAIRNESS',
+    },
+    {
+      id: 'Q58', module: 6, section: '6A',
+      intent_codes: [],
+      tiers: ['professional', 'expert'],
+      type: 'multi_select',
+      text: {
+        retrospective: 'Which hotel attributes had the greatest impact on your value perception?',
+        anticipatory:  'Which hotel attributes have the greatest impact on your value perception?',
+      },
+      instruction: 'Select up to three.',
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'Room quality and physical comfort' },
+        { code: 'B', taxonomy_code: null, text: 'Staff service quality and attitude' },
+        { code: 'C', taxonomy_code: null, text: 'Location and convenience' },
+        { code: 'D', taxonomy_code: null, text: 'Food and beverage quality and accessibility' },
+        { code: 'E', taxonomy_code: null, text: 'Cleanliness and maintenance standard' },
+        { code: 'F', taxonomy_code: null, text: 'Amenities available — gym, pool, spa, lounge' },
+        { code: 'G', taxonomy_code: null, text: 'Reliability — everything worked as expected' },
+        { code: 'H', taxonomy_code: null, text: 'The experience feeling special or memorable' },
+        { code: 'I', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: 3, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
+
+    // ── 6B — Price Sensitivity ───────────────────────────────────────────
+    {
+      id: 'Q59', module: 6, section: '6B',
+      intent_codes: [],
+      tiers: ['professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'Who typically paid for hotel stays of this type?',
+        anticipatory:  'Who typically pays for hotel stays of this type?',
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: 'SELF-PAY',     text: 'I paid entirely from personal funds' },
+        { code: 'B', taxonomy_code: 'CORP-CHOICE',  text: 'My employer paid and I chose the hotel within a budget' },
+        { code: 'C', taxonomy_code: 'CORP-POLICY',  text: 'My employer paid and the hotel was chosen by a travel policy or agent' },
+        { code: 'D', taxonomy_code: 'CORP-REIMB',   text: 'I paid but was reimbursed' },
+        { code: 'E', taxonomy_code: 'HYBRID',       text: 'Shared cost — partially personal, partially professional' },
+        { code: 'F', taxonomy_code: 'THIRD-PARTY',  text: 'Someone else paid — event organiser, family, or partner' },
+        { code: 'G', taxonomy_code: null,            text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: null, routes_module_5: false, module_5_code: null,
+      researcher_note: 'SELF-PAY | CORP-CHOICE | CORP-POLICY | CORP-REIMB | HYBRID | THIRD-PARTY',
+    },
+    {
+      id: 'Q60', module: 6, section: '6B',
+      intent_codes: [],
+      tiers: ['expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'How did knowing that someone else was paying affect your hotel expectations?',
+        anticipatory:  'How does knowing that someone else is paying affect your hotel expectations?',
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'It raised them — if I am not paying, I expect a higher standard' },
+        { code: 'B', taxonomy_code: null, text: 'It did not change my expectations — I have consistent standards regardless' },
+        { code: 'C', taxonomy_code: null, text: 'It lowered them slightly — I felt less entitled to complain' },
+        { code: 'D', taxonomy_code: null, text: 'It created tension — I wanted a better hotel than the budget allowed' },
+        { code: 'E', taxonomy_code: null, text: 'Not applicable — I always paid for my own stays' },
+        { code: 'F', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: null, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
+    {
+      id: 'Q61', module: 6, section: '6B',
+      intent_codes: [],
+      tiers: ['amateur', 'professional', 'expert'],
+      type: 'scale_5',
+      text: {
+        retrospective: 'How sensitive were you to unexpected or hidden charges during a hotel stay (resort fees, Wi-Fi charges, minibar minimums)?',
+        anticipatory:  'How sensitive are you to unexpected or hidden charges during a hotel stay (resort fees, Wi-Fi charges, minibar minimums)?',
+      },
+      instruction: null,
+      scale_labels: ['Not bothered', 'Slightly bothered', 'Moderately bothered', 'Very bothered', 'Dealbreaker — I avoid hotels with hidden charges'],
+      options: [], has_none_option: false, max_selections: null, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
+    {
+      id: 'Q62', module: 6, section: '6B',
+      intent_codes: [],
+      tiers: ['professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: "How did a hotel's cancellation policy affect your booking decision?",
+        anticipatory:  "How does a hotel's cancellation policy affect your booking decision?",
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'Significantly — I only booked fully flexible rates even if they cost more' },
+        { code: 'B', taxonomy_code: null, text: 'Considerably — I weighed the saving against the risk carefully' },
+        { code: 'C', taxonomy_code: null, text: 'Moderately — I accepted some restriction for the right price' },
+        { code: 'D', taxonomy_code: null, text: 'Minimally — I rarely cancelled so it did not affect me much' },
+        { code: 'E', taxonomy_code: null, text: 'Not at all — I booked whatever was cheapest' },
+        { code: 'F', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: null, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
+
+    // ── 6C — Loyalty Programmes ──────────────────────────────────────────
+    {
+      id: 'Q63', module: 6, section: '6C',
+      intent_codes: [],
+      tiers: ['professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'How much did loyalty programme membership influence which hotel you chose?',
+        anticipatory:  'How much does loyalty programme membership influence which hotel you choose?',
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'It was my primary decision factor — I always stayed within my programme' },
+        { code: 'B', taxonomy_code: null, text: 'It was a significant factor — I preferred my programme but would defect for the right hotel' },
+        { code: 'C', taxonomy_code: null, text: 'It was a minor factor — I earned points but they did not drive my choice' },
+        { code: 'D', taxonomy_code: null, text: 'It had no influence — I was not a member or did not value programmes' },
+        { code: 'E', taxonomy_code: null, text: 'I was guided by a corporate travel policy that determined this for me' },
+        { code: 'F', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: null, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
+    {
+      id: 'Q64', module: 6, section: '6C',
+      intent_codes: [],
+      tiers: ['expert'],
+      type: 'multi_select',
+      text: {
+        retrospective: 'What loyalty programme benefits mattered most to you?',
+        anticipatory:  'What loyalty programme benefits matter most to you?',
+      },
+      instruction: 'Select up to two.',
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'Room upgrades based on status' },
+        { code: 'B', taxonomy_code: null, text: 'Late checkout and early check-in' },
+        { code: 'C', taxonomy_code: null, text: 'Free nights earned through points' },
+        { code: 'D', taxonomy_code: null, text: 'Recognition at the property — status acknowledgment and perks' },
+        { code: 'E', taxonomy_code: null, text: 'Points convertible to airline miles or other currencies' },
+        { code: 'F', taxonomy_code: null, text: 'Lounge or executive floor access' },
+        { code: 'G', taxonomy_code: null, text: 'I was not a loyalty programme member' },
+        { code: 'H', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: 2, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
+
+    // ── 6D — Ancillary & Upgrade Expectations ────────────────────────────
+    {
+      id: 'Q65', module: 6, section: '6D',
+      intent_codes: [],
+      tiers: ['professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'How did you respond to upgrade offers at check-in?',
+        anticipatory:  'How do you respond to upgrade offers at check-in?',
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'I actively asked or looked for upgrades' },
+        { code: 'B', taxonomy_code: null, text: 'I welcomed them when offered and the price was right' },
+        { code: 'C', taxonomy_code: null, text: 'I accepted complimentary upgrades but did not pay for them' },
+        { code: 'D', taxonomy_code: null, text: 'I was indifferent — I booked what I wanted' },
+        { code: 'E', taxonomy_code: null, text: 'I was suspicious of upgrade offers — they may imply my original room was inadequate' },
+        { code: 'F', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: null, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
+    {
+      id: 'Q66', module: 6, section: '6D',
+      intent_codes: [],
+      tiers: ['expert'],
+      type: 'multi_select',
+      text: {
+        retrospective: 'Which ancillary services would you have considered purchasing if offered at the right time and price?',
+        anticipatory:  'Which ancillary services would you consider purchasing if offered at the right time and price?',
+      },
+      instruction: 'Select all that apply.',
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'Breakfast package' },
+        { code: 'B', taxonomy_code: null, text: 'Airport transfer' },
+        { code: 'C', taxonomy_code: null, text: 'Early check-in or late checkout' },
+        { code: 'D', taxonomy_code: null, text: 'Spa or wellness access' },
+        { code: 'E', taxonomy_code: null, text: 'In-room dining credit or F&B package' },
+        { code: 'F', taxonomy_code: null, text: 'Room upgrade' },
+        { code: 'G', taxonomy_code: null, text: 'Local experience or excursion' },
+        { code: 'H', taxonomy_code: null, text: 'I preferred to keep costs itemised and resisted packages' },
+        { code: 'I', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: null, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // MODULE 7 — POST-STAY & GUEST RELATIONSHIP EXPECTATIONS (S3-03)
+    // ══════════════════════════════════════════════════════════════════════
+
+    // ── 7A — Checkout & Departure ────────────────────────────────────────
+    {
+      id: 'Q67', module: 7, section: '7A',
+      intent_codes: [],
+      tiers: ['amateur', 'professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'What was your preferred checkout method?',
+        anticipatory:  'What is your preferred checkout method?',
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'Express checkout via app or TV — bill pre-reviewed, no front desk needed' },
+        { code: 'B', taxonomy_code: null, text: 'Front desk checkout — I wanted to review and discuss the bill in person' },
+        { code: 'C', taxonomy_code: null, text: 'Automatic checkout — bill emailed, no action required from me' },
+        { code: 'D', taxonomy_code: null, text: 'I wanted staff to proactively ask about my experience at checkout' },
+        { code: 'E', taxonomy_code: null, text: 'No preference — whatever was quickest' },
+        { code: 'F', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: null, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
+    {
+      id: 'Q68', module: 7, section: '7A',
+      intent_codes: [],
+      tiers: ['professional', 'expert'],
+      type: 'scale_5',
+      text: {
+        retrospective: 'How important was flexible or extended checkout for your departure planning?',
+        anticipatory:  'How important is flexible or extended checkout for your departure planning?',
+      },
+      instruction: null,
+      scale_labels: ['Not important', 'Slightly important', 'Moderately important', 'Very important', 'Essential — I plan my day around it'],
+      options: [], has_none_option: false, max_selections: null, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
+    {
+      id: 'Q69', module: 7, section: '7A',
+      intent_codes: [],
+      tiers: ['expert'],
+      type: 'multi_select',
+      text: {
+        retrospective: 'What did you expect the hotel to provide after checkout?',
+        anticipatory:  'What do you expect the hotel to provide after checkout?',
+      },
+      instruction: 'Select all that apply.',
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'An itemised bill emailed promptly' },
+        { code: 'B', taxonomy_code: null, text: 'Luggage storage while I made use of the day after checkout' },
+        { code: 'C', taxonomy_code: null, text: 'Access to hotel facilities after checkout — gym, pool, lounge' },
+        { code: 'D', taxonomy_code: null, text: 'Nothing — once I checked out, my engagement with the hotel was complete' },
+        { code: 'E', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: null, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
+
+    // ── 7B — Post-Stay Communication ─────────────────────────────────────
+    {
+      id: 'Q70', module: 7, section: '7B',
+      intent_codes: [],
+      tiers: ['professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'How did you feel about receiving a guest satisfaction survey after your stay?',
+        anticipatory:  'How do you feel about receiving a guest satisfaction survey after your stay?',
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'Positive — I wanted to share feedback and believed hotels used it' },
+        { code: 'B', taxonomy_code: null, text: 'Neutral — I completed it if it was short' },
+        { code: 'C', taxonomy_code: null, text: 'Indifferent — I rarely completed them' },
+        { code: 'D', taxonomy_code: null, text: 'Negative — I found post-stay surveys intrusive or performative' },
+        { code: 'E', taxonomy_code: null, text: 'Positive only if I knew my feedback led to visible action' },
+        { code: 'F', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: null, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
+    {
+      id: 'Q71', module: 7, section: '7B',
+      intent_codes: [],
+      tiers: ['expert'],
+      type: 'multi_select',
+      text: {
+        retrospective: 'What type of post-stay communication from the hotel would you have welcomed?',
+        anticipatory:  'What type of post-stay communication from the hotel would you welcome?',
+      },
+      instruction: 'Select all that apply.',
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'A personalised thank-you message acknowledging the stay' },
+        { code: 'B', taxonomy_code: null, text: 'A relevant promotional offer for a future stay' },
+        { code: 'C', taxonomy_code: null, text: 'Notification of new facilities or property changes since my stay' },
+        { code: 'D', taxonomy_code: null, text: 'Loyalty point summary or status update' },
+        { code: 'E', taxonomy_code: null, text: 'Nothing — I did not want to be contacted after checkout' },
+        { code: 'F', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: null, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
+    {
+      id: 'Q72', module: 7, section: '7B',
+      intent_codes: [],
+      tiers: ['expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'How long after your stay would a follow-up message have felt appropriate?',
+        anticipatory:  'How long after your stay would a follow-up message feel appropriate?',
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'Within 24 hours — while the experience was fresh' },
+        { code: 'B', taxonomy_code: null, text: 'Within 3 days' },
+        { code: 'C', taxonomy_code: null, text: 'Within one week' },
+        { code: 'D', taxonomy_code: null, text: 'I did not mind the timing as long as the content was relevant' },
+        { code: 'E', taxonomy_code: null, text: 'I did not want any follow-up communication' },
+        { code: 'F', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: null, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
+
+    // ── 7C — Dispute Resolution ──────────────────────────────────────────
+    {
+      id: 'Q73', module: 7, section: '7C',
+      intent_codes: [],
+      tiers: ['professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'If you had a complaint or billing issue after checkout, what was your preferred resolution channel?',
+        anticipatory:  'If you had a complaint or billing issue after checkout, what is your preferred resolution channel?',
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'Email — I wanted a written record of the exchange' },
+        { code: 'B', taxonomy_code: null, text: 'Phone — I preferred to resolve it with a real person quickly' },
+        { code: 'C', taxonomy_code: null, text: 'Through the booking platform I used' },
+        { code: 'D', taxonomy_code: null, text: "Through the hotel brand's central customer service team" },
+        { code: 'E', taxonomy_code: null, text: 'Public review platforms — I wrote about it and expected a response' },
+        { code: 'F', taxonomy_code: null, text: 'I have never had a post-stay dispute' },
+        { code: 'G', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: null, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
+    {
+      id: 'Q74', module: 7, section: '7C',
+      intent_codes: [],
+      tiers: ['expert'],
+      type: 'multi_select',
+      text: {
+        retrospective: 'What would have made a post-stay complaint resolution feel satisfactory?',
+        anticipatory:  'What would make a post-stay complaint resolution feel satisfactory?',
+      },
+      instruction: 'Select up to two.',
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'A genuine acknowledgment that something fell short' },
+        { code: 'B', taxonomy_code: null, text: 'A concrete remedy — refund, credit, or compensation' },
+        { code: 'C', taxonomy_code: null, text: 'Speed — resolved within 24–48 hours without needing to follow up' },
+        { code: 'D', taxonomy_code: null, text: 'A personal response, not an automated template' },
+        { code: 'E', taxonomy_code: null, text: 'Evidence that the issue has been addressed for future guests' },
+        { code: 'F', taxonomy_code: null, text: 'An invitation to return with a meaningful gesture' },
+        { code: 'G', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: 2, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
+
+    // ── 7D — Return & Advocacy ───────────────────────────────────────────
+    {
+      id: 'Q75', module: 7, section: '7D',
+      intent_codes: [],
+      tiers: ['amateur', 'professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'Under what conditions would you return to the same hotel?',
+        anticipatory:  'Under what conditions would you return to the same hotel?',
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'If the stay met or exceeded expectations — I return to what works' },
+        { code: 'B', taxonomy_code: null, text: 'If the occasion or location brings me back to the same area' },
+        { code: 'C', taxonomy_code: null, text: 'If I receive a meaningful offer or loyalty incentive' },
+        { code: 'D', taxonomy_code: null, text: 'If a service failure was resolved to my satisfaction' },
+        { code: 'E', taxonomy_code: null, text: 'Only if the hotel has demonstrably improved since my last stay' },
+        { code: 'F', taxonomy_code: null, text: 'I rarely returned to the same hotel — I preferred variety' },
+        { code: 'G', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: null, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
+    {
+      id: 'Q76', module: 7, section: '7D',
+      intent_codes: [],
+      tiers: ['professional', 'expert'],
+      type: 'multi_select',
+      text: {
+        retrospective: 'Under what conditions would you actively recommend a hotel to others?',
+        anticipatory:  'Under what conditions would you actively recommend a hotel to others?',
+      },
+      instruction: 'Select all that apply.',
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'If something genuinely surprised or delighted me' },
+        { code: 'B', taxonomy_code: null, text: 'If the stay was consistently reliable across all touchpoints' },
+        { code: 'C', taxonomy_code: null, text: 'If the hotel handled a problem exceptionally well' },
+        { code: 'D', taxonomy_code: null, text: 'If I knew it was the right fit for the person I was recommending to' },
+        { code: 'E', taxonomy_code: null, text: 'If I was directly asked for a hotel recommendation' },
+        { code: 'F', taxonomy_code: null, text: 'I recommended freely when the experience warranted it' },
+        { code: 'G', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: null, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
+    {
+      id: 'Q77', module: 7, section: '7D',
+      intent_codes: [],
+      tiers: ['expert'],
+      type: 'multi_select',
+      text: {
+        retrospective: 'How did you typically share your hotel experience after a stay?',
+        anticipatory:  'How do you typically share your hotel experience after a stay?',
+      },
+      instruction: 'Select all that apply.',
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'Word of mouth to colleagues, friends, or family' },
+        { code: 'B', taxonomy_code: null, text: 'Online review — TripAdvisor, Google, Booking.com' },
+        { code: 'C', taxonomy_code: null, text: 'Social media post or story' },
+        { code: 'D', taxonomy_code: null, text: 'Internal company travel feedback system' },
+        { code: 'E', taxonomy_code: null, text: 'Direct feedback to the hotel via survey or email' },
+        { code: 'F', taxonomy_code: null, text: 'I did not typically share hotel experiences' },
+        { code: 'G', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: null, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
+
+    // ── 7E — Ideal Hotel Synthesis ───────────────────────────────────────
+    {
+      id: 'Q78', module: 7, section: '7E',
+      intent_codes: [],
+      tiers: ['amateur', 'professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'Thinking about the stay type you described at the start, which single factor would make a hotel truly exceptional for that purpose — above and beyond what you described as important?',
+        anticipatory:  'Thinking about the stay type you described at the start, which single factor would make a hotel truly exceptional for that purpose — above and beyond what you describe as important?',
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'Anticipating my needs before I even know I have them' },
+        { code: 'B', taxonomy_code: null, text: 'Making me feel genuinely welcome as an individual, not a room number' },
+        { code: 'C', taxonomy_code: null, text: 'A physical environment that is beautiful, calm, and curated' },
+        { code: 'D', taxonomy_code: null, text: 'Flawless reliability — everything worked, nothing broke, no surprises' },
+        { code: 'E', taxonomy_code: null, text: 'A staff interaction that turned an ordinary stay into a memorable one' },
+        { code: 'F', taxonomy_code: null, text: 'Value — I left feeling I received more than I paid for' },
+        { code: 'G', taxonomy_code: null, text: 'Location — it made everything about the stay easier or more enjoyable' },
+        { code: 'H', taxonomy_code: null, text: "The hotel's personality — it had a distinctive character I responded to" },
+        { code: 'I', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: null, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
+    {
+      id: 'Q79', module: 7, section: '7E',
+      intent_codes: [],
+      tiers: ['amateur', 'professional', 'expert'],
+      type: 'single_select',
+      text: {
+        retrospective: 'What is the single most common reason you have been disappointed by a hotel that started with high expectations?',
+        anticipatory:  'What is the single most common reason you have been disappointed by a hotel that started with high expectations?',
+      },
+      instruction: null,
+      options: [
+        { code: 'A', taxonomy_code: null, text: 'The physical product did not match what was shown or described online' },
+        { code: 'B', taxonomy_code: null, text: 'Staff attitude or service quality fell short' },
+        { code: 'C', taxonomy_code: null, text: 'Hidden costs or billing surprises' },
+        { code: 'D', taxonomy_code: null, text: 'Noise — from other guests, outside, or the building itself' },
+        { code: 'E', taxonomy_code: null, text: 'Cleanliness fell below an acceptable threshold' },
+        { code: 'F', taxonomy_code: null, text: 'A problem arose and was handled poorly' },
+        { code: 'G', taxonomy_code: null, text: 'The location was misrepresented or less convenient than presented' },
+        { code: 'H', taxonomy_code: null, text: 'Wi-Fi or in-room technology was inadequate' },
+        { code: 'I', taxonomy_code: null, text: 'I have generally not been disappointed — my experiences are consistent' },
+        { code: 'J', taxonomy_code: null, text: 'Other – please specify' },
+      ],
+      has_none_option: true, max_selections: null, routes_module_5: false, module_5_code: null, researcher_note: null,
+    },
   ],
 
   episodes: [
@@ -1215,9 +1679,9 @@ const questionnaire = {
   ],
 
   tiers: {
-    amateur:      { name: 'Amateur',      descriptor: 'Quick take on the essentials — 8 focused questions',          timeEstimate: '~5 minutes',  questionCount: 8,  ctaLabel: 'Start as Amateur',      colorToken: 'amateur-400' },
-    professional: { name: 'Professional', descriptor: 'Deeper dive into service and environment — 18 questions',     timeEstimate: '~8 minutes',  questionCount: 18, ctaLabel: 'Start as Professional', colorToken: 'professional-400' },
-    expert:       { name: 'Expert',       descriptor: 'The complete picture — all 7 modules, 79 questions',          timeEstimate: '~16 minutes', questionCount: 79, ctaLabel: 'Start as Expert',       colorToken: 'expert-400' },
+    amateur:      { name: 'Amateur',      descriptor: 'Quick take on the essentials — 20 focused questions',         timeEstimate: '~5 minutes',  questionCount: 20, ctaLabel: 'Start as Amateur',      colorToken: 'amateur-400' },
+    professional: { name: 'Professional', descriptor: 'Deeper dive across all 7 modules — around 46 questions',      timeEstimate: '~8 minutes',  questionCount: 46, ctaLabel: 'Start as Professional', colorToken: 'professional-400' },
+    expert:       { name: 'Expert',       descriptor: 'The complete picture — all 7 modules, up to 66 questions',    timeEstimate: '~16 minutes', questionCount: 66, ctaLabel: 'Start as Expert',       colorToken: 'expert-400' },
   },
 
   uiCopy: {
