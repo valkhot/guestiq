@@ -31,28 +31,6 @@ function getEpisodeForQuestion(question, episodes) {
   return episodes.find((ep) => ep.moduleMappings.includes(question.module)) || null;
 }
 
-// Compute progress within the current episode (0.0–1.0)
-function computeEpisodeProgress(currentIndex, tierQuestions, episodes) {
-  const currentQ = tierQuestions[currentIndex];
-  if (!currentQ || !episodes) return 0;
-
-  const currentEp = getEpisodeForQuestion(currentQ, episodes);
-  if (!currentEp) return 0;
-
-  // Find all questions in this episode for this tier's question list
-  const epQuestions = tierQuestions.filter((q) =>
-    currentEp.moduleMappings.includes(q.module)
-  );
-  if (epQuestions.length === 0) return 0;
-
-  // Index of current question within the episode
-  const posInEp = epQuestions.findIndex((q) => q.id === currentQ.id);
-  if (posInEp < 0) return 0;
-
-  // Return proportion answered (not including current)
-  return posInEp / epQuestions.length;
-}
-
 export default function QuestionScreen({ tier, propertyId, onComplete, resumedSession }) {
   const { filterQuestionsForSession, episodes } = useQuestionnaire();
   const session = useSession(propertyId);
@@ -81,11 +59,10 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
 
   const currentEpisodeNumber = currentEpisode?.number || 1;
 
-  const progressWithinEpisode = computeEpisodeProgress(
-    currentIndex,
-    tierQuestions,
-    episodes
-  );
+  // Option B: cumulative progress across the full session
+  // Simpler and more satisfying — bar fills 0→100% across all questions
+  const progressWithinEpisode =
+    tierQuestions.length > 0 ? currentIndex / tierQuestions.length : 0;
 
   const getEpisodeName = (moduleNum) => {
     const ep = episodes.find((e) => e.moduleMappings.includes(moduleNum));
