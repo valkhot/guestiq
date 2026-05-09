@@ -10,7 +10,7 @@ import Badge from './Badge';
 export default function BadgeToast({ definition, onDismiss }) {
   // Auto-dismiss after 2.5s
   useEffect(() => {
-    const timer = setTimeout(onDismiss, 2500);
+    const timer = setTimeout(onDismiss, 4500);
     return () => clearTimeout(timer);
   }, [onDismiss]);
 
@@ -32,9 +32,9 @@ export default function BadgeToast({ definition, onDismiss }) {
         background: '#161620',
         border: `1px solid ${definition.color}40`,
         borderRadius: '12px',
-        padding: '0.875rem 1.25rem',
+        padding: '1rem 1.25rem',
         boxShadow: `0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px ${definition.color}20`,
-        maxWidth: '340px',
+        maxWidth: '380px',
         width: 'calc(100vw - 3rem)',
         pointerEvents: 'none',
       }}
@@ -71,9 +71,6 @@ export default function BadgeToast({ definition, onDismiss }) {
             fontSize: '0.8125rem',
             color: '#64748B',
             lineHeight: 1.4,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
           }}
         >
           {definition.description}
