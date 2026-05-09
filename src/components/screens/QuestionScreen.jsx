@@ -1,17 +1,19 @@
 // src/components/screens/QuestionScreen.jsx
 // GuestIQ — Question Screen
-// S3-05: Curiosity hook screen inserted between episodes 1-6.
-// Hook fires after last question of an episode, before first of next.
+// S3-06: Badge awards wired at Q1, episode completions, and session end.
 
 import { useState, useEffect, useRef } from 'react';
+import { AnimatePresence } from 'framer-motion';
 
 import {
   useQuestionnaire,
   getSecondaryIntentFromQ2Answer,
 } from '../../hooks/useQuestionnaire';
 import { useSession } from '../../hooks/useSession';
+import { useBadges } from '../../hooks/useBadges';
 import Question from '../question/Question';
 import CuriosityHookScreen from './CuriosityHookScreen';
+import BadgeToast from '../badges/BadgeToast';
 import { insertResponse, insertScaleResponse, insertNoneFlag } from '../../services/supabase';
 import {
   trackRoutingGateAnswered,
@@ -41,15 +43,12 @@ function getEpisodeForQuestion(question, episodes) {
 export default function QuestionScreen({ tier, propertyId, onComplete, resumedSession }) {
   const { filterQuestionsForSession, episodes } = useQuestionnaire();
   const session = useSession(propertyId);
+  const badges = useBadges();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [sessionReady, setSessionReady] = useState(false);
   const [secondaryIntentCategory, setSecondaryIntentCategory] = useState(null);
-
-  // S3-05: Hook screen state
-  // When set, the hook screen is shown instead of the next question
   const [pendingHook, setPendingHook] = useState(null);
-  // { completedEpisode, nextEpisode, nextIndex }
 
   const lastEpisodeRef = useRef(null);
   const tierColor = TIER_COLORS[tier] || TIER_COLORS.professional;
@@ -63,14 +62,10 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
   });
 
   const currentQuestion = tierQuestions[currentIndex];
-
   const currentEpisode = currentQuestion
     ? getEpisodeForQuestion(currentQuestion, episodes)
     : null;
-
   const currentEpisodeNumber = currentEpisode?.number || 1;
-
-  // Cumulative progress across full session
   const progressWithinEpisode =
     tierQuestions.length > 0 ? currentIndex / tierQuestions.length : 0;
 
@@ -79,7 +74,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
     return ep?.name || 'GuestIQ';
   };
 
-  // Episode transition tracking (PostHog only — hook is handled in handleAnswer)
+  // Episode transition PostHog tracking
   useEffect(() => {
     if (!sessionReady || !currentEpisode) return;
     const lastEp = lastEpisodeRef.current;
@@ -121,7 +116,6 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Called when respondent clicks Continue on the hook screen
   function handleHookContinue() {
     if (!pendingHook) return;
     const { nextIndex } = pendingHook;
@@ -159,8 +153,11 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         ...(extraText ? { qr1_other_text: extraText } : {}),
       });
 
-    // ── Q1 ─────────────────────────────────────────────────────────────
+    // ── Q1 — Intent + badges ────────────────────────────────────────────
     } else if (currentQuestion.id === 'Q1' && !isNoneOption) {
+      // Award badges BEFORE awaits — React 18 batches state after async boundaries
+      badges.awardBadge(badges.BADGE_IDS.FIRST_STEP);
+      badges.awardBadge(badges.BADGE_IDS.INTENT_LOCKED);
       await session.setIntentCategoryAndPersist(taxonomyCode);
       await insertResponse({
         response_id: crypto.randomUUID(),
@@ -266,12 +263,15 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
       });
     }
 
-    // ── Advance — check for episode transition ──────────────────────────
+    // ── Advance — episode boundary check ────────────────────────────────
     const nextIndex = currentIndex + 1;
 
     if (nextIndex >= tierQuestions.length) {
       // End of session
       if (currentEpisode) {
+        // Award badges synchronously
+        badges.awardEpisodeBadge(currentEpisode.number);
+        badges.awardExpertComplete(tier);
         trackEpisodeCompleted({
           episode_number: currentEpisode.number,
           episode_name: currentEpisode.name,
@@ -279,18 +279,18 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
           property_id: propertyId,
         });
       }
-      if (onComplete) onComplete();
+      if (onComplete) onComplete(badges.allBadges);
       return;
     }
 
-    // Check if we are crossing an episode boundary
     const nextQuestion = tierQuestions[nextIndex];
     const nextEpisode = getEpisodeForQuestion(nextQuestion, episodes);
     const crossingEpisode =
       nextEpisode && currentEpisode && nextEpisode.number !== currentEpisode.number;
 
     if (crossingEpisode) {
-      // Fire episode_completed for the episode just finished
+      // Award episode badge synchronously before any state changes
+      badges.awardEpisodeBadge(currentEpisode.number);
       trackEpisodeCompleted({
         episode_number: currentEpisode.number,
         episode_name: currentEpisode.name,
@@ -298,8 +298,6 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         property_id: propertyId,
       });
 
-      // AC1: Show hook for episodes 1-6 only (not after episode 7)
-      // AC4: fire curiosity_hook_viewed
       if (currentEpisode.number <= 6 && currentEpisode.curiosityHookText) {
         trackCuriosityHookViewed({
           episode_number: currentEpisode.number,
@@ -307,30 +305,22 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
           tier,
           property_id: propertyId,
         });
-        // Show hook screen — store pending state
-        setPendingHook({
-          completedEpisode: currentEpisode,
-          nextEpisode,
-          nextIndex,
-        });
-        return; // Don't advance yet — wait for hook Continue click
+        setPendingHook({ completedEpisode: currentEpisode, nextEpisode, nextIndex });
+        return;
       }
     }
 
     setCurrentIndex(nextIndex);
   }
 
-  // ── Loading ────────────────────────────────────────────────────────────
+  // ── Render ─────────────────────────────────────────────────────────────
+
   if (!sessionReady) {
     return (
       <div
         style={{
-          minHeight: '100vh',
-          background: '#0D0D12',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: 'system-ui, sans-serif',
+          minHeight: '100vh', background: '#0D0D12', display: 'flex',
+          alignItems: 'center', justifyContent: 'center', fontFamily: 'system-ui, sans-serif',
         }}
       >
         <div style={{ color: '#475569', fontSize: '0.8125rem' }}>Starting session...</div>
@@ -338,51 +328,52 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
     );
   }
 
-  // ── Curiosity hook screen — S3-05 ─────────────────────────────────────
-  if (pendingHook) {
-    return (
-      <CuriosityHookScreen
-        completedEpisode={pendingHook.completedEpisode}
-        nextEpisode={pendingHook.nextEpisode}
-        tierColor={tierColor}
-        onContinue={handleHookContinue}
-      />
-    );
-  }
-
-  // ── Session complete placeholder ───────────────────────────────────────
-  if (!currentQuestion) {
-    return (
-      <div
-        style={{
-          minHeight: '100vh',
-          background: '#0D0D12',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: 'system-ui, sans-serif',
-        }}
-      >
-        <div style={{ color: '#94A3B8', fontSize: '0.9375rem' }}>
-          Session complete — results screen coming in S3-08.
-        </div>
-      </div>
-    );
-  }
-
-  // ── Question screen ────────────────────────────────────────────────────
   return (
-    <Question
-      key={currentQuestion.id}
-      tier={tier}
-      question={currentQuestion}
-      tenseFrame={session.tenseFrame || resumedSession?.tense_frame}
-      onAnswer={handleAnswer}
-      questionNumber={`${currentQuestion.id} / ${tierQuestions.length}`}
-      episodeName={currentEpisode?.name || getEpisodeName(currentQuestion.module)}
-      episodes={episodes}
-      currentEpisode={currentEpisodeNumber}
-      progressWithinEpisode={progressWithinEpisode}
-    />
+    <>
+      {/* Badge toast notification — AC3 animation, AC5 once per badge */}
+      <AnimatePresence mode="wait">
+        {badges.currentToast && (
+          <BadgeToast
+            key={badges.currentToast.id}
+            definition={badges.currentToast}
+            onDismiss={badges.dismissToast}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Curiosity hook screen */}
+      {pendingHook ? (
+        <CuriosityHookScreen
+          completedEpisode={pendingHook.completedEpisode}
+          nextEpisode={pendingHook.nextEpisode}
+          tierColor={tierColor}
+          onContinue={handleHookContinue}
+        />
+      ) : !currentQuestion ? (
+        <div
+          style={{
+            minHeight: '100vh', background: '#0D0D12', display: 'flex',
+            alignItems: 'center', justifyContent: 'center', fontFamily: 'system-ui, sans-serif',
+          }}
+        >
+          <div style={{ color: '#94A3B8', fontSize: '0.9375rem' }}>
+            Session complete — results screen coming in S3-08.
+          </div>
+        </div>
+      ) : (
+        <Question
+          key={currentQuestion.id}
+          tier={tier}
+          question={currentQuestion}
+          tenseFrame={session.tenseFrame || resumedSession?.tense_frame}
+          onAnswer={handleAnswer}
+          questionNumber={`${currentQuestion.id} / ${tierQuestions.length}`}
+          episodeName={currentEpisode?.name || getEpisodeName(currentQuestion.module)}
+          episodes={episodes}
+          currentEpisode={currentEpisodeNumber}
+          progressWithinEpisode={progressWithinEpisode}
+        />
+      )}
+    </>
   );
 }
