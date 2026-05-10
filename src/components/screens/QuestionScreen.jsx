@@ -1,6 +1,6 @@
 // src/components/screens/QuestionScreen.jsx
 // GuestIQ — Question Screen
-// S3-06: Badge awards wired at Q1, episode completions, and session end.
+// S3-07: Tier upgrade prompts after Episode 1 (Amateur) and Episode 4 (Professional).
 
 import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence } from 'framer-motion';
@@ -13,6 +13,7 @@ import { useSession } from '../../hooks/useSession';
 import { useBadges } from '../../hooks/useBadges';
 import Question from '../question/Question';
 import CuriosityHookScreen from './CuriosityHookScreen';
+import TierUpgradeScreen from './TierUpgradeScreen';
 import BadgeToast from '../badges/BadgeToast';
 import { insertResponse, insertScaleResponse, insertNoneFlag } from '../../services/supabase';
 import {
@@ -23,12 +24,21 @@ import {
   trackNoneFlagSelected,
   trackPurposeExpert,
   trackCuriosityHookViewed,
+  trackTierUpgradePrompted,
+  trackTierUpgradeAccepted,
+  trackTierUpgradeDeclined,
 } from '../../services/analytics';
 
 const TIER_COLORS = {
   amateur:      '#4ADE80',
   professional: '#60A5FA',
   expert:       '#A78BFA',
+};
+
+// Upgrade trigger: which episode completion triggers an upgrade prompt
+const UPGRADE_TRIGGERS = {
+  amateur:      1, // after Episode 1
+  professional: 4, // after Episode 4
 };
 
 function getTenseFrame(answerCode) {
@@ -40,7 +50,12 @@ function getEpisodeForQuestion(question, episodes) {
   return episodes.find((ep) => ep.moduleMappings.includes(question.module)) || null;
 }
 
-export default function QuestionScreen({ tier, propertyId, onComplete, resumedSession }) {
+export default function QuestionScreen({
+  tier: initialTier,
+  propertyId,
+  onComplete,
+  resumedSession,
+}) {
   const { filterQuestionsForSession, episodes } = useQuestionnaire();
   const session = useSession(propertyId);
   const badges = useBadges();
@@ -49,14 +64,19 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
   const [sessionReady, setSessionReady] = useState(false);
   const [secondaryIntentCategory, setSecondaryIntentCategory] = useState(null);
   const [pendingHook, setPendingHook] = useState(null);
+  // S3-07: upgrade prompt state
+  const [pendingUpgrade, setPendingUpgrade] = useState(null);
+  // { nextIndex, completedEpisodeNumber }
+  // Current tier — may change if respondent accepts upgrade
+  const [currentTier, setCurrentTier] = useState(initialTier);
 
   const lastEpisodeRef = useRef(null);
-  const tierColor = TIER_COLORS[tier] || TIER_COLORS.professional;
+  const tierColor = TIER_COLORS[currentTier] || TIER_COLORS.professional;
 
   const intentCategory = session.intentCategory || resumedSession?.intent_category || null;
 
   const tierQuestions = filterQuestionsForSession({
-    tier,
+    tier: currentTier,
     intentCategory,
     secondaryIntentCategory,
   });
@@ -82,30 +102,31 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
       trackEpisodeStarted({
         episode_number: currentEpisode.number,
         episode_name: currentEpisode.name,
-        tier,
+        tier: currentTier,
         property_id: propertyId,
       });
     }
     lastEpisodeRef.current = currentEpisode;
-  }, [currentEpisodeNumber, sessionReady, currentEpisode, tier, propertyId]);
+  }, [currentEpisodeNumber, sessionReady, currentEpisode, currentTier, propertyId]);
 
   // Session initialization
   useEffect(() => {
     async function init() {
       if (resumedSession) {
         session.restoreSession(resumedSession);
+        setCurrentTier(resumedSession.tier || initialTier);
         const startIndex = resumedSession.tense_frame ? 1 : 0;
         setCurrentIndex(startIndex);
         setSessionReady(true);
       } else {
-        await session.startSession(tier);
+        await session.startSession(currentTier);
         setSessionReady(true);
         const ep1 = episodes.find((e) => e.number === 1);
         if (ep1) {
           trackEpisodeStarted({
             episode_number: 1,
             episode_name: ep1.name,
-            tier,
+            tier: currentTier,
             property_id: propertyId,
           });
           lastEpisodeRef.current = ep1;
@@ -116,10 +137,48 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Hook screen continue
   function handleHookContinue() {
     if (!pendingHook) return;
     const { nextIndex } = pendingHook;
     setPendingHook(null);
+    setCurrentIndex(nextIndex);
+  }
+
+  // Upgrade accepted — AC3: update tier in Supabase and continue
+  async function handleUpgradeAccept() {
+    if (!pendingUpgrade) return;
+    const { nextIndex, completedEpisodeNumber } = pendingUpgrade;
+    const newTier = currentTier === 'amateur' ? 'professional' : 'expert';
+
+    trackTierUpgradeAccepted({
+      from_tier: currentTier,
+      to_tier: newTier,
+      after_episode: completedEpisodeNumber,
+      property_id: propertyId,
+    });
+
+    // AC3: update Supabase sessions.tier
+    await session.upgradeTier(newTier);
+    setCurrentTier(newTier);
+    setPendingUpgrade(null);
+    setCurrentIndex(nextIndex);
+  }
+
+  // Upgrade declined — continue with current tier
+  function handleUpgradeDecline() {
+    if (!pendingUpgrade) return;
+    const { nextIndex, completedEpisodeNumber } = pendingUpgrade;
+    const newTier = currentTier === 'amateur' ? 'professional' : 'expert';
+
+    trackTierUpgradeDeclined({
+      from_tier: currentTier,
+      to_tier: newTier,
+      after_episode: completedEpisodeNumber,
+      property_id: propertyId,
+    });
+
+    setPendingUpgrade(null);
     setCurrentIndex(nextIndex);
   }
 
@@ -133,7 +192,6 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
     const isNoneOption = answerCode === 'NONE';
     const isScaleAnswer = answerCode?.startsWith('SCALE_');
 
-    // ── Q0 ─────────────────────────────────────────────────────────────
     if (currentQuestion.id === 'QR1') {
       const frame = getTenseFrame(answerCode);
       await session.setTenseFrameAndPersist(frame);
@@ -152,10 +210,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         property_id: propertyId,
         ...(extraText ? { qr1_other_text: extraText } : {}),
       });
-
-    // ── Q1 — Intent + badges ────────────────────────────────────────────
     } else if (currentQuestion.id === 'Q1' && !isNoneOption) {
-      // Award badges BEFORE awaits — React 18 batches state after async boundaries
       badges.awardBadge(badges.BADGE_IDS.FIRST_STEP);
       badges.awardBadge(badges.BADGE_IDS.INTENT_LOCKED);
       await session.setIntentCategoryAndPersist(taxonomyCode);
@@ -172,12 +227,10 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         question_id: 'Q1',
         answer_code: answerCode,
         module_number: 1,
-        tier,
+        tier: currentTier,
         tense_frame: activeTenseFrame,
         property_id: propertyId,
       });
-
-    // ── Q2 ─────────────────────────────────────────────────────────────
     } else if (currentQuestion.id === 'Q2' && !isNoneOption && answerCode !== 'A') {
       const secondaryIntent = getSecondaryIntentFromQ2Answer(answerCode);
       if (secondaryIntent && secondaryIntent !== intentCategory) {
@@ -185,7 +238,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         trackPurposeExpert({
           primary_intent: intentCategory,
           secondary_intent: secondaryIntent,
-          tier,
+          tier: currentTier,
           property_id: propertyId,
         });
       }
@@ -202,12 +255,10 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         question_id: 'Q2',
         answer_code: answerCode,
         module_number: 1,
-        tier,
+        tier: currentTier,
         tense_frame: activeTenseFrame,
         property_id: propertyId,
       });
-
-    // ── Scale ───────────────────────────────────────────────────────────
     } else if (isScaleAnswer) {
       const scaleValue = parseInt(answerCode.replace('SCALE_', ''), 10);
       await insertScaleResponse({
@@ -221,12 +272,10 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         question_id: currentQuestion.id,
         answer_code: answerCode,
         module_number: currentQuestion.module,
-        tier,
+        tier: currentTier,
         tense_frame: activeTenseFrame,
         property_id: propertyId,
       });
-
-    // ── All other questions ─────────────────────────────────────────────
     } else if (!isNoneOption) {
       await insertResponse({
         response_id: crypto.randomUUID(),
@@ -241,13 +290,12 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         question_id: currentQuestion.id,
         answer_code: answerCode,
         module_number: currentQuestion.module,
-        tier,
+        tier: currentTier,
         tense_frame: activeTenseFrame,
         property_id: propertyId,
       });
     }
 
-    // None flag
     if (isNoneOption) {
       await insertNoneFlag({
         none_flag_id: crypto.randomUUID(),
@@ -258,24 +306,22 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
       trackNoneFlagSelected({
         question_id: currentQuestion.id,
         module_number: currentQuestion.module,
-        tier,
+        tier: currentTier,
         property_id: propertyId,
       });
     }
 
-    // ── Advance — episode boundary check ────────────────────────────────
+    // Advance — check episode boundary and upgrade trigger
     const nextIndex = currentIndex + 1;
 
     if (nextIndex >= tierQuestions.length) {
-      // End of session
+      badges.awardEpisodeBadge(currentEpisode?.number);
+      badges.awardExpertComplete(currentTier);
       if (currentEpisode) {
-        // Award badges synchronously
-        badges.awardEpisodeBadge(currentEpisode.number);
-        badges.awardExpertComplete(tier);
         trackEpisodeCompleted({
           episode_number: currentEpisode.number,
           episode_name: currentEpisode.name,
-          tier,
+          tier: currentTier,
           property_id: propertyId,
         });
       }
@@ -289,23 +335,63 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
       nextEpisode && currentEpisode && nextEpisode.number !== currentEpisode.number;
 
     if (crossingEpisode) {
-      // Award episode badge synchronously before any state changes
       badges.awardEpisodeBadge(currentEpisode.number);
       trackEpisodeCompleted({
         episode_number: currentEpisode.number,
         episode_name: currentEpisode.name,
-        tier,
+        tier: currentTier,
         property_id: propertyId,
       });
 
+      // S3-07: Check upgrade trigger BEFORE curiosity hook
+      const upgradeTriggerEpisode = UPGRADE_TRIGGERS[currentTier];
+      if (upgradeTriggerEpisode && currentEpisode.number === upgradeTriggerEpisode) {
+        const toTier = currentTier === 'amateur' ? 'professional' : 'expert';
+        // AC4: tier_upgrade_prompted PostHog event
+        trackTierUpgradePrompted({
+          from_tier: currentTier,
+          to_tier: toTier,
+          after_episode: currentEpisode.number,
+          property_id: propertyId,
+        });
+        // Show curiosity hook first, then upgrade prompt
+        // Store upgrade info for after hook is dismissed
+        if (currentEpisode.number <= 6 && currentEpisode.curiosityHookText) {
+          trackCuriosityHookViewed({
+            episode_number: currentEpisode.number,
+            episode_name: currentEpisode.name,
+            tier: currentTier,
+            property_id: propertyId,
+          });
+          setPendingHook({
+            completedEpisode: currentEpisode,
+            nextEpisode,
+            nextIndex,
+            showUpgradeAfter: true, // flag to show upgrade after hook
+          });
+        } else {
+          setPendingUpgrade({
+            nextIndex,
+            completedEpisodeNumber: currentEpisode.number,
+          });
+        }
+        return;
+      }
+
+      // Regular curiosity hook (no upgrade)
       if (currentEpisode.number <= 6 && currentEpisode.curiosityHookText) {
         trackCuriosityHookViewed({
           episode_number: currentEpisode.number,
           episode_name: currentEpisode.name,
-          tier,
+          tier: currentTier,
           property_id: propertyId,
         });
-        setPendingHook({ completedEpisode: currentEpisode, nextEpisode, nextIndex });
+        setPendingHook({
+          completedEpisode: currentEpisode,
+          nextEpisode,
+          nextIndex,
+          showUpgradeAfter: false,
+        });
         return;
       }
     }
@@ -313,16 +399,27 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
     setCurrentIndex(nextIndex);
   }
 
-  // ── Render ─────────────────────────────────────────────────────────────
+  // Override hook continue to show upgrade after hook when flagged
+  function handleHookContinueWithUpgrade() {
+    if (!pendingHook) return;
+    const { nextIndex, showUpgradeAfter, completedEpisode } = pendingHook;
+    setPendingHook(null);
+    if (showUpgradeAfter) {
+      setPendingUpgrade({
+        nextIndex,
+        completedEpisodeNumber: completedEpisode.number,
+      });
+    } else {
+      setCurrentIndex(nextIndex);
+    }
+  }
 
   if (!sessionReady) {
     return (
-      <div
-        style={{
-          minHeight: '100vh', background: '#0D0D12', display: 'flex',
-          alignItems: 'center', justifyContent: 'center', fontFamily: 'system-ui, sans-serif',
-        }}
-      >
+      <div style={{
+        minHeight: '100vh', background: '#0D0D12', display: 'flex',
+        alignItems: 'center', justifyContent: 'center', fontFamily: 'system-ui, sans-serif',
+      }}>
         <div style={{ color: '#475569', fontSize: '0.8125rem' }}>Starting session...</div>
       </div>
     );
@@ -330,7 +427,6 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
 
   return (
     <>
-      {/* Badge toast notification — AC3 animation, AC5 once per badge */}
       <AnimatePresence mode="wait">
         {badges.currentToast && (
           <BadgeToast
@@ -341,21 +437,24 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
         )}
       </AnimatePresence>
 
-      {/* Curiosity hook screen */}
       {pendingHook ? (
         <CuriosityHookScreen
           completedEpisode={pendingHook.completedEpisode}
           nextEpisode={pendingHook.nextEpisode}
           tierColor={tierColor}
-          onContinue={handleHookContinue}
+          onContinue={handleHookContinueWithUpgrade}
+        />
+      ) : pendingUpgrade ? (
+        <TierUpgradeScreen
+          currentTier={currentTier}
+          onAccept={handleUpgradeAccept}
+          onDecline={handleUpgradeDecline}
         />
       ) : !currentQuestion ? (
-        <div
-          style={{
-            minHeight: '100vh', background: '#0D0D12', display: 'flex',
-            alignItems: 'center', justifyContent: 'center', fontFamily: 'system-ui, sans-serif',
-          }}
-        >
+        <div style={{
+          minHeight: '100vh', background: '#0D0D12', display: 'flex',
+          alignItems: 'center', justifyContent: 'center', fontFamily: 'system-ui, sans-serif',
+        }}>
           <div style={{ color: '#94A3B8', fontSize: '0.9375rem' }}>
             Session complete — results screen coming in S3-08.
           </div>
@@ -363,7 +462,7 @@ export default function QuestionScreen({ tier, propertyId, onComplete, resumedSe
       ) : (
         <Question
           key={currentQuestion.id}
-          tier={tier}
+          tier={currentTier}
           question={currentQuestion}
           tenseFrame={session.tenseFrame || resumedSession?.tense_frame}
           onAnswer={handleAnswer}

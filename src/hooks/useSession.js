@@ -77,8 +77,8 @@ export function useSession(propertyId) {
         session_id: id,
         property_id: propertyId,
         tier: selectedTier,
-        tense_frame: null, // set after Q0
-        intent_category: null, // set after Q1
+        tense_frame: null,       // set after Q0
+        intent_category: null,   // set after Q1
         is_complete: false,
       };
 
@@ -134,6 +134,17 @@ export function useSession(propertyId) {
     }
   }, [sessionId]);
 
+  // Called when respondent accepts a tier upgrade — AC3
+  const upgradeTier = useCallback(
+    async (newTier) => {
+      setTier(newTier);
+      if (sessionId) {
+        await updateSession(sessionId, { tier: newTier });
+      }
+    },
+    [sessionId]
+  );
+
   // Restore session state from a resumed incomplete session
   const restoreSession = useCallback((session) => {
     setSessionId(session.session_id);
@@ -153,6 +164,7 @@ export function useSession(propertyId) {
     isCreating,
     // Actions
     startSession,
+    upgradeTier,
     setTenseFrameAndPersist,
     setIntentCategoryAndPersist,
     completeSession,
