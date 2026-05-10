@@ -5,6 +5,10 @@
 //
 // SERVICE LAYER NOTE — supabase.js exports getDashboardData (NOT fetchDashboardData).
 // All Supabase calls go through src/services/supabase.js per API Spec v1.0 § 1.
+//
+// CONTRACT NOTE — earnedBadges is an array of badge DEFINITION OBJECTS produced by
+// useBadges.allBadges (each has id, name, color, ariaLabel, svgPath, description).
+// No keyed lookup is performed here.
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
@@ -17,8 +21,6 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from 'recharts';
-import Badge from '../badges/Badge';
-import { BADGE_DEFINITIONS } from '../badges/BadgeDefinitions';
 import {
   trackSessionCompleted,
   trackResultsViewed,
@@ -32,8 +34,7 @@ import { getDashboardData } from '../../services/supabase';
 const INTENT_LABELS = {
   'WORK-TRANS': {
     name: 'Business Travel',
-    description:
-      'Work-related stay for meetings, site visits, or client engagements.',
+    description: 'Work-related stay for meetings, site visits, or client engagements.',
   },
   'WORK-EVENT': {
     name: 'Conference or Event',
@@ -45,8 +46,7 @@ const INTENT_LABELS = {
   },
   'LEIS-PLAN': {
     name: 'Planned Leisure',
-    description:
-      'Holiday or vacation booked in advance for relaxation or sightseeing.',
+    description: 'Holiday or vacation booked in advance for relaxation or sightseeing.',
   },
   'LEIS-SOC': {
     name: 'Social Leisure',
@@ -58,23 +58,19 @@ const INTENT_LABELS = {
   },
   'DISP-HOME': {
     name: 'Home Displacement',
-    description:
-      'Stay caused by a home-related disruption — renovation, repair, or insurance.',
+    description: 'Stay caused by a home-related disruption — renovation, repair, or insurance.',
   },
   'DISP-TRANS': {
     name: 'Transition Stay',
-    description:
-      'Temporary stay during relocation or housing transition.',
+    description: 'Temporary stay during relocation or housing transition.',
   },
   MED: {
     name: 'Medical or Health-Adjacent',
-    description:
-      'Stay tied to a medical appointment, procedure, or care for a relative.',
+    description: 'Stay tied to a medical appointment, procedure, or care for a relative.',
   },
   FAM: {
     name: 'Family Visit',
-    description:
-      'Stay built around visiting or hosting family members.',
+    description: 'Stay built around visiting or hosting family members.',
   },
   TRANSIT: {
     name: 'In Transit',
@@ -86,14 +82,14 @@ const INTENT_LABELS = {
   },
 };
 
-// Tier display names + tier accent token reference.
+// Tier display names + accent colors (matching --tier-400 design tokens).
 const TIER_META = {
-  amateur: { label: 'Amateur', tokenClass: 'text-amateur-400' },
-  professional: { label: 'Professional', tokenClass: 'text-professional-400' },
-  expert: { label: 'Expert', tokenClass: 'text-expert-400' },
+  amateur: { label: 'Amateur', accent: '#4ADE80' },
+  professional: { label: 'Professional', accent: '#60A5FA' },
+  expert: { label: 'Expert', accent: '#A78BFA' },
 };
 
-// Q31 (service interaction style) maps to a short descriptor.
+// Q31 (service interaction style) — answer codes mapped to descriptors.
 // Source: hotel_questionnaire_all79.md § Module 4.
 const SERVICE_STYLE_LABELS = {
   A: 'Hands-off — minimal staff contact preferred',
@@ -107,37 +103,36 @@ const SERVICE_STYLE_LABELS = {
  *
  * Props:
  *  - tier: 'amateur' | 'professional' | 'expert'
+ *  - earnedBadges: array of badge definition objects (each: {id, name, color, ...})
  *  - intentCategory: string — Q1 taxonomy code (e.g. 'WORK-TRANS')
- *  - earnedBadges: string[] — array of badge IDs earned this session
- *  - propertyId: string — for aggregate query and PostHog
- *  - sessionStartedAt: number — Date.now() at session start (for total_time_seconds)
- *  - tenseFrame: 'retrospective' | 'anticipatory'
+ *  - serviceStyleCode: string | null — Q31 answer code, or null if not asked
  *  - topPriorities: string[] — top 3 expectation labels (derived upstream)
- *  - serviceStyleAnswer: string | null — Q31 answer code, or null if not asked
+ *  - tenseFrame: 'retrospective' | 'anticipatory'
+ *  - sessionStartedAt: number — Date.now() at session start (for total_time_seconds)
  *  - episodeCountCompleted: number — episodes finished
+ *  - propertyId: string — for aggregate query and PostHog
  *  - onComplete: () => void — fires session.completeSession() on mount
  */
 export default function CompletionScreen({
   tier,
-  intentCategory,
   earnedBadges = [],
-  propertyId,
-  sessionStartedAt,
-  tenseFrame,
+  intentCategory,
+  serviceStyleCode = null,
   topPriorities = [],
-  serviceStyleAnswer = null,
+  tenseFrame,
+  sessionStartedAt,
   episodeCountCompleted = 0,
+  propertyId,
   onComplete,
 }) {
   const [aggregateData, setAggregateData] = useState(null);
   const [aggregateError, setAggregateError] = useState(false);
 
   const tierMeta = TIER_META[tier] || TIER_META.amateur;
-  const intentMeta =
-    INTENT_LABELS[intentCategory] || {
-      name: intentCategory || 'Unknown',
-      description: '',
-    };
+  const intentMeta = INTENT_LABELS[intentCategory] || {
+    name: intentCategory || 'Unknown',
+    description: '',
+  };
 
   // Mount effect — fire completion side-effects exactly once.
   useEffect(() => {
@@ -147,8 +142,7 @@ export default function CompletionScreen({
       ? Math.round((Date.now() - sessionStartedAt) / 1000)
       : 0;
 
-    // Fire session_completed FIRST — single source of truth for analytics
-    // funnel from app_loaded → session_completed.
+    // Fire session_completed FIRST — funnel anchor: app_loaded → session_completed.
     trackSessionCompleted({
       tier,
       total_time_seconds: totalTimeSeconds,
@@ -197,8 +191,8 @@ export default function CompletionScreen({
           return;
         }
 
-        // Build a simple intent-distribution chart so the respondent sees
-        // how their primary intent compares to the property cohort.
+        // Simple intent-distribution chart so the respondent sees how their
+        // primary intent compares to the property cohort.
         const intentCounts = {};
         completeSessions.forEach((s) => {
           const code = s.intent_category;
@@ -221,7 +215,7 @@ export default function CompletionScreen({
           responses_in_aggregate: completeSessions.length,
           property_id: propertyId,
         });
-      } catch (err) {
+      } catch {
         if (!cancelled) setAggregateError(true);
       }
     }
@@ -237,60 +231,121 @@ export default function CompletionScreen({
 
   return (
     <div
-      className="min-h-screen bg-canvas-respondent text-text-primary px-6 py-12"
+      style={{
+        minHeight: '100vh',
+        background: '#0D0D12',
+        color: '#F8FAFC',
+        padding: '3rem 1.5rem',
+        fontFamily: 'system-ui, sans-serif',
+      }}
       role="main"
       aria-labelledby="completion-heading"
     >
-      <div className="max-w-3xl mx-auto">
+      <div style={{ maxWidth: '720px', margin: '0 auto' }}>
         {/* Heading */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="text-center mb-10"
+          style={{ textAlign: 'center', marginBottom: '2.5rem' }}
         >
-          <div className={`text-sm uppercase tracking-widest mb-3 ${tierMeta.tokenClass}`}>
+          <div
+            style={{
+              fontSize: '0.75rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.15em',
+              color: tierMeta.accent,
+              marginBottom: '0.75rem',
+              fontWeight: 600,
+            }}
+          >
             {tierMeta.label} tier complete
           </div>
           <h1
             id="completion-heading"
-            className="text-3xl sm:text-4xl font-semibold mb-3"
+            style={{
+              fontSize: '2rem',
+              fontWeight: 600,
+              marginBottom: '0.75rem',
+            }}
           >
             ✦ You did it.
           </h1>
-          <p className="text-text-secondary text-base">
+          <p style={{ color: '#94A3B8', fontSize: '1rem' }}>
             Thank you for sharing your front-desk perspective.
           </p>
         </motion.div>
 
         {/* Badge grid */}
-        {earnedBadges.length > 0 && (
+        {earnedBadges && earnedBadges.length > 0 && (
           <section
             aria-label="Badges earned during this session"
-            className="mb-10"
+            style={{ marginBottom: '2.5rem' }}
           >
-            <h2 className="text-sm uppercase tracking-widest text-text-secondary mb-4 text-center">
+            <h2
+              style={{
+                fontSize: '0.75rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.15em',
+                color: '#94A3B8',
+                marginBottom: '1rem',
+                textAlign: 'center',
+                fontWeight: 600,
+              }}
+            >
               Badges earned
             </h2>
-            <div className="grid grid-cols-3 sm:grid-cols-5 gap-4 justify-items-center">
-              {earnedBadges.map((badgeId) => {
-                const def = BADGE_DEFINITIONS[badgeId];
-                if (!def) return null;
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(96px, 1fr))',
+                gap: '1rem',
+                justifyItems: 'center',
+              }}
+            >
+              {earnedBadges.map((badge) => {
+                if (!badge || !badge.id) return null;
+                const color = badge.color || '#94A3B8';
                 return (
                   <motion.div
-                    key={badgeId}
+                    key={badge.id}
                     initial={{ scale: 0.85, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ duration: 0.3 }}
-                    className="flex flex-col items-center text-center"
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      textAlign: 'center',
+                      width: '100%',
+                    }}
                   >
-                    <Badge
-                      badgeId={badgeId}
-                      color={def.color || '#94A3B8'}
-                      size={56}
-                    />
-                    <span className="text-xs mt-2 text-text-secondary">
-                      {def.name}
+                    <svg
+                      width="56"
+                      height="56"
+                      viewBox="0 0 24 24"
+                      role="img"
+                      aria-label={badge.ariaLabel || badge.name || 'Badge'}
+                      style={{
+                        background: `${color}22`,
+                        border: `2px solid ${color}`,
+                        borderRadius: '50%',
+                        padding: '6px',
+                      }}
+                    >
+                      {badge.svgPath && (
+                        <path d={badge.svgPath} fill={color} />
+                      )}
+                    </svg>
+                    <span
+                      style={{
+                        fontSize: '0.75rem',
+                        marginTop: '0.5rem',
+                        color: '#94A3B8',
+                        lineHeight: 1.3,
+                      }}
+                    >
+                      {badge.name}
                     </span>
                   </motion.div>
                 );
@@ -302,93 +357,170 @@ export default function CompletionScreen({
         {/* Personal results */}
         <section
           aria-label="Your personal results"
-          className="bg-canvas-surface rounded-xl p-6 mb-8"
+          style={{
+            background: '#161620',
+            borderRadius: '12px',
+            padding: '1.5rem',
+            marginBottom: '2rem',
+          }}
         >
-          <h2 className="text-sm uppercase tracking-widest text-text-secondary mb-3">
+          <h2
+            style={{
+              fontSize: '0.75rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.15em',
+              color: '#94A3B8',
+              marginBottom: '0.75rem',
+              fontWeight: 600,
+            }}
+          >
             Your profile
           </h2>
-          <div className="text-2xl font-semibold mb-2">{intentMeta.name}</div>
+          <div style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+            {intentMeta.name}
+          </div>
           {intentMeta.description && (
-            <p className="text-text-secondary text-sm mb-5">
+            <p style={{ color: '#94A3B8', fontSize: '0.9375rem', marginBottom: '1.25rem' }}>
               {intentMeta.description}
             </p>
           )}
 
-          {topPriorities.length > 0 && (
-            <div className="mb-5">
-              <div className="text-sm uppercase tracking-widest text-text-secondary mb-2">
+          {topPriorities && topPriorities.length > 0 && (
+            <div style={{ marginBottom: '1.25rem' }}>
+              <div
+                style={{
+                  fontSize: '0.75rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.15em',
+                  color: '#94A3B8',
+                  marginBottom: '0.5rem',
+                  fontWeight: 600,
+                }}
+              >
                 Your top priorities
               </div>
-              <ul className="text-base text-text-primary space-y-1">
+              <ul
+                style={{
+                  fontSize: '1rem',
+                  color: '#F8FAFC',
+                  listStyle: 'none',
+                  padding: 0,
+                  margin: 0,
+                }}
+              >
                 {topPriorities.slice(0, 3).map((label, idx) => (
-                  <li key={`${label}-${idx}`}>· {label}</li>
+                  <li key={`${label}-${idx}`} style={{ padding: '0.25rem 0' }}>
+                    · {label}
+                  </li>
                 ))}
               </ul>
             </div>
           )}
 
-          {serviceStyleAnswer && SERVICE_STYLE_LABELS[serviceStyleAnswer] && (
+          {serviceStyleCode && SERVICE_STYLE_LABELS[serviceStyleCode] && (
             <div>
-              <div className="text-sm uppercase tracking-widest text-text-secondary mb-2">
+              <div
+                style={{
+                  fontSize: '0.75rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.15em',
+                  color: '#94A3B8',
+                  marginBottom: '0.5rem',
+                  fontWeight: 600,
+                }}
+              >
                 Service interaction style
               </div>
-              <p className="text-base text-text-primary">
-                {SERVICE_STYLE_LABELS[serviceStyleAnswer]}
+              <p style={{ fontSize: '1rem', color: '#F8FAFC', margin: 0 }}>
+                {SERVICE_STYLE_LABELS[serviceStyleCode]}
               </p>
             </div>
           )}
         </section>
 
         {/* Aggregate comparison — only if 3+ complete sessions */}
-        {aggregateData && aggregateData.count >= 3 && aggregateData.chart.length > 0 && (
-          <section
-            aria-label="How your priorities compare to other respondents"
-            className="bg-canvas-surface rounded-xl p-6 mb-8"
-          >
-            <h2 className="text-sm uppercase tracking-widest text-text-secondary mb-1">
-              How your colleagues responded
-            </h2>
-            <p className="text-text-secondary text-xs mb-4">
-              Based on {aggregateData.count} complete sessions at this property.
-            </p>
-            <div style={{ width: '100%', height: 240 }}>
-              <ResponsiveContainer>
-                <BarChart
-                  data={aggregateData.chart}
-                  margin={{ top: 8, right: 16, left: 0, bottom: 24 }}
-                >
-                  <CartesianGrid stroke="#1A2540" vertical={false} />
-                  <XAxis
-                    dataKey="label"
-                    stroke="#94A3B8"
-                    tick={{ fontSize: 11 }}
-                    interval={0}
-                    angle={-20}
-                    textAnchor="end"
-                    height={60}
-                  />
-                  <YAxis stroke="#94A3B8" tick={{ fontSize: 11 }} allowDecimals={false} />
-                  <Tooltip
-                    contentStyle={{
-                      background: '#161620',
-                      border: '1px solid #1F2B4A',
-                      color: '#F8FAFC',
-                    }}
-                  />
-                  <Bar dataKey="count" fill="#60A5FA" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </section>
-        )}
+        {aggregateData &&
+          aggregateData.count >= 3 &&
+          aggregateData.chart.length > 0 && (
+            <section
+              aria-label="How your priorities compare to other respondents"
+              style={{
+                background: '#161620',
+                borderRadius: '12px',
+                padding: '1.5rem',
+                marginBottom: '2rem',
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: '0.75rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.15em',
+                  color: '#94A3B8',
+                  marginBottom: '0.25rem',
+                  fontWeight: 600,
+                }}
+              >
+                How your colleagues responded
+              </h2>
+              <p style={{ color: '#94A3B8', fontSize: '0.75rem', marginBottom: '1rem' }}>
+                Based on {aggregateData.count} complete sessions at this property.
+              </p>
+              <div style={{ width: '100%', height: 240 }}>
+                <ResponsiveContainer>
+                  <BarChart
+                    data={aggregateData.chart}
+                    margin={{ top: 8, right: 16, left: 0, bottom: 24 }}
+                  >
+                    <CartesianGrid stroke="#1A2540" vertical={false} />
+                    <XAxis
+                      dataKey="label"
+                      stroke="#94A3B8"
+                      tick={{ fontSize: 11 }}
+                      interval={0}
+                      angle={-20}
+                      textAnchor="end"
+                      height={60}
+                    />
+                    <YAxis
+                      stroke="#94A3B8"
+                      tick={{ fontSize: 11 }}
+                      allowDecimals={false}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        background: '#161620',
+                        border: '1px solid #1F2B4A',
+                        color: '#F8FAFC',
+                      }}
+                    />
+                    <Bar dataKey="count" fill={tierMeta.accent} radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </section>
+          )}
 
         {aggregateError && (
-          <p className="text-text-muted text-xs text-center mb-6">
+          <p
+            style={{
+              color: '#64748B',
+              fontSize: '0.75rem',
+              textAlign: 'center',
+              marginBottom: '1.5rem',
+            }}
+          >
             (Aggregate comparison unavailable right now — your responses are saved.)
           </p>
         )}
 
-        <div className="text-center text-text-muted text-xs">
+        <div
+          style={{
+            textAlign: 'center',
+            color: '#64748B',
+            fontSize: '0.75rem',
+          }}
+        >
           Your responses have been saved. You can close this window.
         </div>
       </div>

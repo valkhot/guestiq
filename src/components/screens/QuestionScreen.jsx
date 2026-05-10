@@ -1,6 +1,7 @@
 // src/components/screens/QuestionScreen.jsx
 // GuestIQ — Question Screen
 // S3-07: Tier upgrade prompts after Episode 1 (Amateur) and Episode 4 (Professional).
+// S3-08: Captures Q31 service style + session timing + priorities for completion screen.
 
 import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence } from 'framer-motion';
@@ -30,16 +31,20 @@ import {
 } from '../../services/analytics';
 
 const TIER_COLORS = {
-  amateur:      '#4ADE80',
+  amateur: '#4ADE80',
   professional: '#60A5FA',
-  expert:       '#A78BFA',
+  expert: '#A78BFA',
 };
 
 // Upgrade trigger: which episode completion triggers an upgrade prompt
 const UPGRADE_TRIGGERS = {
-  amateur:      1, // after Episode 1
+  amateur: 1, // after Episode 1
   professional: 4, // after Episode 4
 };
+
+// Q31 — service interaction style answer codes (Module 4).
+// Source: hotel_questionnaire_all79.md Module 4. Used by completion screen.
+const SERVICE_STYLE_QUESTION_ID = 'Q31';
 
 function getTenseFrame(answerCode) {
   return answerCode === 'B' ? 'anticipatory' : 'retrospective';
@@ -50,13 +55,37 @@ function getEpisodeForQuestion(question, episodes) {
   return episodes.find((ep) => ep.moduleMappings.includes(question.module)) || null;
 }
 
+// Derive top 3 priority labels from a captured-responses map.
+// Heuristic for Phase 1a: pick the highest-rated scale answers (4 or 5) from
+// the priority/expectation modules (M2/M3/M6) and return their question text.
+// If no scale data is available, fall back to first 3 answered question IDs.
+function deriveTopPriorities(responsesByQid, allQuestions) {
+  if (!responsesByQid || !allQuestions) return [];
+  const scaleEntries = [];
+  Object.entries(responsesByQid).forEach(([qid, entry]) => {
+    if (entry?.scaleValue && entry.scaleValue >= 4) {
+      const q = allQuestions.find((x) => x.id === qid);
+      if (q && [2, 3, 6].includes(q.module)) {
+        scaleEntries.push({
+          qid,
+          value: entry.scaleValue,
+          label: q.shortLabel || q.text || qid,
+        });
+      }
+    }
+  });
+  scaleEntries.sort((a, b) => b.value - a.value);
+  return scaleEntries.slice(0, 3).map((e) => e.label);
+}
+
 export default function QuestionScreen({
   tier: initialTier,
   propertyId,
   onComplete,
   resumedSession,
 }) {
-  const { filterQuestionsForSession, episodes } = useQuestionnaire();
+  const { filterQuestionsForSession, episodes, questions: allQuestions } =
+    useQuestionnaire();
   const session = useSession(propertyId);
   const badges = useBadges();
 
@@ -66,11 +95,16 @@ export default function QuestionScreen({
   const [pendingHook, setPendingHook] = useState(null);
   // S3-07: upgrade prompt state
   const [pendingUpgrade, setPendingUpgrade] = useState(null);
-  // { nextIndex, completedEpisodeNumber }
   // Track all answered question IDs for correct resume after tier upgrade
   const [answeredQuestionIds, setAnsweredQuestionIds] = useState(new Set());
   // Current tier — may change if respondent accepts upgrade
   const [currentTier, setCurrentTier] = useState(initialTier);
+  // S3-08: capture all responses keyed by question ID for derivation downstream
+  const [responsesByQid, setResponsesByQid] = useState({});
+  // S3-08: count completed episodes (for session_completed PostHog property)
+  const [episodesCompleted, setEpisodesCompleted] = useState(0);
+  // S3-08: session start time (Date.now()) — set once on mount
+  const sessionStartedAtRef = useRef(Date.now());
 
   const lastEpisodeRef = useRef(null);
   const tierColor = TIER_COLORS[currentTier] || TIER_COLORS.professional;
@@ -138,6 +172,25 @@ export default function QuestionScreen({
     init();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Helper — build the completion payload for handoff to App.jsx
+  function buildCompletionPayload() {
+    const serviceStyleCode =
+      responsesByQid[SERVICE_STYLE_QUESTION_ID]?.answerCode || null;
+    const topPriorities = deriveTopPriorities(responsesByQid, allQuestions);
+    return {
+      tier: currentTier,
+      sessionResponses: responsesByQid,
+      intentCategory,
+      serviceStyleCode,
+      topPriorities,
+      tenseFrame: session.tenseFrame || resumedSession?.tense_frame || 'retrospective',
+      sessionStartedAt: sessionStartedAtRef.current,
+      episodeCountCompleted: episodesCompleted,
+      sessionId: session.sessionId || resumedSession?.session_id,
+      onComplete: () => session.completeSession(),
+    };
+  }
 
   // Upgrade accepted — AC3: update tier in Supabase and continue
   async function handleUpgradeAccept() {
@@ -207,6 +260,19 @@ export default function QuestionScreen({
 
     const isNoneOption = answerCode === 'NONE';
     const isScaleAnswer = answerCode?.startsWith('SCALE_');
+
+    // S3-08: capture every response in a local map so the completion screen
+    // can show top priorities and Q31 service style without re-querying Supabase.
+    setResponsesByQid((prev) => ({
+      ...prev,
+      [currentQuestion.id]: {
+        answerCode,
+        scaleValue: isScaleAnswer
+          ? parseInt(answerCode.replace('SCALE_', ''), 10)
+          : null,
+        isNone: isNoneOption,
+      },
+    }));
 
     if (currentQuestion.id === 'QR1') {
       const frame = getTenseFrame(answerCode);
@@ -332,8 +398,13 @@ export default function QuestionScreen({
     const nextIndex = currentIndex + 1;
 
     if (nextIndex >= tierQuestions.length) {
+      // S3-08 React 18 batching rule: ALL badge awards BEFORE any await.
       badges.awardEpisodeBadge(currentEpisode?.number);
       badges.awardExpertComplete(currentTier);
+      // Final episode counts toward total
+      const finalEpisodesCompleted = episodesCompleted + 1;
+      setEpisodesCompleted(finalEpisodesCompleted);
+
       if (currentEpisode) {
         trackEpisodeCompleted({
           episode_number: currentEpisode.number,
@@ -343,13 +414,16 @@ export default function QuestionScreen({
         });
       }
       if (onComplete) {
-        onComplete(badges.allBadges, {
-          sessionResponses: [],
-          intentCategory,
-          serviceStyleCode: null,
-          sessionId: session.sessionId || resumedSession?.session_id,
-          onComplete: () => session.completeSession(),
-        });
+        // Build payload with the up-to-date episodesCompleted number,
+        // bypassing setState async to avoid a stale value in the handoff.
+        const payload = buildCompletionPayload();
+        payload.episodeCountCompleted = finalEpisodesCompleted;
+        // Latest Q31 may have just been added — re-read from local response
+        // map plus the just-captured currentQuestion if it was Q31.
+        if (currentQuestion.id === SERVICE_STYLE_QUESTION_ID) {
+          payload.serviceStyleCode = answerCode;
+        }
+        onComplete(badges.allBadges, payload);
       }
       return;
     }
@@ -361,6 +435,7 @@ export default function QuestionScreen({
 
     if (crossingEpisode) {
       badges.awardEpisodeBadge(currentEpisode.number);
+      setEpisodesCompleted((prev) => prev + 1);
       trackEpisodeCompleted({
         episode_number: currentEpisode.number,
         episode_name: currentEpisode.name,
@@ -380,7 +455,6 @@ export default function QuestionScreen({
           property_id: propertyId,
         });
         // Show curiosity hook first, then upgrade prompt
-        // Store upgrade info for after hook is dismissed
         if (currentEpisode.number <= 6 && currentEpisode.curiosityHookText) {
           trackCuriosityHookViewed({
             episode_number: currentEpisode.number,
@@ -392,7 +466,7 @@ export default function QuestionScreen({
             completedEpisode: currentEpisode,
             nextEpisode,
             nextIndex,
-            showUpgradeAfter: true, // flag to show upgrade after hook
+            showUpgradeAfter: true,
           });
         } else {
           setPendingUpgrade({
@@ -441,10 +515,16 @@ export default function QuestionScreen({
 
   if (!sessionReady) {
     return (
-      <div style={{
-        minHeight: '100vh', background: '#0D0D12', display: 'flex',
-        alignItems: 'center', justifyContent: 'center', fontFamily: 'system-ui, sans-serif',
-      }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          background: '#0D0D12',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: 'system-ui, sans-serif',
+        }}
+      >
         <div style={{ color: '#475569', fontSize: '0.8125rem' }}>Starting session...</div>
       </div>
     );
@@ -476,12 +556,18 @@ export default function QuestionScreen({
           onDecline={handleUpgradeDecline}
         />
       ) : !currentQuestion ? (
-        <div style={{
-          minHeight: '100vh', background: '#0D0D12', display: 'flex',
-          alignItems: 'center', justifyContent: 'center', fontFamily: 'system-ui, sans-serif',
-        }}>
+        <div
+          style={{
+            minHeight: '100vh',
+            background: '#0D0D12',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontFamily: 'system-ui, sans-serif',
+          }}
+        >
           <div style={{ color: '#94A3B8', fontSize: '0.9375rem' }}>
-            Session complete — results screen coming in S3-08.
+            Session complete.
           </div>
         </div>
       ) : (

@@ -1,6 +1,6 @@
 // src/App.jsx
 // GuestIQ — Root React Component
-// Session router: disambiguation → welcome → question screens
+// Session router: disambiguation → welcome → question screens → completion
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 
@@ -157,6 +157,7 @@ const SCREEN = {
   DISAMBIGUATION: 'DISAMBIGUATION',
   WELCOME: 'WELCOME',
   QUESTION: 'QUESTION',
+  COMPLETE: 'COMPLETE',
   EXITED: 'EXITED',
 };
 
@@ -165,9 +166,8 @@ export default function App() {
   const [screen, setScreen] = useState(SCREEN.LOADING);
   const [tier, setTier] = useState(null);
   const [incompleteSession, setIncompleteSession] = useState(null);
-  // S3-08: completion screen data
+  // S3-08: completion screen data — populated by QuestionScreen.onComplete
   const [completionData, setCompletionData] = useState(null);
-  // { earnedBadges, sessionResponses, intentCategory, serviceStyleCode, sessionId }
   const [dashboardOpen, setDashboardOpen] = useState(false);
 
   const { uiCopy, tiers } = useQuestionnaire();
@@ -259,7 +259,11 @@ export default function App() {
         }}
       >
         <div
-          style={{ color: '#475569', fontSize: '0.8125rem', fontFamily: 'system-ui, sans-serif' }}
+          style={{
+            color: '#475569',
+            fontSize: '0.8125rem',
+            fontFamily: 'system-ui, sans-serif',
+          }}
         >
           Loading...
         </div>
@@ -321,21 +325,27 @@ export default function App() {
           tier={tier}
           propertyId={propertyId}
           onComplete={(badgeData, sessionData) => {
-            setCompletionData({ earnedBadges: badgeData, ...(sessionData || {}) });
+            setCompletionData({
+              earnedBadges: badgeData,
+              ...(sessionData || {}),
+            });
             setScreen(SCREEN.COMPLETE);
           }}
           resumedSession={incompleteSession}
         />
       )}
-      {screen === SCREEN.COMPLETE && (
+      {screen === SCREEN.COMPLETE && completionData && (
         <CompletionScreen
-          tier={tier}
-          earnedBadges={completionData?.earnedBadges}
-          sessionResponses={completionData?.sessionResponses || []}
-          intentCategory={completionData?.intentCategory}
-          serviceStyleCode={completionData?.serviceStyleCode}
+          tier={completionData.tier || tier}
+          earnedBadges={completionData.earnedBadges || []}
+          intentCategory={completionData.intentCategory}
+          serviceStyleCode={completionData.serviceStyleCode}
+          topPriorities={completionData.topPriorities || []}
+          tenseFrame={completionData.tenseFrame}
+          sessionStartedAt={completionData.sessionStartedAt}
+          episodeCountCompleted={completionData.episodeCountCompleted || 0}
           propertyId={propertyId}
-          onComplete={completionData?.onComplete}
+          onComplete={completionData.onComplete}
         />
       )}
       {dashboardOpen && <DashboardOverlay onClose={() => setDashboardOpen(false)} />}
