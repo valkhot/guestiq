@@ -10,6 +10,7 @@ import { trackAppLoaded, trackSessionPaused } from './services/analytics';
 import { getIncompleteSession } from './services/supabase';
 import { useQuestionnaire } from './hooks/useQuestionnaire';
 import WelcomeScreen from './components/screens/WelcomeScreen';
+import CompletionScreen from './components/screens/CompletionScreen';
 import QuestionScreen from './components/screens/QuestionScreen';
 
 // ── Disambiguation screen ─────────────────────────────────────────────────
@@ -164,11 +165,15 @@ export default function App() {
   const [screen, setScreen] = useState(SCREEN.LOADING);
   const [tier, setTier] = useState(null);
   const [incompleteSession, setIncompleteSession] = useState(null);
+  // S3-08: completion screen data
+  const [completionData, setCompletionData] = useState(null);
+  // { earnedBadges, sessionResponses, intentCategory, serviceStyleCode, sessionId }
   const [dashboardOpen, setDashboardOpen] = useState(false);
 
   const { uiCopy, tiers } = useQuestionnaire();
 
-  const propertyId = new URLSearchParams(window.location.search).get('property') || 'PROP001';
+  const propertyId =
+    new URLSearchParams(window.location.search).get('property') || 'PROP001';
 
   // ── Initialization ────────────────────────────────────────────────
   useEffect(() => {
@@ -315,8 +320,23 @@ export default function App() {
         <QuestionScreen
           tier={tier}
           propertyId={propertyId}
-          onComplete={() => setScreen(SCREEN.EXITED)}
+          onComplete={(badgeData, sessionData) => {
+            setCompletionData({ earnedBadges: badgeData, ...(sessionData || {}) });
+            setScreen(SCREEN.COMPLETE);
+          }}
           resumedSession={incompleteSession}
+        />
+      )}
+      {screen === SCREEN.COMPLETE && (
+        <CompletionScreen
+          tier={tier}
+          earnedBadges={completionData?.earnedBadges}
+          sessionResponses={completionData?.sessionResponses || []}
+          intentCategory={completionData?.intentCategory}
+          serviceStyleCode={completionData?.serviceStyleCode}
+          sessionId={completionData?.sessionId}
+          propertyId={propertyId}
+          onComplete={completionData?.onComplete}
         />
       )}
       {dashboardOpen && <DashboardOverlay onClose={() => setDashboardOpen(false)} />}

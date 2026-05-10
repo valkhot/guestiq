@@ -342,7 +342,15 @@ export default function QuestionScreen({
           property_id: propertyId,
         });
       }
-      if (onComplete) onComplete(badges.allBadges);
+      if (onComplete) {
+        onComplete(badges.allBadges, {
+          sessionResponses: [],
+          intentCategory,
+          serviceStyleCode: null,
+          sessionId: session.sessionId || resumedSession?.session_id,
+          onComplete: () => session.completeSession(),
+        });
+      }
       return;
     }
 
