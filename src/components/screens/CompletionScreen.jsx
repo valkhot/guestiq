@@ -1,185 +1,160 @@
 // src/components/screens/CompletionScreen.jsx
-// GuestIQ — Completion Celebration Screen
-// S3-08: Badges grid, personal results summary, aggregate comparison chart.
-// AC5: session.is_complete set in Supabase, localStorage token cleared.
+// S3-08 — Completion celebration screen and results display
+// Builds: badge grid, personal results, aggregate comparison chart (3+ sessions),
+// fires session_completed / results_viewed / aggregate_comparison_viewed.
+//
+// SERVICE LAYER NOTE — supabase.js exports getDashboardData (NOT fetchDashboardData).
+// All Supabase calls go through src/services/supabase.js per API Spec v1.0 § 1.
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from 'recharts';
 import Badge from '../badges/Badge';
 import { BADGE_DEFINITIONS } from '../badges/BadgeDefinitions';
-import { fetchDashboardData } from '../../services/supabase';
 import {
   trackSessionCompleted,
   trackResultsViewed,
   trackAggregateComparisonViewed,
 } from '../../services/analytics';
+import { getDashboardData } from '../../services/supabase';
 
-// ── Intent category display labels and descriptions ───────────────────────
+// 12 intent categories — human-readable labels and short descriptions.
+// Keep in sync with branching_logic_specification_v10.md § 3 and
+// taxonomy.json (Phase 1b). Used only on the results screen.
 const INTENT_LABELS = {
-  'WORK-TRANS':  {
-    label: 'Business Traveller',
-    desc: 'Guests visiting for meetings, client engagements, or site visits.',
+  'WORK-TRANS': {
+    name: 'Business Travel',
+    description:
+      'Work-related stay for meetings, site visits, or client engagements.',
   },
-  'WORK-EVENT':  {
-    label: 'Conference Attendee',
-    desc: 'Guests attending a professional event, trade show, or conference.',
+  'WORK-EVENT': {
+    name: 'Conference or Event',
+    description: 'Stay tied to a conference, training, or scheduled event.',
   },
-  'WORK-EXT':    {
-    label: 'Extended Assignment',
-    desc: 'Guests on longer work placements or project-based stays.',
+  'WORK-EXT': {
+    name: 'Extended Work Stay',
+    description: 'Longer-term work assignment requiring a multi-week stay.',
   },
-  'LEIS-PLAN':   {
-    label: 'Leisure Traveller',
-    desc: 'Guests on a planned holiday, city break, or vacation.',
+  'LEIS-PLAN': {
+    name: 'Planned Leisure',
+    description:
+      'Holiday or vacation booked in advance for relaxation or sightseeing.',
   },
-  'LEIS-SOC':    {
-    label: 'Event Guest',
-    desc: 'Guests attending a personal occasion — wedding, reunion, or celebration.',
+  'LEIS-SOC': {
+    name: 'Social Leisure',
+    description: 'Leisure stay built around friends, gatherings, or events.',
   },
-  'LEIS-EXP':    {
-    label: 'Explorer',
-    desc: 'Guests driven by curiosity — sightseeing, culture, or new experiences.',
+  'LEIS-EXP': {
+    name: 'Experiential Leisure',
+    description: 'Leisure stay focused on a specific experience or activity.',
   },
-  'DISP-HOME':   {
-    label: 'Displaced Guest',
-    desc: 'Guests whose home is temporarily unavailable.',
+  'DISP-HOME': {
+    name: 'Home Displacement',
+    description:
+      'Stay caused by a home-related disruption — renovation, repair, or insurance.',
   },
-  'DISP-TRANS':  {
-    label: 'Transitional Guest',
-    desc: 'Guests needing a private, stable space during a life transition.',
+  'DISP-TRANS': {
+    name: 'Transition Stay',
+    description:
+      'Temporary stay during relocation or housing transition.',
   },
-  'MED':         {
-    label: 'Health-Adjacent Guest',
-    desc: 'Guests staying near a hospital, clinic, or treatment facility.',
+  MED: {
+    name: 'Medical or Health-Adjacent',
+    description:
+      'Stay tied to a medical appointment, procedure, or care for a relative.',
   },
-  'FAM':         {
-    label: 'Family Traveller',
-    desc: 'Guests visiting family or supporting a family situation.',
+  FAM: {
+    name: 'Family Visit',
+    description:
+      'Stay built around visiting or hosting family members.',
   },
-  'TRANSIT':     {
-    label: 'Transit Passenger',
-    desc: 'Guests passing through — early flights, late arrivals, or layovers.',
+  TRANSIT: {
+    name: 'In Transit',
+    description: 'Short overnight stay between two longer journeys.',
   },
-  'LOC-ESC':     {
-    label: 'Local Escapee',
-    desc: 'Guests seeking a short break from routine close to home.',
+  'LOC-ESC': {
+    name: 'Local Escape',
+    description: 'Short break close to home — staycation or local getaway.',
   },
 };
 
-// ── Service style labels (Q31 answer codes) ──────────────────────────────
+// Tier display names + tier accent token reference.
+const TIER_META = {
+  amateur: { label: 'Amateur', tokenClass: 'text-amateur-400' },
+  professional: { label: 'Professional', tokenClass: 'text-professional-400' },
+  expert: { label: 'Expert', tokenClass: 'text-expert-400' },
+};
+
+// Q31 (service interaction style) maps to a short descriptor.
+// Source: hotel_questionnaire_all79.md § Module 4.
 const SERVICE_STYLE_LABELS = {
-  A: 'High-touch — warmly recognised and engaged throughout',
-  B: 'Attentive — available when needed, not intrusive',
-  C: 'Efficient — quick service, otherwise left alone',
-  D: 'Invisible — technology-mediated, minimal human contact',
-  E: 'Context-dependent — varies by time and activity',
+  A: 'Hands-off — minimal staff contact preferred',
+  B: 'Available but unobtrusive',
+  C: 'Friendly and conversational',
+  D: 'High-touch and personalised',
 };
 
-// ── Tier colours ──────────────────────────────────────────────────────────
-const TIER_COLORS = {
-  amateur:      '#4ADE80',
-  professional: '#60A5FA',
-  expert:       '#A78BFA',
-};
-
-const TIER_LABELS = {
-  amateur:      'Amateur',
-  professional: 'Professional',
-  expert:       'Expert',
-};
-
-// ── Derive top priorities from responses ─────────────────────────────────
-// Looks at Q58 (value attributes) and Q34 (staff qualities) for top answers
-function deriveTopPriorities(sessionResponses) {
-  const priorities = [];
-
-  // Q57: value framework
-  const q57 = sessionResponses.find((r) => r.question_id === 'Q57');
-  if (q57) {
-    const valueMap = {
-      A: 'Experience matching price paid',
-      B: 'Competitive quality at price point',
-      C: 'Better than alternatives considered',
-      D: 'Productivity and time value',
-      E: 'Overall fairness of the deal',
-    };
-    if (valueMap[q57.answer_code]) priorities.push(valueMap[q57.answer_code]);
-  }
-
-  // Q31: service interaction style
-  const q31 = sessionResponses.find((r) => r.question_id === 'Q31');
-  if (q31 && SERVICE_STYLE_LABELS[q31.answer_code]) {
-    priorities.push(SERVICE_STYLE_LABELS[q31.answer_code]);
-  }
-
-  // Q21: cleanliness non-negotiables
-  const q21 = sessionResponses.find((r) => r.question_id === 'Q21');
-  if (q21) priorities.push('Cleanliness standards — non-negotiable');
-
-  // Fill to 3 with defaults if needed
-  const defaults = ['Room quality and comfort', 'Staff responsiveness', 'Location convenience'];
-  while (priorities.length < 3) {
-    priorities.push(defaults[priorities.length]);
-  }
-
-  return priorities.slice(0, 3);
-}
-
-// ── Aggregate chart data builder ─────────────────────────────────────────
-function buildRadarData(sessions) {
-  if (!sessions || sessions.length < 3) return null;
-
-  const intentCounts = {};
-  sessions.forEach((s) => {
-    if (s.intent_category) {
-      intentCounts[s.intent_category] = (intentCounts[s.intent_category] || 0) + 1;
-    }
-  });
-
-  // Top 6 intent categories for radar
-  const sorted = Object.entries(intentCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 6);
-
-  const total = sessions.length;
-  return sorted.map(([code, count]) => ({
-    subject: INTENT_LABELS[code]?.label || code,
-    value: Math.round((count / total) * 100),
-  }));
-}
-
-// ── Main component ────────────────────────────────────────────────────────
+/**
+ * CompletionScreen — final screen of the questionnaire.
+ *
+ * Props:
+ *  - tier: 'amateur' | 'professional' | 'expert'
+ *  - intentCategory: string — Q1 taxonomy code (e.g. 'WORK-TRANS')
+ *  - earnedBadges: string[] — array of badge IDs earned this session
+ *  - propertyId: string — for aggregate query and PostHog
+ *  - sessionStartedAt: number — Date.now() at session start (for total_time_seconds)
+ *  - tenseFrame: 'retrospective' | 'anticipatory'
+ *  - topPriorities: string[] — top 3 expectation labels (derived upstream)
+ *  - serviceStyleAnswer: string | null — Q31 answer code, or null if not asked
+ *  - episodeCountCompleted: number — episodes finished
+ *  - onComplete: () => void — fires session.completeSession() on mount
+ */
 export default function CompletionScreen({
   tier,
-  earnedBadges,        // array of badge definitions with earned flag
-  sessionResponses,    // responses from this session for personal results
-  intentCategory,      // from session state
-  serviceStyleCode,    // Q31 answer code
+  intentCategory,
+  earnedBadges = [],
   propertyId,
-  onComplete,          // called by parent to handle session.completeSession()
+  sessionStartedAt,
+  tenseFrame,
+  topPriorities = [],
+  serviceStyleAnswer = null,
+  episodeCountCompleted = 0,
+  onComplete,
 }) {
   const [aggregateData, setAggregateData] = useState(null);
-  const [loadingAggregate, setLoadingAggregate] = useState(true);
+  const [aggregateError, setAggregateError] = useState(false);
 
-  const tierColor = TIER_COLORS[tier] || TIER_COLORS.professional;
-  const tierLabel = TIER_LABELS[tier] || 'GuestIQ';
-  const intentInfo = INTENT_LABELS[intentCategory] || {
-    label: 'Hotel Guest',
-    desc: 'Thank you for completing the questionnaire.',
-  };
-  const topPriorities = deriveTopPriorities(sessionResponses || []);
-  const badgesToShow = earnedBadges || BADGE_DEFINITIONS.map((d) => ({ ...d, earned: false }));
-  const earnedCount = badgesToShow.filter((b) => b.earned).length;
+  const tierMeta = TIER_META[tier] || TIER_META.amateur;
+  const intentMeta =
+    INTENT_LABELS[intentCategory] || {
+      name: intentCategory || 'Unknown',
+      description: '',
+    };
 
-  // AC5 + AC4: complete session in Supabase, fire PostHog events
+  // Mount effect — fire completion side-effects exactly once.
   useEffect(() => {
-    if (onComplete) onComplete();
+    let cancelled = false;
 
+    const totalTimeSeconds = sessionStartedAt
+      ? Math.round((Date.now() - sessionStartedAt) / 1000)
+      : 0;
+
+    // Fire session_completed FIRST — single source of truth for analytics
+    // funnel from app_loaded → session_completed.
     trackSessionCompleted({
       tier,
+      total_time_seconds: totalTimeSeconds,
+      episode_count_completed: episodeCountCompleted,
       intent_category: intentCategory,
-      badges_earned: earnedCount,
+      tense_frame: tenseFrame,
       property_id: propertyId,
     });
 
@@ -189,343 +164,234 @@ export default function CompletionScreen({
       property_id: propertyId,
     });
 
-    // AC3: fetch aggregate data
+    // Trigger Supabase write: is_complete=true + completed_at,
+    // and clear localStorage token. Owned by parent (App.jsx) via prop.
+    if (typeof onComplete === 'function') {
+      onComplete();
+    }
+
+    // Aggregate comparison — only if 3+ complete sessions exist for property.
     async function loadAggregate() {
       try {
-        const data = await fetchDashboardData(propertyId);
-        const completeSessions = (data?.sessions || []).filter((s) => s.is_complete);
-        if (completeSessions.length >= 3) {
-          const radarData = buildRadarData(completeSessions);
-          if (radarData) {
-            setAggregateData(radarData);
-            trackAggregateComparisonViewed({
-              session_count: completeSessions.length,
-              property_id: propertyId,
-            });
-          }
+        const result = await getDashboardData(propertyId);
+        if (cancelled) return;
+
+        // Per API Spec § 2 + Production Readiness § 7.3, getDashboardData
+        // returns { sessions, responses, scale_responses, none_flags } on
+        // success or { success: false, ... } on failure.
+        if (!result || result.success === false) {
+          setAggregateError(true);
+          return;
         }
-      } catch {
-        // Aggregate data is optional — fail silently
-      } finally {
-        setLoadingAggregate(false);
+
+        const sessions = Array.isArray(result.sessions)
+          ? result.sessions
+          : Array.isArray(result?.data?.sessions)
+            ? result.data.sessions
+            : [];
+
+        const completeSessions = sessions.filter((s) => s && s.is_complete);
+
+        if (completeSessions.length < 3) {
+          setAggregateData({ count: completeSessions.length, chart: [] });
+          return;
+        }
+
+        // Build a simple intent-distribution chart so the respondent sees
+        // how their primary intent compares to the property cohort.
+        const intentCounts = {};
+        completeSessions.forEach((s) => {
+          const code = s.intent_category;
+          if (!code) return;
+          intentCounts[code] = (intentCounts[code] || 0) + 1;
+        });
+
+        const chart = Object.entries(intentCounts)
+          .map(([code, count]) => ({
+            code,
+            label: INTENT_LABELS[code]?.name || code,
+            count,
+          }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 6);
+
+        setAggregateData({ count: completeSessions.length, chart });
+
+        trackAggregateComparisonViewed({
+          responses_in_aggregate: completeSessions.length,
+          property_id: propertyId,
+        });
+      } catch (err) {
+        if (!cancelled) setAggregateError(true);
       }
     }
 
     loadAggregate();
+
+    return () => {
+      cancelled = true;
+    };
+    // Mount-only effect — dependencies are intentionally fixed at mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div
-      style={{
-        minHeight: '100vh',
-        background: '#0D0D12',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        padding: '2.5rem 1.5rem 4rem',
-        maxWidth: '680px',
-        margin: '0 auto',
-      }}
+      className="min-h-screen bg-canvas-respondent text-text-primary px-6 py-12"
+      role="main"
+      aria-labelledby="completion-heading"
     >
-      {/* ── Celebration header ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        style={{ textAlign: 'center', marginBottom: '2.5rem' }}
-      >
-        <div
-          style={{
-            fontSize: '2.5rem',
-            marginBottom: '1rem',
-            lineHeight: 1,
-          }}
+      <div className="max-w-3xl mx-auto">
+        {/* Heading */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="text-center mb-10"
         >
-          🎉
-        </div>
-        <h1
-          style={{
-            fontSize: 'clamp(1.375rem, 3vw, 1.75rem)',
-            fontWeight: 700,
-            color: '#F8FAFC',
-            marginBottom: '0.5rem',
-            lineHeight: 1.3,
-          }}
-        >
-          Session complete
-        </h1>
-        <p
-          style={{
-            fontSize: '0.9375rem',
-            color: tierColor,
-            fontWeight: 600,
-          }}
-        >
-          {tierLabel} tier · {earnedCount} badge{earnedCount !== 1 ? 's' : ''} earned
-        </p>
-      </motion.div>
-
-      {/* ── Badges grid — AC1 ── */}
-      <motion.section
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.1 }}
-        style={{ marginBottom: '2.5rem' }}
-      >
-        <h2
-          style={{
-            fontSize: '0.8125rem',
-            fontWeight: 600,
-            color: '#475569',
-            letterSpacing: '0.07em',
-            textTransform: 'uppercase',
-            marginBottom: '1rem',
-          }}
-        >
-          Badges earned
-        </h2>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(72px, 1fr))',
-            gap: '1rem',
-          }}
-        >
-          {badgesToShow.map((badge) => (
-            <div
-              key={badge.id}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '0.5rem',
-              }}
-            >
-              <Badge definition={badge} size={56} earned={badge.earned} animate={false} />
-              <span
-                style={{
-                  fontSize: '0.6875rem',
-                  color: badge.earned ? '#94A3B8' : '#334155',
-                  textAlign: 'center',
-                  lineHeight: 1.3,
-                }}
-              >
-                {badge.name}
-              </span>
-            </div>
-          ))}
-        </div>
-      </motion.section>
-
-      {/* ── Personal results — AC2 ── */}
-      <motion.section
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.2 }}
-        style={{
-          background: 'rgba(255,255,255,0.02)',
-          border: '1px solid rgba(255,255,255,0.07)',
-          borderRadius: '12px',
-          padding: '1.5rem',
-          marginBottom: '2rem',
-        }}
-      >
-        <h2
-          style={{
-            fontSize: '0.8125rem',
-            fontWeight: 600,
-            color: '#475569',
-            letterSpacing: '0.07em',
-            textTransform: 'uppercase',
-            marginBottom: '1.25rem',
-          }}
-        >
-          Your results
-        </h2>
-
-        {/* Intent category */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <div
-            style={{
-              display: 'inline-block',
-              padding: '0.375rem 0.875rem',
-              borderRadius: '20px',
-              background: `${tierColor}18`,
-              border: `1px solid ${tierColor}50`,
-              fontSize: '0.875rem',
-              fontWeight: 600,
-              color: tierColor,
-              marginBottom: '0.5rem',
-            }}
-          >
-            {intentInfo.label}
+          <div className={`text-sm uppercase tracking-widest mb-3 ${tierMeta.tokenClass}`}>
+            {tierMeta.label} tier complete
           </div>
-          <p
-            style={{
-              fontSize: '0.875rem',
-              color: '#64748B',
-              lineHeight: 1.5,
-            }}
+          <h1
+            id="completion-heading"
+            className="text-3xl sm:text-4xl font-semibold mb-3"
           >
-            {intentInfo.desc}
+            ✦ You did it.
+          </h1>
+          <p className="text-text-secondary text-base">
+            Thank you for sharing your front-desk perspective.
           </p>
-        </div>
+        </motion.div>
 
-        {/* Top 3 priorities */}
-        <div style={{ marginBottom: '1.25rem' }}>
-          <p
-            style={{
-              fontSize: '0.8125rem',
-              color: '#475569',
-              fontWeight: 600,
-              marginBottom: '0.75rem',
-            }}
+        {/* Badge grid */}
+        {earnedBadges.length > 0 && (
+          <section
+            aria-label="Badges earned during this session"
+            className="mb-10"
           >
-            Top expectation priorities
-          </p>
-          {topPriorities.map((priority, i) => (
-            <div
-              key={i}
-              style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '0.75rem',
-                marginBottom: '0.5rem',
-              }}
-            >
-              <div
-                style={{
-                  flexShrink: 0,
-                  width: '20px',
-                  height: '20px',
-                  borderRadius: '50%',
-                  background: `${tierColor}22`,
-                  border: `1px solid ${tierColor}60`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '0.6875rem',
-                  fontWeight: 700,
-                  color: tierColor,
-                  marginTop: '1px',
-                }}
-              >
-                {i + 1}
+            <h2 className="text-sm uppercase tracking-widest text-text-secondary mb-4 text-center">
+              Badges earned
+            </h2>
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-4 justify-items-center">
+              {earnedBadges.map((badgeId) => {
+                const def = BADGE_DEFINITIONS[badgeId];
+                if (!def) return null;
+                return (
+                  <motion.div
+                    key={badgeId}
+                    initial={{ scale: 0.85, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex flex-col items-center text-center"
+                  >
+                    <Badge
+                      badgeId={badgeId}
+                      color={def.color || '#94A3B8'}
+                      size={56}
+                    />
+                    <span className="text-xs mt-2 text-text-secondary">
+                      {def.name}
+                    </span>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* Personal results */}
+        <section
+          aria-label="Your personal results"
+          className="bg-canvas-surface rounded-xl p-6 mb-8"
+        >
+          <h2 className="text-sm uppercase tracking-widest text-text-secondary mb-3">
+            Your profile
+          </h2>
+          <div className="text-2xl font-semibold mb-2">{intentMeta.name}</div>
+          {intentMeta.description && (
+            <p className="text-text-secondary text-sm mb-5">
+              {intentMeta.description}
+            </p>
+          )}
+
+          {topPriorities.length > 0 && (
+            <div className="mb-5">
+              <div className="text-sm uppercase tracking-widest text-text-secondary mb-2">
+                Your top priorities
               </div>
-              <p
-                style={{
-                  fontSize: '0.875rem',
-                  color: '#CBD5E1',
-                  lineHeight: 1.5,
-                }}
-              >
-                {priority}
+              <ul className="text-base text-text-primary space-y-1">
+                {topPriorities.slice(0, 3).map((label, idx) => (
+                  <li key={`${label}-${idx}`}>· {label}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {serviceStyleAnswer && SERVICE_STYLE_LABELS[serviceStyleAnswer] && (
+            <div>
+              <div className="text-sm uppercase tracking-widest text-text-secondary mb-2">
+                Service interaction style
+              </div>
+              <p className="text-base text-text-primary">
+                {SERVICE_STYLE_LABELS[serviceStyleAnswer]}
               </p>
             </div>
-          ))}
-        </div>
+          )}
+        </section>
 
-        {/* Service style from Q31 */}
-        {serviceStyleCode && SERVICE_STYLE_LABELS[serviceStyleCode] && (
-          <div
-            style={{
-              background: 'rgba(255,255,255,0.02)',
-              borderRadius: '8px',
-              padding: '0.875rem 1rem',
-              border: '1px solid rgba(255,255,255,0.05)',
-            }}
+        {/* Aggregate comparison — only if 3+ complete sessions */}
+        {aggregateData && aggregateData.count >= 3 && aggregateData.chart.length > 0 && (
+          <section
+            aria-label="How your priorities compare to other respondents"
+            className="bg-canvas-surface rounded-xl p-6 mb-8"
           >
-            <p
-              style={{
-                fontSize: '0.75rem',
-                color: '#475569',
-                fontWeight: 600,
-                marginBottom: '0.25rem',
-              }}
-            >
-              Preferred service style
+            <h2 className="text-sm uppercase tracking-widest text-text-secondary mb-1">
+              How your colleagues responded
+            </h2>
+            <p className="text-text-secondary text-xs mb-4">
+              Based on {aggregateData.count} complete sessions at this property.
             </p>
-            <p style={{ fontSize: '0.875rem', color: '#94A3B8', lineHeight: 1.5 }}>
-              {SERVICE_STYLE_LABELS[serviceStyleCode]}
-            </p>
-          </div>
+            <div style={{ width: '100%', height: 240 }}>
+              <ResponsiveContainer>
+                <BarChart
+                  data={aggregateData.chart}
+                  margin={{ top: 8, right: 16, left: 0, bottom: 24 }}
+                >
+                  <CartesianGrid stroke="#1A2540" vertical={false} />
+                  <XAxis
+                    dataKey="label"
+                    stroke="#94A3B8"
+                    tick={{ fontSize: 11 }}
+                    interval={0}
+                    angle={-20}
+                    textAnchor="end"
+                    height={60}
+                  />
+                  <YAxis stroke="#94A3B8" tick={{ fontSize: 11 }} allowDecimals={false} />
+                  <Tooltip
+                    contentStyle={{
+                      background: '#161620',
+                      border: '1px solid #1F2B4A',
+                      color: '#F8FAFC',
+                    }}
+                  />
+                  <Bar dataKey="count" fill="#60A5FA" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </section>
         )}
-      </motion.section>
 
-      {/* ── Aggregate comparison — AC3 ── */}
-      {!loadingAggregate && aggregateData && (
-        <motion.section
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.3 }}
-          style={{
-            background: 'rgba(255,255,255,0.02)',
-            border: '1px solid rgba(255,255,255,0.07)',
-            borderRadius: '12px',
-            padding: '1.5rem',
-            marginBottom: '2rem',
-          }}
-        >
-          <h2
-            style={{
-              fontSize: '0.8125rem',
-              fontWeight: 600,
-              color: '#475569',
-              letterSpacing: '0.07em',
-              textTransform: 'uppercase',
-              marginBottom: '0.375rem',
-            }}
-          >
-            How your team sees it
-          </h2>
-          <p
-            style={{
-              fontSize: '0.8125rem',
-              color: '#334155',
-              marginBottom: '1.5rem',
-            }}
-          >
-            Anonymous distribution across all completed sessions at this property
+        {aggregateError && (
+          <p className="text-text-muted text-xs text-center mb-6">
+            (Aggregate comparison unavailable right now — your responses are saved.)
           </p>
-          <ResponsiveContainer width="100%" height={260}>
-            <RadarChart data={aggregateData}>
-              <PolarGrid stroke="rgba(255,255,255,0.06)" />
-              <PolarAngleAxis
-                dataKey="subject"
-                tick={{ fill: '#475569', fontSize: 11 }}
-              />
-              <Radar
-                name="Guest Intent"
-                dataKey="value"
-                stroke={tierColor}
-                fill={tierColor}
-                fillOpacity={0.18}
-                strokeWidth={1.5}
-              />
-            </RadarChart>
-          </ResponsiveContainer>
-        </motion.section>
-      )}
+        )}
 
-      {/* ── Thank you footer ── */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4, delay: 0.4 }}
-        style={{ textAlign: 'center' }}
-      >
-        <p
-          style={{
-            fontSize: '0.875rem',
-            color: '#334155',
-            lineHeight: 1.6,
-            maxWidth: '420px',
-            margin: '0 auto',
-          }}
-        >
-          Your responses are anonymous and contribute directly to understanding
-          what guests at this property genuinely expect.
-        </p>
-      </motion.div>
+        <div className="text-center text-text-muted text-xs">
+          Your responses have been saved. You can close this window.
+        </div>
+      </div>
     </div>
   );
 }
