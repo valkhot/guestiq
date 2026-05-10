@@ -17,14 +17,20 @@ export function useBadges() {
   const [toastQueue, setToastQueue] = useState([]);
 
   // Award a badge — idempotent (safe to call multiple times)
+  // AC5: Set prevents duplicate awards; toast also checked against Set
   const awardBadge = useCallback((badgeId) => {
+    let alreadyEarned = false;
     setEarnedBadgeIds((prev) => {
-      if (prev.has(badgeId)) return prev; // already earned — AC5
+      if (prev.has(badgeId)) {
+        alreadyEarned = true;
+        return prev; // already earned — AC5
+      }
       const next = new Set(prev);
       next.add(badgeId);
       return next;
     });
-    // Add to toast queue if not already earned
+    // Only add toast if badge was not previously earned
+    if (alreadyEarned) return;
     setToastQueue((prev) => {
       const alreadyQueued = prev.some((b) => b.id === badgeId);
       if (alreadyQueued) return prev;

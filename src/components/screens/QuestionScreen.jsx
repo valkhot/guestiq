@@ -67,6 +67,8 @@ export default function QuestionScreen({
   // S3-07: upgrade prompt state
   const [pendingUpgrade, setPendingUpgrade] = useState(null);
   // { nextIndex, completedEpisodeNumber }
+  // Track all answered question IDs for correct resume after tier upgrade
+  const [answeredQuestionIds, setAnsweredQuestionIds] = useState(new Set());
   // Current tier — may change if respondent accepts upgrade
   const [currentTier, setCurrentTier] = useState(initialTier);
 
@@ -140,7 +142,7 @@ export default function QuestionScreen({
   // Upgrade accepted — AC3: update tier in Supabase and continue
   async function handleUpgradeAccept() {
     if (!pendingUpgrade) return;
-    const { nextIndex, completedEpisodeNumber } = pendingUpgrade;
+    const { completedEpisodeNumber } = pendingUpgrade;
     const newTier = currentTier === 'amateur' ? 'professional' : 'expert';
 
     trackTierUpgradeAccepted({
@@ -152,9 +154,24 @@ export default function QuestionScreen({
 
     // AC3: update Supabase sessions.tier
     await session.upgradeTier(newTier);
+
+    // Find the correct resume index in the NEW tier's question list.
+    // Find the first question in the new tier list that has NOT been answered yet.
+    // This correctly handles interleaved Professional-only questions (Q2, Q4, Q6)
+    // that appear between Amateur questions already answered.
+    const newTierQuestions = filterQuestionsForSession({
+      tier: newTier,
+      intentCategory,
+      secondaryIntentCategory,
+    });
+    const firstUnansweredIdx = newTierQuestions.findIndex(
+      (q) => !answeredQuestionIds.has(q.id)
+    );
+    const resumeIndex = firstUnansweredIdx >= 0 ? firstUnansweredIdx : currentIndex + 1;
+
     setCurrentTier(newTier);
     setPendingUpgrade(null);
-    setCurrentIndex(nextIndex);
+    setCurrentIndex(resumeIndex);
   }
 
   // Upgrade declined — continue with current tier
@@ -180,6 +197,13 @@ export default function QuestionScreen({
       session.tenseFrame || resumedSession?.tense_frame || 'retrospective';
 
     if (!activeSessionId) return;
+
+    // Track answered question ID for upgrade resume logic
+    setAnsweredQuestionIds((prev) => {
+      const next = new Set(prev);
+      next.add(currentQuestion.id);
+      return next;
+    });
 
     const isNoneOption = answerCode === 'NONE';
     const isScaleAnswer = answerCode?.startsWith('SCALE_');
