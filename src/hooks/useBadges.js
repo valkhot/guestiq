@@ -40,6 +40,16 @@ export function useBadges() {
     });
   }, []);
 
+  // Award a badge silently — updates earnedBadgeIds but no toast notification
+  const awardBadgeSilent = useCallback((badgeId) => {
+    setEarnedBadgeIds((prev) => {
+      if (prev.has(badgeId)) return prev;
+      const next = new Set(prev);
+      next.add(badgeId);
+      return next;
+    });
+  }, []);
+
   // Dismiss the front toast
   const dismissToast = useCallback(() => {
     setToastQueue((prev) => prev.slice(1));
@@ -70,6 +80,7 @@ export function useBadges() {
   return {
     earnedBadgeIds,
     awardBadge,
+    awardBadgeSilent,
     awardEpisodeBadge,
     awardExpertComplete,
     dismissToast,

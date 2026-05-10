@@ -227,7 +227,8 @@ export default function QuestionScreen({
         ...(extraText ? { qr1_other_text: extraText } : {}),
       });
     } else if (currentQuestion.id === 'Q1' && !isNoneOption) {
-      badges.awardBadge(badges.BADGE_IDS.FIRST_STEP);
+      // First Step earned silently — no toast. Intent Locked is the single visible moment.
+      badges.awardBadgeSilent(badges.BADGE_IDS.FIRST_STEP);
       badges.awardBadge(badges.BADGE_IDS.INTENT_LOCKED);
       await session.setIntentCategoryAndPersist(taxonomyCode);
       await insertResponse({
