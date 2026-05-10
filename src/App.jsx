@@ -334,7 +334,6 @@ export default function App() {
           sessionResponses={completionData?.sessionResponses || []}
           intentCategory={completionData?.intentCategory}
           serviceStyleCode={completionData?.serviceStyleCode}
-          sessionId={completionData?.sessionId}
           propertyId={propertyId}
           onComplete={completionData?.onComplete}
         />

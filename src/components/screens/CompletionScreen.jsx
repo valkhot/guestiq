@@ -127,7 +127,7 @@ function deriveTopPriorities(sessionResponses) {
 }
 
 // ── Aggregate chart data builder ─────────────────────────────────────────
-function buildRadarData(sessions, responses) {
+function buildRadarData(sessions) {
   if (!sessions || sessions.length < 3) return null;
 
   const intentCounts = {};
@@ -156,7 +156,6 @@ export default function CompletionScreen({
   sessionResponses,    // responses from this session for personal results
   intentCategory,      // from session state
   serviceStyleCode,    // Q31 answer code
-  sessionId,
   propertyId,
   onComplete,          // called by parent to handle session.completeSession()
 }) {
@@ -196,7 +195,7 @@ export default function CompletionScreen({
         const data = await fetchDashboardData(propertyId);
         const completeSessions = (data?.sessions || []).filter((s) => s.is_complete);
         if (completeSessions.length >= 3) {
-          const radarData = buildRadarData(completeSessions, data?.responses || []);
+          const radarData = buildRadarData(completeSessions);
           if (radarData) {
             setAggregateData(radarData);
             trackAggregateComparisonViewed({
