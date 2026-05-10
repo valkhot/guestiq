@@ -137,14 +137,6 @@ export default function QuestionScreen({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Hook screen continue
-  function handleHookContinue() {
-    if (!pendingHook) return;
-    const { nextIndex } = pendingHook;
-    setPendingHook(null);
-    setCurrentIndex(nextIndex);
-  }
-
   // Upgrade accepted — AC3: update tier in Supabase and continue
   async function handleUpgradeAccept() {
     if (!pendingUpgrade) return;

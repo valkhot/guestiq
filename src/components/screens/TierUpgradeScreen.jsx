@@ -21,9 +21,7 @@ const UPGRADE_CONFIG = {
     toTier:              'professional',
     additionalTime:      '~3 more minutes',
     additionalQuestions: 'about 26 more questions',
-    benefit:
-      'Deeper insight into pre-arrival expectations, physical environment, and service
-      dynamics — the dimensions that drive repeat visits.',
+    benefit: 'Deeper insight into pre-arrival expectations, physical environment, and service dynamics — the dimensions that drive repeat visits.',
     acceptLabel:         'Yes — upgrade to Professional',
     declineLabel:        'No thanks — keep going as Amateur',
   },
@@ -31,9 +29,7 @@ const UPGRADE_CONFIG = {
     toTier:              'expert',
     additionalTime:      '~8 more minutes',
     additionalQuestions: 'about 20 more questions',
-    benefit:
-      'The complete picture — value perception, post-stay relationships, and the full
-      synthesis of what makes a hotel truly exceptional.',
+    benefit: 'The complete picture — value perception, post-stay relationships, and the full synthesis of what makes a hotel truly exceptional.',
     acceptLabel:         'Yes — upgrade to Expert',
     declineLabel:        'No thanks — keep going as Professional',
   },
