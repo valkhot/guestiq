@@ -276,8 +276,8 @@ export default function CompletionScreen({
           </p>
         </motion.div>
 
-        {/* Badge grid */}
-        {earnedBadges && earnedBadges.length > 0 && (
+        {/* Badge grid — only show section if at least one badge is actually earned */}
+        {earnedBadges && earnedBadges.some((b) => b && b.earned === true) && (
           <section
             aria-label="Badges earned during this session"
             style={{ marginBottom: '2.5rem' }}
@@ -303,8 +303,9 @@ export default function CompletionScreen({
                 justifyItems: 'center',
               }}
             >
-              {earnedBadges.map((badge) => {
-                if (!badge || !badge.id) return null;
+              {earnedBadges
+                .filter((b) => b && b.id && b.earned === true)
+                .map((badge) => {
                 const color = badge.color || '#94A3B8';
                 return (
                   <motion.div
