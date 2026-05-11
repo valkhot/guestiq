@@ -29,6 +29,11 @@ import {
   trackTierUpgradeAccepted,
   trackTierUpgradeDeclined,
 } from '../../services/analytics';
+import {
+  BADGE_DEFINITIONS,
+  BADGE_IDS,
+  EPISODE_BADGE_MAP,
+} from '../badges/BadgeDefinitions';
 
 const TIER_COLORS = {
   amateur: '#4ADE80',
@@ -451,7 +456,22 @@ export default function QuestionScreen({
         if (currentQuestion.id === SERVICE_STYLE_QUESTION_ID) {
           payload.serviceStyleCode = answerCode;
         }
-        onComplete(badges.allBadges, payload);
+        // Deterministic final-badges resolution.
+        // React 18 batches setState — badges.allBadges may NOT include the
+        // final-episode badge or expert-complete badge that we just awarded.
+        // Build the expected earned-IDs set ourselves and return matching
+        // badge definitions, bypassing the stale hook snapshot entirely.
+        const finalEarnedIds = new Set(badges.earnedBadgeIds);
+        const finalEpisodeBadgeId = EPISODE_BADGE_MAP[currentEpisode?.number];
+        if (finalEpisodeBadgeId) finalEarnedIds.add(finalEpisodeBadgeId);
+        if (currentTier === 'expert') {
+          finalEarnedIds.add(BADGE_IDS.EXPERT_COMPLETE);
+        }
+        const finalBadges = BADGE_DEFINITIONS.map((def) => ({
+          ...def,
+          earned: finalEarnedIds.has(def.id),
+        }));
+        onComplete(finalBadges, payload);
       }
       return;
     }
