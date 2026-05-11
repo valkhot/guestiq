@@ -409,11 +409,14 @@ export default function CompletionScreen({
                   margin: 0,
                 }}
               >
-                {topPriorities.slice(0, 3).map((label, idx) => (
-                  <li key={`${label}-${idx}`} style={{ padding: '0.25rem 0' }}>
-                    · {label}
-                  </li>
-                ))}
+                {topPriorities
+                  .filter((label) => typeof label === 'string' && label.length > 0)
+                  .slice(0, 3)
+                  .map((label, idx) => (
+                    <li key={`${label}-${idx}`} style={{ padding: '0.25rem 0' }}>
+                      · {label}
+                    </li>
+                  ))}
               </ul>
             </div>
           )}

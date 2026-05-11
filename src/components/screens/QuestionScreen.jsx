@@ -58,18 +58,40 @@ function getEpisodeForQuestion(question, episodes) {
 // Derive top 3 priority labels from a captured-responses map.
 // Heuristic for Phase 1a: pick the highest-rated scale answers (4 or 5) from
 // the priority/expectation modules (M2/M3/M6) and return their question text.
-// If no scale data is available, fall back to first 3 answered question IDs.
-function deriveTopPriorities(responsesByQid, allQuestions) {
+//
+// CRITICAL — question copy is tense-aware. Fields like q.shortLabel and q.text
+// may be objects shaped as { retrospective: '...', anticipatory: '...' } rather
+// than plain strings. We must pick the right tense and coerce to string, or
+// React throws error #31 (objects are not valid as a React child).
+function pickTenseString(value, tenseFrame) {
+  if (value == null) return null;
+  if (typeof value === 'string') return value;
+  if (typeof value === 'object') {
+    const preferred = tenseFrame && value[tenseFrame];
+    if (typeof preferred === 'string' && preferred.length > 0) return preferred;
+    // Fall back to whichever tense exists
+    if (typeof value.retrospective === 'string') return value.retrospective;
+    if (typeof value.anticipatory === 'string') return value.anticipatory;
+  }
+  return null;
+}
+
+function deriveTopPriorities(responsesByQid, allQuestions, tenseFrame) {
   if (!responsesByQid || !allQuestions) return [];
   const scaleEntries = [];
   Object.entries(responsesByQid).forEach(([qid, entry]) => {
     if (entry?.scaleValue && entry.scaleValue >= 4) {
       const q = allQuestions.find((x) => x.id === qid);
       if (q && [2, 3, 6].includes(q.module)) {
+        const label =
+          pickTenseString(q.shortLabel, tenseFrame) ||
+          pickTenseString(q.text, tenseFrame) ||
+          qid;
+        // Defence in depth — guarantee string before pushing.
         scaleEntries.push({
           qid,
           value: entry.scaleValue,
-          label: q.shortLabel || q.text || qid,
+          label: String(label),
         });
       }
     }
@@ -175,16 +197,22 @@ export default function QuestionScreen({
 
   // Helper — build the completion payload for handoff to App.jsx
   function buildCompletionPayload() {
+    const activeTenseFrame =
+      session.tenseFrame || resumedSession?.tense_frame || 'retrospective';
     const serviceStyleCode =
       responsesByQid[SERVICE_STYLE_QUESTION_ID]?.answerCode || null;
-    const topPriorities = deriveTopPriorities(responsesByQid, allQuestions);
+    const topPriorities = deriveTopPriorities(
+      responsesByQid,
+      allQuestions,
+      activeTenseFrame
+    );
     return {
       tier: currentTier,
       sessionResponses: responsesByQid,
       intentCategory,
       serviceStyleCode,
       topPriorities,
-      tenseFrame: session.tenseFrame || resumedSession?.tense_frame || 'retrospective',
+      tenseFrame: activeTenseFrame,
       sessionStartedAt: sessionStartedAtRef.current,
       episodeCountCompleted: episodesCompleted,
       sessionId: session.sessionId || resumedSession?.session_id,
