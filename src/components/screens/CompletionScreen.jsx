@@ -98,6 +98,21 @@ const SERVICE_STYLE_LABELS = {
   D: 'High-touch and personalised',
 };
 
+// Tooltip text for unearned badges — explains how to unlock each one.
+// Badge IDs match BADGE_IDS in BadgeDefinitions.js.
+// Used on the completion screen badge grid for the desaturated/locked state.
+const UNLOCK_REQUIREMENTS = {
+  'first-step': 'Answer the first question to earn this.',
+  'intent-locked': 'Tell us your stay purpose to earn this.',
+  'guest-arrival': 'Complete Episode 1 — Why You Stay — to earn this.',
+  'environment-critic': 'Complete Episode 3 — Your Space — to earn this.',
+  'service-specialist': 'Complete Episode 4 — The Human Element — to earn this.',
+  'purpose-expert': 'Complete Episode 5 — Your Kind of Stay — to earn this.',
+  'value-analyst': 'Complete Episode 6 — What It\u2019s Worth — to earn this.',
+  'full-picture': 'Complete Episode 7 — After the Stay — to earn this.',
+  'expert-complete': 'Complete the Expert tier to earn this.',
+};
+
 /**
  * CompletionScreen — final screen of the questionnaire.
  *
@@ -276,84 +291,135 @@ export default function CompletionScreen({
           </p>
         </motion.div>
 
-        {/* Badge grid — only show section if at least one badge is actually earned */}
-        {earnedBadges && earnedBadges.some((b) => b && b.earned === true) && (
-          <section
-            aria-label="Badges earned during this session"
-            style={{ marginBottom: '2.5rem' }}
-          >
-            <h2
-              style={{
-                fontSize: '0.75rem',
-                textTransform: 'uppercase',
-                letterSpacing: '0.15em',
-                color: '#94A3B8',
-                marginBottom: '1rem',
-                textAlign: 'center',
-                fontWeight: 600,
-              }}
+        {/* Badge grid — all 9 badges always shown; unearned render as locked
+            silhouettes to create aspirational signal toward upgrade */}
+        {earnedBadges && earnedBadges.length > 0 && (() => {
+          const earnedCount = earnedBadges.filter(
+            (b) => b && b.earned === true
+          ).length;
+          const totalCount = earnedBadges.length;
+          return (
+            <section
+              aria-label={`${earnedCount} of ${totalCount} badges earned`}
+              style={{ marginBottom: '2.5rem' }}
             >
-              Badges earned
-            </h2>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(96px, 1fr))',
-                gap: '1rem',
-                justifyItems: 'center',
-              }}
-            >
-              {earnedBadges
-                .filter((b) => b && b.id && b.earned === true)
-                .map((badge) => {
-                const color = badge.color || '#94A3B8';
-                return (
-                  <motion.div
-                    key={badge.id}
-                    initial={{ scale: 0.85, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.3 }}
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      textAlign: 'center',
-                      width: '100%',
-                    }}
-                  >
-                    <svg
-                      width="56"
-                      height="56"
-                      viewBox="0 0 24 24"
-                      role="img"
-                      aria-label={badge.ariaLabel || badge.name || 'Badge'}
-                      style={{
-                        background: `${color}22`,
-                        border: `2px solid ${color}`,
-                        borderRadius: '50%',
-                        padding: '6px',
-                      }}
-                    >
-                      {badge.svgPath && (
-                        <path d={badge.svgPath} fill={color} />
-                      )}
-                    </svg>
-                    <span
-                      style={{
-                        fontSize: '0.75rem',
-                        marginTop: '0.5rem',
-                        color: '#94A3B8',
-                        lineHeight: 1.3,
-                      }}
-                    >
-                      {badge.name}
-                    </span>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </section>
-        )}
+              <h2
+                style={{
+                  fontSize: '0.75rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.15em',
+                  color: '#94A3B8',
+                  marginBottom: '1rem',
+                  textAlign: 'center',
+                  fontWeight: 600,
+                }}
+              >
+                Badges &nbsp;·&nbsp;
+                <span style={{ color: '#F8FAFC' }}>
+                  {earnedCount} of {totalCount} earned
+                </span>
+              </h2>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(96px, 1fr))',
+                  gap: '1rem',
+                  justifyItems: 'center',
+                }}
+              >
+                {earnedBadges
+                  .filter((b) => b && b.id)
+                  .map((badge) => {
+                    const isEarned = badge.earned === true;
+                    const color = badge.color || '#94A3B8';
+                    // Locked badges render in muted grey, no fill, reduced
+                    // opacity. Earned badges render in full color with animation.
+                    const displayColor = isEarned ? color : '#475569';
+                    const titleText = isEarned
+                      ? badge.ariaLabel || badge.name || 'Badge earned'
+                      : UNLOCK_REQUIREMENTS[badge.id] ||
+                        `Locked — ${badge.name || 'badge'} not yet earned.`;
+                    return (
+                      <motion.div
+                        key={badge.id}
+                        initial={
+                          isEarned
+                            ? { scale: 0.85, opacity: 0 }
+                            : { opacity: 0 }
+                        }
+                        animate={
+                          isEarned
+                            ? { scale: 1, opacity: 1 }
+                            : { opacity: 1 }
+                        }
+                        transition={{ duration: 0.3 }}
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          textAlign: 'center',
+                          width: '100%',
+                          opacity: isEarned ? 1 : 0.35,
+                          filter: isEarned ? 'none' : 'grayscale(60%)',
+                        }}
+                        title={titleText}
+                      >
+                        <svg
+                          width="56"
+                          height="56"
+                          viewBox="0 0 24 24"
+                          role="img"
+                          aria-label={titleText}
+                          style={{
+                            background: isEarned
+                              ? `${color}22`
+                              : 'transparent',
+                            border: `2px ${
+                              isEarned ? 'solid' : 'dashed'
+                            } ${displayColor}`,
+                            borderRadius: '50%',
+                            padding: '6px',
+                          }}
+                        >
+                          {badge.svgPath && (
+                            <path
+                              d={badge.svgPath}
+                              fill={isEarned ? color : 'none'}
+                              stroke={isEarned ? 'none' : displayColor}
+                              strokeWidth={isEarned ? 0 : 1.25}
+                            />
+                          )}
+                        </svg>
+                        <span
+                          style={{
+                            fontSize: '0.75rem',
+                            marginTop: '0.5rem',
+                            color: isEarned ? '#94A3B8' : '#64748B',
+                            lineHeight: 1.3,
+                          }}
+                        >
+                          {badge.name}
+                        </span>
+                      </motion.div>
+                    );
+                  })}
+              </div>
+              {earnedCount < totalCount && (
+                <p
+                  style={{
+                    color: '#64748B',
+                    fontSize: '0.75rem',
+                    textAlign: 'center',
+                    marginTop: '1rem',
+                    fontStyle: 'italic',
+                  }}
+                >
+                  Hover any locked badge to see how to earn it.
+                </p>
+              )}
+            </section>
+          );
+        })()}
 
         {/* Personal results */}
         <section
