@@ -2,6 +2,7 @@
 // GuestIQ — Badge State Management Hook
 // Tracks earned badges for the current session.
 // AC5: each badge earned only once per session.
+// S3-08 EXTENSION: awardProfessionalComplete added for tier-aware upgrade reward.
 
 import { useState, useCallback } from 'react';
 import {
@@ -61,6 +62,15 @@ export function useBadges() {
     if (badgeId) awardBadge(badgeId);
   }, [awardBadge]);
 
+  // Award Professional Complete when Professional or Expert tier finishes
+  // all episodes. Expert sessions earn BOTH Professional Complete AND
+  // Expert Complete (Expert is a superset of Professional depth).
+  const awardProfessionalComplete = useCallback((tier) => {
+    if (tier === 'professional' || tier === 'expert') {
+      awardBadge(BADGE_IDS.PROFESSIONAL_COMPLETE);
+    }
+  }, [awardBadge]);
+
   // Award Expert Complete when Expert tier finishes all episodes
   const awardExpertComplete = useCallback((tier) => {
     if (tier === 'expert') {
@@ -82,6 +92,7 @@ export function useBadges() {
     awardBadge,
     awardBadgeSilent,
     awardEpisodeBadge,
+    awardProfessionalComplete,
     awardExpertComplete,
     dismissToast,
     currentToast,

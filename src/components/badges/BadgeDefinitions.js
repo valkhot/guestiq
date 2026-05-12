@@ -1,17 +1,20 @@
 // src/components/badges/BadgeDefinitions.js
 // GuestIQ — Badge definitions and trigger mapping
-// 9 badges, each with id, name, aria-label, SVG path data, and trigger condition.
+// 10 badges, each with id, name, aria-label, SVG path data, and trigger condition.
+// S3-08 EXTENSION: Professional Complete added to create a clear visible reward
+// when respondents upgrade from Amateur to Professional tier.
 
 export const BADGE_IDS = {
-  FIRST_STEP:         'first-step',
-  INTENT_LOCKED:      'intent-locked',
-  GUEST_ARRIVAL:      'guest-arrival',
-  ENVIRONMENT_CRITIC: 'environment-critic',
-  SERVICE_SPECIALIST: 'service-specialist',
-  PURPOSE_EXPERT:     'purpose-expert',
-  VALUE_ANALYST:      'value-analyst',
-  FULL_PICTURE:       'full-picture',
-  EXPERT_COMPLETE:    'expert-complete',
+  FIRST_STEP:           'first-step',
+  INTENT_LOCKED:        'intent-locked',
+  GUEST_ARRIVAL:        'guest-arrival',
+  ENVIRONMENT_CRITIC:   'environment-critic',
+  SERVICE_SPECIALIST:   'service-specialist',
+  PURPOSE_EXPERT:       'purpose-expert',
+  VALUE_ANALYST:        'value-analyst',
+  FULL_PICTURE:         'full-picture',
+  PROFESSIONAL_COMPLETE:'professional-complete',
+  EXPERT_COMPLETE:      'expert-complete',
 };
 
 // Maps episode number → badge awarded on that episode's completion
@@ -96,6 +99,16 @@ export const BADGE_DEFINITIONS = [
     color: '#818CF8',
     // Circle complete / panorama icon
     svgPath: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z',
+  },
+  {
+    id: BADGE_IDS.PROFESSIONAL_COMPLETE,
+    name: 'Professional Complete',
+    ariaLabel:
+      'Professional Complete badge — awarded for completing the full Professional tier',
+    description: 'You went deeper. Your perspective covers every dimension that matters.',
+    color: '#60A5FA',
+    // Medal/ribbon icon — a tier upgrade above Full Picture, below the Expert trophy
+    svgPath: 'M12 2C9.24 2 7 4.24 7 7c0 1.7.85 3.2 2.14 4.11L7.5 22l4.5-3 4.5 3-1.64-10.89C16.15 10.2 17 8.7 17 7c0-2.76-2.24-5-5-5zm0 8C10.34 10 9 8.66 9 7s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z',
   },
   {
     id: BADGE_IDS.EXPERT_COMPLETE,
