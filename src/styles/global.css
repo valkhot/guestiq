@@ -1,26 +1,70 @@
 /* src/styles/global.css */
-/* GuestIQ — Global Styles */
-/* Canvas CSS custom properties — used throughout the application */
+/* GuestIQ — Global Styles                                              */
+/* Source of truth for CSS custom properties referenced across the app. */
+/* All values LOCKED from Visual Design System v1.0 (S1-3.3).           */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
+  /* ── Canvas system — Section 1 of Visual Design System ────────────── */
   --canvas-respondent: #0d0d12;
-  --canvas-dashboard: #0b1120;
-  --canvas-surface: #161620;
-  --canvas-overlay: #1e1e2e;
+  --canvas-dashboard:  #0b1120;
+  --canvas-surface:    #161620;
+  --canvas-overlay:    #1e1e2e;
 
-  --tier-amateur: #4ade80;
+  /* ── Tier primary colours (400 stop) — Section 2.1 ────────────────── */
+  --tier-amateur:      #4ade80;
   --tier-professional: #60a5fa;
-  --tier-expert: #a78bfa;
+  --tier-expert:       #a78bfa;
+
+  /* ── Neutral text — Section 2.2 ───────────────────────────────────── */
+  --text-primary:      #f8fafc;
+  --text-secondary:    #94a3b8;
+  --text-muted:        #64748b;
+
+  /* ── Semantic states — Section 2.2 ────────────────────────────────── */
+  --semantic-success:  #22c55e;
+  --semantic-warning:  #f59e0b;
+  --semantic-error:    #ef4444;
+  --semantic-info:     #38bdf8;
+  --semantic-noneflag: #f97316;
+
+  /* ── Dashboard tokens — Section 2.2 ───────────────────────────────── */
+  --dash-panel-bg:     #131829;
+  --dash-panel-border: #1f2b4a;
+  --dash-text-primary: #e2e8f0;
+  --dash-text-secondary: #94a3b8;
+  --dash-accent:       #60a5fa;
+  --dash-grid:         #1a2540;
+
+  /* ── Episode accent colours — Section 6.1 ─────────────────────────── */
+  /* Used by curiosity hook screens and badge color props per episode.   */
+  --episode-1: #14b8a6; /* Teal    — Why Do Guests Actually Come Here? */
+  --episode-2: #f59e0b; /* Amber   — The Room They Are Imagining       */
+  --episode-3: #38bdf8; /* Sky     — Finding and Arriving              */
+  --episode-4: #f43f5e; /* Rose    — The Human Side                    */
+  --episode-5: #8b5cf6; /* Violet  — What This Guest Actually Needs    */
+  --episode-6: #eab308; /* Gold    — Value and What They Pay           */
+  --episode-7: #10b981; /* Emerald — After the Stay                    */
+
+  /* ── Tier RGB triplets — used by giq-pulse animation ──────────────── */
+  /* Allows rgba(var(--tier-rgb), 0.5) for the EpisodeMap current-node   */
+  /* pulse without hardcoding the tier hex inside the animation rule.    */
+  --tier-amateur-rgb:      74, 222, 128;
+  --tier-professional-rgb: 96, 165, 250;
+  --tier-expert-rgb:       167, 139, 250;
+
+  /* Default the running pulse-tier-rgb to professional for safety.      */
+  /* QuestionScreen sets this to the active tier at runtime via JS.      */
+  --giq-tier-rgb: var(--tier-professional-rgb);
 }
 
-/* Base — respondent canvas applied to body */
+/* ── Base — respondent canvas applied to body ────────────────────────── */
 body {
   background-color: var(--canvas-respondent);
-  color: #f8fafc;
+  color: var(--text-primary);
   font-family:
     system-ui,
     -apple-system,
@@ -33,18 +77,17 @@ body {
   padding: 0;
 }
 
-/* Focus ring — accessible keyboard navigation */
+/* ── Focus ring — accessible keyboard navigation ────────────────────── */
 *:focus-visible {
   outline: 2px solid var(--tier-professional);
   outline-offset: 2px;
 }
 
-/* Remove default focus for mouse users */
 *:focus:not(:focus-visible) {
   outline: none;
 }
 
-/* Scrollbar styling */
+/* ── Scrollbar styling ───────────────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 4px;
 }
@@ -54,4 +97,21 @@ body {
 ::-webkit-scrollbar-thumb {
   background: #334155;
   border-radius: 2px;
+}
+
+/* ── EpisodeMap current-node pulse animation ────────────────────────── */
+/* Migrated from JS-injected style in EpisodeMap.jsx for cleaner global  */
+/* style management. The --giq-tier-rgb variable is set at runtime by    */
+/* EpisodeMap based on the active session tier.                         */
+@keyframes giq-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(var(--giq-tier-rgb), 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(var(--giq-tier-rgb), 0);
+  }
+}
+
+.giq-node-current {
+  animation: giq-pulse 1.8s ease-in-out infinite;
 }
