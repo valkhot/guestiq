@@ -3,17 +3,9 @@
 // S3-07: Appears after Episode 1 (Amateur→Professional) and Episode 4 (Professional→Expert).
 // AC1/AC2: Shows time estimate, benefit, Accept and Decline buttons.
 // AC4: PostHog events fired by parent (QuestionScreen).
+// S3-09: Migrated from inline hex styles to Tailwind utility classes + token imports.
 
-const TIER_COLORS = {
-  amateur:      '#4ADE80',
-  professional: '#60A5FA',
-  expert:       '#A78BFA',
-};
-
-const TIER_LABELS = {
-  professional: 'Professional',
-  expert:       'Expert',
-};
+import { TIER_HEX, getTierLabel } from '../../constants/tierColors';
 
 // Upgrade config by current tier
 const UPGRADE_CONFIG = {
@@ -21,7 +13,9 @@ const UPGRADE_CONFIG = {
     toTier:              'professional',
     additionalTime:      '~3 more minutes',
     additionalQuestions: 'about 26 more questions',
-    benefit: 'Deeper insight into pre-arrival expectations, physical environment, and service dynamics — the dimensions that drive repeat visits.',
+    benefit:
+      'Deeper insight into pre-arrival expectations, physical environment, and ' +
+      'service dynamics — the dimensions that drive repeat visits.',
     acceptLabel:         'Yes — upgrade to Professional',
     declineLabel:        'No thanks — keep going as Amateur',
   },
@@ -29,7 +23,9 @@ const UPGRADE_CONFIG = {
     toTier:              'expert',
     additionalTime:      '~8 more minutes',
     additionalQuestions: 'about 20 more questions',
-    benefit: 'The complete picture — value perception, post-stay relationships, and the full synthesis of what makes a hotel truly exceptional.',
+    benefit:
+      'The complete picture — value perception, post-stay relationships, and the ' +
+      'full synthesis of what makes a hotel truly exceptional.',
     acceptLabel:         'Yes — upgrade to Expert',
     declineLabel:        'No thanks — keep going as Professional',
   },
@@ -39,55 +35,38 @@ export default function TierUpgradeScreen({ currentTier, onAccept, onDecline }) 
   const config = UPGRADE_CONFIG[currentTier];
   if (!config) return null;
 
-  const toColor = TIER_COLORS[config.toTier];
-  const fromColor = TIER_COLORS[currentTier];
-  const toLabel = TIER_LABELS[config.toTier];
+  // Dynamic tier colours — must stay as inline style values because we use
+  // hex-with-alpha suffixes (`${color}18`, `${color}50`) which Tailwind can't
+  // emit at build time from a runtime prop.
+  const toColor = TIER_HEX[config.toTier];
+  const fromColor = TIER_HEX[currentTier];
+  const toLabel = getTierLabel(config.toTier);
 
   return (
     <div
-      style={{
-        minHeight: '100vh',
-        background: '#0D0D12',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem 1.5rem',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        textAlign: 'center',
-      }}
+      className={
+        'min-h-screen bg-canvas-respondent flex flex-col items-center ' +
+        'justify-center text-center px-6 py-8'
+      }
     >
       {/* Tier transition indicator */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.75rem',
-          marginBottom: '2rem',
-        }}
-      >
+      <div className="flex items-center gap-3 mb-8">
         <div
+          className="px-3.5 py-1.5 rounded-pill text-caption font-semibold"
           style={{
-            padding: '0.375rem 0.875rem',
-            borderRadius: '20px',
             background: `${fromColor}18`,
             border: `1px solid ${fromColor}50`,
-            fontSize: '0.8125rem',
-            fontWeight: 600,
             color: fromColor,
           }}
         >
-          {currentTier.charAt(0).toUpperCase() + currentTier.slice(1)}
+          {getTierLabel(currentTier)}
         </div>
-        <span style={{ color: '#334155', fontSize: '1rem' }}>→</span>
+        <span className="text-base text-neutral-600">→</span>
         <div
+          className="px-3.5 py-1.5 rounded-pill text-caption font-semibold"
           style={{
-            padding: '0.375rem 0.875rem',
-            borderRadius: '20px',
             background: `${toColor}18`,
             border: `1px solid ${toColor}50`,
-            fontSize: '0.8125rem',
-            fontWeight: 600,
             color: toColor,
           }}
         >
@@ -97,40 +76,22 @@ export default function TierUpgradeScreen({ currentTier, onAccept, onDecline }) 
 
       {/* Headline */}
       <h2
-        style={{
-          fontSize: 'clamp(1.25rem, 3vw, 1.5rem)',
-          fontWeight: 600,
-          color: '#F8FAFC',
-          lineHeight: 1.35,
-          maxWidth: '480px',
-          marginBottom: '1rem',
-        }}
+        className="font-semibold text-primary leading-snug max-w-[480px] mb-4"
+        style={{ fontSize: 'clamp(1.25rem, 3vw, 1.5rem)' }}
       >
         You are doing great. Want to go deeper?
       </h2>
 
       {/* Time and question count */}
       <p
-        style={{
-          fontSize: '0.9375rem',
-          color: toColor,
-          fontWeight: 500,
-          marginBottom: '1.25rem',
-        }}
+        className="text-body font-medium mb-5"
+        style={{ color: toColor }}
       >
         {config.additionalTime} · {config.additionalQuestions}
       </p>
 
       {/* Benefit text */}
-      <p
-        style={{
-          fontSize: '0.9375rem',
-          color: '#94A3B8',
-          lineHeight: 1.6,
-          maxWidth: '440px',
-          marginBottom: '2.5rem',
-        }}
-      >
+      <p className="text-body text-secondary leading-relaxed max-w-[440px] mb-10">
         {config.benefit}
       </p>
 
@@ -138,22 +99,15 @@ export default function TierUpgradeScreen({ currentTier, onAccept, onDecline }) 
       <button
         type="button"
         onClick={onAccept}
+        className={
+          'w-full max-w-[400px] py-3.5 rounded-lg text-body font-semibold ' +
+          'cursor-pointer transition-opacity hover:opacity-90 mb-3'
+        }
         style={{
-          width: '100%',
-          maxWidth: '400px',
-          padding: '0.9375rem',
           background: toColor,
-          color: '#0D0D12',
+          color: 'var(--canvas-respondent)',
           border: 'none',
-          borderRadius: '8px',
-          fontSize: '0.9375rem',
-          fontWeight: 600,
-          cursor: 'pointer',
-          marginBottom: '0.75rem',
-          transition: 'opacity 0.12s ease',
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.88')}
-        onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
       >
         {config.acceptLabel}
       </button>
@@ -162,26 +116,11 @@ export default function TierUpgradeScreen({ currentTier, onAccept, onDecline }) 
       <button
         type="button"
         onClick={onDecline}
-        style={{
-          width: '100%',
-          maxWidth: '400px',
-          padding: '0.9375rem',
-          background: 'transparent',
-          color: '#475569',
-          border: '1px solid rgba(255,255,255,0.08)',
-          borderRadius: '8px',
-          fontSize: '0.9375rem',
-          cursor: 'pointer',
-          transition: 'all 0.12s ease',
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.16)';
-          e.currentTarget.style.color = '#94A3B8';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
-          e.currentTarget.style.color = '#475569';
-        }}
+        className={
+          'w-full max-w-[400px] py-3.5 rounded-lg text-body cursor-pointer ' +
+          'bg-transparent text-neutral-600 border border-white/10 ' +
+          'transition-colors hover:text-neutral-400 hover:border-white/20'
+        }
       >
         {config.declineLabel}
       </button>

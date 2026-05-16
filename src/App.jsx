@@ -1,6 +1,9 @@
 // src/App.jsx
 // GuestIQ — Root React Component
 // Session router: disambiguation → welcome → question screens → completion
+// S3-09: Migrated from inline hex styles to Tailwind utility classes.
+//   AC3 specifically protected — DashboardOverlay uses bg-canvas-dashboard,
+//   all respondent screens use bg-canvas-respondent.
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 
@@ -17,70 +20,35 @@ import QuestionScreen from './components/screens/QuestionScreen';
 function DisambiguationScreen({ onResume, onNewSession }) {
   return (
     <div
-      style={{
-        minHeight: '100vh',
-        background: '#0D0D12',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem',
-        fontFamily: 'system-ui, sans-serif',
-      }}
+      className={
+        'min-h-screen bg-canvas-respondent flex items-center justify-center p-8'
+      }
     >
-      <div
-        style={{
-          maxWidth: '480px',
-          width: '100%',
-          background: '#161620',
-          borderRadius: '12px',
-          padding: '2rem',
-        }}
-      >
-        <h2
-          style={{
-            color: '#F8FAFC',
-            fontSize: '1.25rem',
-            fontWeight: 500,
-            marginBottom: '0.5rem',
-          }}
-        >
+      <div className="max-w-[480px] w-full bg-canvas-surface rounded-card p-8">
+        <h2 className="text-primary text-heading-md font-medium mb-2">
           Welcome back
         </h2>
-        <p style={{ color: '#94A3B8', fontSize: '0.9375rem', marginBottom: '2rem' }}>
+        <p className="text-secondary text-body mb-8">
           It looks like you started a session earlier.
         </p>
         <button
           type="button"
           onClick={onResume}
-          style={{
-            display: 'block',
-            width: '100%',
-            padding: '1rem',
-            background: 'rgba(96, 165, 250, 0.1)',
-            border: '1px solid #60A5FA',
-            borderRadius: '8px',
-            color: '#60A5FA',
-            fontSize: '0.9375rem',
-            cursor: 'pointer',
-            marginBottom: '0.75rem',
-          }}
+          className={
+            'block w-full p-4 rounded-lg text-body cursor-pointer mb-3 ' +
+            'bg-professional-400/10 border border-professional-400 ' +
+            'text-professional-400'
+          }
         >
           Resume my session — pick up where I left off
         </button>
         <button
           type="button"
           onClick={onNewSession}
-          style={{
-            display: 'block',
-            width: '100%',
-            padding: '1rem',
-            background: 'transparent',
-            border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: '8px',
-            color: '#94A3B8',
-            fontSize: '0.9375rem',
-            cursor: 'pointer',
-          }}
+          className={
+            'block w-full p-4 rounded-lg text-body cursor-pointer ' +
+            'bg-transparent border border-white/10 text-secondary'
+          }
         >
           Start fresh — I am someone new
         </button>
@@ -90,60 +58,39 @@ function DisambiguationScreen({ onResume, onNewSession }) {
 }
 
 // ── Dashboard overlay ─────────────────────────────────────────────────────
+// AC3 anchor: This is the ONLY surface that uses bg-canvas-dashboard.
 function DashboardOverlay({ onClose }) {
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-label="Management Dashboard"
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 50,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'rgba(0,0,0,0.7)',
-      }}
+      className={
+        'fixed inset-0 z-50 flex items-center justify-center bg-black/70'
+      }
     >
       <div
-        style={{
-          width: '100%',
-          maxWidth: '64rem',
-          height: '75vh',
-          background: '#0B1120',
-          borderRadius: '12px',
-          padding: '2rem',
-          overflow: 'auto',
-          fontFamily: 'system-ui, sans-serif',
-        }}
+        className={
+          'w-full max-w-4xl bg-canvas-dashboard rounded-card p-8 overflow-auto'
+        }
+        style={{ height: '75vh' }}
       >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '1.5rem',
-          }}
-        >
-          <h2 style={{ color: '#E2E8F0', fontSize: '1.25rem', fontWeight: 500 }}>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-neutral-200 text-heading-md font-medium">
             GuestIQ Management
           </h2>
           <button
             type="button"
             onClick={onClose}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#94A3B8',
-              cursor: 'pointer',
-              fontSize: '0.8125rem',
-            }}
+            className={
+              'bg-transparent border-none text-secondary cursor-pointer ' +
+              'text-caption'
+            }
           >
             Esc to close ×
           </button>
         </div>
-        <p style={{ color: '#94A3B8', fontSize: '0.9375rem' }}>
+        <p className="text-secondary text-body">
           Dashboard — full implementation in Sprint 4
         </p>
       </div>
@@ -250,23 +197,11 @@ export default function App() {
   if (screen === SCREEN.LOADING) {
     return (
       <div
-        style={{
-          minHeight: '100vh',
-          background: '#0D0D12',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
+        className={
+          'min-h-screen bg-canvas-respondent flex items-center justify-center'
+        }
       >
-        <div
-          style={{
-            color: '#475569',
-            fontSize: '0.8125rem',
-            fontFamily: 'system-ui, sans-serif',
-          }}
-        >
-          Loading...
-        </div>
+        <div className="text-neutral-600 text-caption">Loading...</div>
       </div>
     );
   }
@@ -274,30 +209,21 @@ export default function App() {
   if (screen === SCREEN.EXITED) {
     return (
       <div
-        style={{
-          minHeight: '100vh',
-          background: '#0D0D12',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: 'system-ui, sans-serif',
-        }}
+        className={
+          'min-h-screen bg-canvas-respondent flex items-center justify-center'
+        }
       >
-        <div style={{ textAlign: 'center' }}>
-          <p style={{ color: '#94A3B8', fontSize: '0.9375rem', marginBottom: '1rem' }}>
+        <div className="text-center">
+          <p className="text-secondary text-body mb-4">
             Thank you. You can close this page.
           </p>
           <button
             type="button"
             onClick={() => setScreen(SCREEN.WELCOME)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#475569',
-              fontSize: '0.8125rem',
-              cursor: 'pointer',
-              textDecoration: 'underline',
-            }}
+            className={
+              'bg-transparent border-none text-neutral-600 text-caption ' +
+              'cursor-pointer underline'
+            }
           >
             Changed your mind? Go back
           </button>

@@ -5,35 +5,30 @@
 // Design spec: Visual Design System v1.0 Section 4 (Tier Card Component Anatomy)
 // Single screen — hook text + tier cards simultaneously.
 // No Continue button. Tier selection IS the start action.
+//
+// S3-09: Migrated from inline hex styles to Tailwind utility classes.
+//   Inline `style` is retained ONLY for runtime tier-colour values
+//   (hex-with-alpha suffixes like `${color}33` that Tailwind cannot emit
+//   from a prop at build time).
 
 import { useEffect } from 'react';
 
 import { trackWelcomeHookViewed, trackTierSelected } from '../../services/analytics';
-
-// Tier colour map — from Visual Identity Document (locked values)
-const TIER_COLORS = {
-  amateur: '#4ADE80',
-  professional: '#60A5FA',
-  expert: '#A78BFA',
-};
+import { TIER_HEX } from '../../constants/tierColors';
 
 // TierCard — receives all content as props, zero hardcoded strings
 function TierCard({ tier, tierData, onSelect, isPopular }) {
-  const color = TIER_COLORS[tier];
+  const color = TIER_HEX[tier];
 
   return (
     <div
+      className={
+        'relative bg-canvas-surface rounded-card p-6 flex flex-col gap-3 ' +
+        'cursor-pointer transition-[border-color,transform] duration-150'
+      }
       style={{
-        background: '#161620',
+        // Dynamic tier border — alpha suffix not expressible in Tailwind from a prop
         border: `1px solid ${color}33`,
-        borderRadius: '12px',
-        padding: '1.5rem',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.75rem',
-        cursor: 'pointer',
-        transition: 'border-color 0.15s ease, transform 0.15s ease',
-        position: 'relative',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.borderColor = `${color}99`;
@@ -47,19 +42,12 @@ function TierCard({ tier, tierData, onSelect, isPopular }) {
       {/* Most Selected badge — Professional only */}
       {isPopular && (
         <div
-          style={{
-            position: 'absolute',
-            top: '-12px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            background: '#1E3A8A',
-            color: '#BFDBFE',
-            fontSize: '11px',
-            fontWeight: 500,
-            padding: '2px 12px',
-            borderRadius: '999px',
-            whiteSpace: 'nowrap',
-          }}
+          className={
+            'absolute -top-3 left-1/2 -translate-x-1/2 bg-professional-800 ' +
+            'text-professional-200 px-3 py-0.5 rounded-pill whitespace-nowrap ' +
+            'font-medium'
+          }
+          style={{ fontSize: '11px' }}
         >
           ★ Most selected
         </div>
@@ -67,35 +55,19 @@ function TierCard({ tier, tierData, onSelect, isPopular }) {
 
       {/* Tier name */}
       <div
-        style={{
-          fontSize: '1.25rem',
-          fontWeight: 600,
-          color,
-          textTransform: 'capitalize',
-        }}
+        className="text-heading-md font-semibold capitalize"
+        style={{ color }}
       >
         {tierData.name}
       </div>
 
       {/* Descriptor */}
-      <div
-        style={{
-          fontSize: '0.875rem',
-          color: '#94A3B8',
-          lineHeight: 1.5,
-          flexGrow: 1,
-        }}
-      >
+      <div className="text-sm text-secondary leading-relaxed flex-grow">
         {tierData.descriptor}
       </div>
 
       {/* Time + question count */}
-      <div
-        style={{
-          fontSize: '0.8125rem',
-          color: '#64748B',
-        }}
-      >
+      <div className="text-caption text-muted">
         {tierData.timeEstimate} · {tierData.questionCount} questions
       </div>
 
@@ -103,21 +75,15 @@ function TierCard({ tier, tierData, onSelect, isPopular }) {
       <button
         type="button"
         onClick={() => onSelect(tier)}
+        className={
+          'mt-2 px-4 py-3 rounded-lg text-body font-medium w-full ' +
+          'transition-opacity duration-150 hover:opacity-90 cursor-pointer'
+        }
         style={{
-          marginTop: '0.5rem',
-          padding: '0.75rem 1rem',
           background: color,
-          color: '#0D0D12',
+          color: 'var(--canvas-respondent)',
           border: 'none',
-          borderRadius: '8px',
-          fontSize: '0.9375rem',
-          fontWeight: 500,
-          cursor: 'pointer',
-          width: '100%',
-          transition: 'opacity 0.15s ease',
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
-        onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
       >
         {tierData.ctaLabel}
       </button>
@@ -141,42 +107,29 @@ export default function WelcomeScreen({ uiCopy, tiers, onTierSelected, onNotNow,
 
   return (
     <div
-      style={{
-        minHeight: '100vh',
-        background: '#0D0D12',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem 1rem',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-      }}
+      className={
+        'min-h-screen bg-canvas-respondent flex flex-col items-center ' +
+        'justify-center px-4 py-8'
+      }
     >
-      <div style={{ maxWidth: '720px', width: '100%' }}>
+      <div className="w-full max-w-[720px]">
         {/* GuestIQ wordmark */}
         <div
-          style={{
-            textAlign: 'center',
-            fontSize: '1rem',
-            fontWeight: 600,
-            color: '#60A5FA',
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-            marginBottom: '2rem',
-          }}
+          className={
+            'text-center text-base font-semibold text-professional-400 ' +
+            'uppercase mb-8'
+          }
+          style={{ letterSpacing: '0.1em' }}
         >
           GuestIQ
         </div>
 
         {/* AC1: Hook text — renders immediately, no delay */}
         <h1
+          className="font-bold text-primary text-center mb-4"
           style={{
             fontSize: 'clamp(1.5rem, 4vw, 2rem)',
-            fontWeight: 700,
-            color: '#F8FAFC',
-            textAlign: 'center',
             lineHeight: 1.25,
-            marginBottom: '1rem',
           }}
         >
           {/* AC8: From uiCopy — not hardcoded */}
@@ -185,15 +138,10 @@ export default function WelcomeScreen({ uiCopy, tiers, onTierSelected, onNotNow,
 
         {/* Context statement */}
         <p
-          style={{
-            fontSize: '0.9375rem',
-            color: '#94A3B8',
-            textAlign: 'center',
-            lineHeight: 1.6,
-            marginBottom: '2.5rem',
-            maxWidth: '560px',
-            margin: '0 auto 2.5rem',
-          }}
+          className={
+            'text-body text-secondary text-center leading-relaxed ' +
+            'max-w-[560px] mx-auto mb-10'
+          }
         >
           {uiCopy.welcomeContextStatement}
         </p>
@@ -201,12 +149,8 @@ export default function WelcomeScreen({ uiCopy, tiers, onTierSelected, onNotNow,
         {/* AC2: Three tier cards — correct colors, descriptors, time/Q counts, CTAs */}
         {/* AC1: No Continue button — tier selection IS the start action */}
         <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '1rem',
-            marginBottom: '2rem',
-          }}
+          className="grid gap-4 mb-8"
+          style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}
         >
           {['amateur', 'professional', 'expert'].map((tier) => (
             <TierCard
@@ -220,52 +164,26 @@ export default function WelcomeScreen({ uiCopy, tiers, onTierSelected, onNotNow,
         </div>
 
         {/* AC3 + AC9: Privacy notice — visible without scrolling, from uiCopy */}
-        <div
-          style={{
-            textAlign: 'center',
-            marginBottom: '1.25rem',
-          }}
-        >
-          {/* AC8: From uiCopy.privacyNoticeText — not hardcoded */}
-          <p
-            style={{
-              fontSize: '0.8125rem',
-              color: '#64748B',
-              lineHeight: 1.6,
-              marginBottom: '0.375rem',
-            }}
-          >
+        <div className="text-center mb-5">
+          <p className="text-caption text-muted leading-relaxed mb-1.5">
             {uiCopy.privacyNoticeText}
           </p>
           {/* AC3: Voluntary participation text — required by FR-008 v2.0 */}
-          <p
-            style={{
-              fontSize: '0.8125rem',
-              color: '#64748B',
-              lineHeight: 1.6,
-            }}
-          >
+          <p className="text-caption text-muted leading-relaxed">
             {uiCopy.voluntaryParticipationText}
           </p>
         </div>
 
         {/* AC4: Not now link — no session record, no localStorage token */}
-        <div style={{ textAlign: 'center' }}>
+        <div className="text-center">
           <button
             type="button"
             onClick={onNotNow}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#475569',
-              fontSize: '0.8125rem',
-              cursor: 'pointer',
-              padding: '0.25rem 0.5rem',
-              textDecoration: 'underline',
-              transition: 'color 0.15s ease',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = '#94A3B8')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = '#475569')}
+            className={
+              'bg-transparent border-none text-neutral-600 text-caption ' +
+              'cursor-pointer px-2 py-1 underline transition-colors ' +
+              'duration-150 hover:text-secondary'
+            }
           >
             {uiCopy.notNowLinkLabel}
           </button>
