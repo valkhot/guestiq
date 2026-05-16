@@ -102,13 +102,17 @@ body {
 /* ── EpisodeMap current-node pulse animation ────────────────────────── */
 /* Migrated from JS-injected style in EpisodeMap.jsx for cleaner global  */
 /* style management. The --giq-tier-rgb variable is set at runtime by    */
-/* EpisodeMap based on the active session tier.                         */
+/* EpisodeMap based on the active session tier.                          */
+/*                                                                       */
+/* Pattern: persistent 2px halo + outward expansion to 12px every 1.8s.  */
+/* The persistent halo makes the current node legible at any moment;     */
+/* the expansion adds kinetic "you are here" signal.                     */
 @keyframes giq-pulse {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(var(--giq-tier-rgb), 0.5);
+    box-shadow: 0 0 0 2px rgba(var(--giq-tier-rgb), 0.6);
   }
   50% {
-    box-shadow: 0 0 0 5px rgba(var(--giq-tier-rgb), 0);
+    box-shadow: 0 0 0 12px rgba(var(--giq-tier-rgb), 0);
   }
 }
 
