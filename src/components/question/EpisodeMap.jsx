@@ -4,39 +4,15 @@
 // AC1: Progress bar fills proportionally within the current episode.
 // AC2: Completed episodes show checkmark, current episode pulses, future muted.
 // AC3: Episode names read from questionnaire data — not hardcoded here.
+//
+// S3-09:
+//   - Removed ensurePulseStyle() — @keyframes giq-pulse is now in global.css
+//   - Tier hex and RGB values imported from src/constants/tierColors.js
+//   - Static colours migrated to Tailwind utility classes / CSS variables
 
 import { useEffect, useState } from 'react';
 
-// Pulsing ring animation via CSS keyframes injected once
-const PULSE_STYLE_ID = 'guestiq-pulse-style';
-function ensurePulseStyle() {
-  if (document.getElementById(PULSE_STYLE_ID)) return;
-  const style = document.createElement('style');
-  style.id = PULSE_STYLE_ID;
-  style.textContent = `
-    @keyframes giq-pulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(var(--giq-tier-rgb), 0.5); }
-      50% { box-shadow: 0 0 0 5px rgba(var(--giq-tier-rgb), 0); }
-    }
-    .giq-node-current {
-      animation: giq-pulse 1.8s ease-in-out infinite;
-    }
-  `;
-  document.head.appendChild(style);
-}
-
-// Tier colour → RGB for CSS variable
-const TIER_RGB = {
-  amateur:      '74, 222, 128',
-  professional: '96, 165, 250',
-  expert:       '167, 139, 250',
-};
-
-const TIER_HEX = {
-  amateur:      '#4ADE80',
-  professional: '#60A5FA',
-  expert:       '#A78BFA',
-};
+import { getTierHex, getTierRgb } from '../../constants/tierColors';
 
 export default function EpisodeMap({
   episodes,           // array from questionnaire data
@@ -45,59 +21,36 @@ export default function EpisodeMap({
   tier,               // 'amateur' | 'professional' | 'expert'
 }) {
   const [tooltip, setTooltip] = useState(null); // episode number being hovered
-  const tierColor = TIER_HEX[tier] || TIER_HEX.professional;
-  const tierRgb = TIER_RGB[tier] || TIER_RGB.professional;
+  const tierColor = getTierHex(tier);
+  const tierRgb = getTierRgb(tier);
 
+  // Set CSS variable for pulse animation colour — keyframe lives in global.css.
   useEffect(() => {
-    ensurePulseStyle();
-    // Set CSS variable for pulse animation colour
     document.documentElement.style.setProperty('--giq-tier-rgb', tierRgb);
   }, [tierRgb]);
 
   return (
-    <div style={{ maxWidth: '720px', margin: '0 auto', padding: '0 1.5rem' }}>
+    <div className="max-w-[720px] mx-auto px-6">
       {/* Progress bar — fills within current episode only */}
       <div
-        style={{
-          height: '3px',
-          background: 'rgba(255,255,255,0.06)',
-          borderRadius: '2px',
-          marginBottom: '10px',
-          overflow: 'hidden',
-        }}
+        className="rounded-sm overflow-hidden bg-white/5 mb-2.5"
+        style={{ height: '3px' }}
       >
         <div
+          className="h-full rounded-sm transition-[width] duration-[400ms] ease-out"
           style={{
-            height: '100%',
             width: `${Math.min(100, Math.max(0, progressWithinEp * 100))}%`,
             background: tierColor,
-            borderRadius: '2px',
-            transition: 'width 0.4s ease',
           }}
         />
       </div>
 
       {/* Episode nodes row */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          position: 'relative',
-        }}
-      >
+      <div className="flex items-center justify-between relative">
         {/* Connector line behind nodes */}
         <div
-          style={{
-            position: 'absolute',
-            left: '12px',
-            right: '12px',
-            top: '50%',
-            height: '1px',
-            background: 'rgba(255,255,255,0.07)',
-            transform: 'translateY(-50%)',
-            zIndex: 0,
-          }}
+          className="absolute top-1/2 -translate-y-1/2 bg-white/[0.07] z-0"
+          style={{ left: '12px', right: '12px', height: '1px' }}
         />
 
         {episodes.map((ep) => {
@@ -106,27 +59,21 @@ export default function EpisodeMap({
           return (
             <div
               key={ep.number}
-              style={{ position: 'relative', zIndex: 1 }}
+              className="relative z-10"
               onMouseEnter={() => setTooltip(ep.number)}
               onMouseLeave={() => setTooltip(null)}
             >
               {/* Tooltip on hover — AC4 */}
               {tooltip === ep.number && (
                 <div
+                  className={
+                    'absolute left-1/2 -translate-x-1/2 px-2.5 py-1 rounded-md ' +
+                    'bg-neutral-800 border border-white/10 text-neutral-200 ' +
+                    'whitespace-nowrap pointer-events-none z-10'
+                  }
                   style={{
-                    position: 'absolute',
                     bottom: '28px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    background: '#1E293B',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: '6px',
-                    padding: '4px 10px',
                     fontSize: '11px',
-                    color: '#E2E8F0',
-                    whiteSpace: 'nowrap',
-                    pointerEvents: 'none',
-                    zIndex: 10,
                   }}
                 >
                   {ep.name}
@@ -135,54 +82,50 @@ export default function EpisodeMap({
 
               {/* Node circle */}
               <div
-                className={isCurrent ? 'giq-node-current' : ''}
+                className={
+                  'rounded-full flex items-center justify-center ' +
+                  'transition-all duration-300 ' +
+                  (isCurrent ? 'giq-node-current' : '')
+                }
                 style={{
                   width: '20px',
                   height: '20px',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
                   background: isCompleted
                     ? tierColor
                     : isCurrent
                       ? `${tierColor}22`
                       : 'rgba(255,255,255,0.04)',
-                  border: isCompleted
+                  border: isCompleted || isCurrent
                     ? `2px solid ${tierColor}`
-                    : isCurrent
-                      ? `2px solid ${tierColor}`
-                      : '2px solid rgba(255,255,255,0.12)',
-                  transition: 'all 0.3s ease',
-                  cursor: 'default',
+                    : '2px solid rgba(255,255,255,0.12)',
                 }}
               >
                 {isCompleted ? (
                   // Checkmark for completed episodes
                   <span
-                    style={{ fontSize: '10px', color: '#0D0D12', fontWeight: 700, lineHeight: 1 }}
+                    className="font-bold leading-none"
+                    style={{
+                      fontSize: '10px',
+                      color: 'var(--canvas-respondent)',
+                    }}
                   >
                     ✓
                   </span>
                 ) : isCurrent ? (
                   // Filled dot for current episode
                   <div
+                    className="rounded-full"
                     style={{
                       width: '7px',
                       height: '7px',
-                      borderRadius: '50%',
                       background: tierColor,
                     }}
                   />
                 ) : (
                   // Episode number for future episodes
                   <span
-                    style={{
-                      fontSize: '9px',
-                      color: '#334155',
-                      fontWeight: 500,
-                      lineHeight: 1,
-                    }}
+                    className="font-medium leading-none text-[#334155]"
+                    style={{ fontSize: '9px' }}
                   >
                     {ep.number}
                   </span>

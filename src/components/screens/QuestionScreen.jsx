@@ -34,12 +34,7 @@ import {
   BADGE_IDS,
   EPISODE_BADGE_MAP,
 } from '../badges/BadgeDefinitions';
-
-const TIER_COLORS = {
-  amateur: '#4ADE80',
-  professional: '#60A5FA',
-  expert: '#A78BFA',
-};
+import { getTierHex } from '../../constants/tierColors';
 
 // Upgrade trigger: which episode completion triggers an upgrade prompt
 const UPGRADE_TRIGGERS = {
@@ -134,7 +129,7 @@ export default function QuestionScreen({
   const sessionStartedAtRef = useRef(Date.now());
 
   const lastEpisodeRef = useRef(null);
-  const tierColor = TIER_COLORS[currentTier] || TIER_COLORS.professional;
+  const tierColor = getTierHex(currentTier);
 
   const intentCategory = session.intentCategory || resumedSession?.intent_category || null;
 
@@ -568,16 +563,11 @@ export default function QuestionScreen({
   if (!sessionReady) {
     return (
       <div
-        style={{
-          minHeight: '100vh',
-          background: '#0D0D12',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: 'system-ui, sans-serif',
-        }}
+        className={
+          'min-h-screen bg-canvas-respondent flex items-center justify-center'
+        }
       >
-        <div style={{ color: '#475569', fontSize: '0.8125rem' }}>Starting session...</div>
+        <div className="text-neutral-600 text-caption">Starting session...</div>
       </div>
     );
   }
@@ -609,18 +599,11 @@ export default function QuestionScreen({
         />
       ) : !currentQuestion ? (
         <div
-          style={{
-            minHeight: '100vh',
-            background: '#0D0D12',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontFamily: 'system-ui, sans-serif',
-          }}
+          className={
+            'min-h-screen bg-canvas-respondent flex items-center justify-center'
+          }
         >
-          <div style={{ color: '#94A3B8', fontSize: '0.9375rem' }}>
-            Session complete.
-          </div>
+          <div className="text-secondary text-body">Session complete.</div>
         </div>
       ) : (
         <Question

@@ -1,6 +1,10 @@
 // src/components/question/ScaleQuestion.jsx
 // GuestIQ — Scale (Likert) Question Renderer
 // S3-NEW-UX (final): Sticky Continue bar matches SingleSelectQuestion pattern.
+// S3-09: Migrated to Tailwind utility classes; tier colour passed in as prop.
+//
+// AC4: Selected state uses SHAPE change (border thickness 2px → 7px filled-ring)
+// alongside colour change — accessibility-compliant indicator.
 
 import { useState } from 'react';
 
@@ -18,16 +22,9 @@ export default function ScaleQuestion({ question, onAnswer, tierColor = '#60A5FA
   }
 
   return (
-    <div style={{ paddingBottom: '5rem' }}>
+    <div className="pb-20">
       {/* Scale buttons */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(5, 1fr)',
-          gap: '0.5rem',
-          marginBottom: '0.75rem',
-        }}
-      >
+      <div className="grid grid-cols-5 gap-2 mb-3">
         {[1, 2, 3, 4, 5].map((val) => {
           const isSelected = selected === val;
           return (
@@ -35,19 +32,17 @@ export default function ScaleQuestion({ question, onAnswer, tierColor = '#60A5FA
               key={val}
               type="button"
               onClick={() => handleSelect(val)}
+              className={
+                'px-2 py-4 rounded-lg cursor-pointer flex flex-col items-center ' +
+                'gap-2 transition-all duration-[120ms] ease-out'
+              }
               style={{
-                padding: '1rem 0.5rem',
-                background: isSelected ? `${tierColor}26` : 'rgba(255,255,255,0.02)',
+                background: isSelected
+                  ? `${tierColor}26`
+                  : 'rgba(255,255,255,0.02)',
                 border: isSelected
                   ? `1px solid ${tierColor}99`
                   : '1px solid rgba(255,255,255,0.08)',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '0.5rem',
-                transition: 'all 0.12s ease',
               }}
               onMouseEnter={(e) => {
                 if (!isSelected) {
@@ -62,21 +57,20 @@ export default function ScaleQuestion({ question, onAnswer, tierColor = '#60A5FA
                 }
               }}
             >
+              {/* AC4: SHAPE indicator — 2px hollow ring → 7px filled ring */}
               <div
+                className="rounded-full transition-[border] duration-[120ms]"
                 style={{
                   width: '28px',
                   height: '28px',
-                  borderRadius: '50%',
-                  border: isSelected ? `7px solid ${tierColor}` : '2px solid rgba(255,255,255,0.2)',
-                  transition: 'border 0.12s ease',
+                  border: isSelected
+                    ? `7px solid ${tierColor}`
+                    : '2px solid rgba(255,255,255,0.2)',
                 }}
               />
               <span
-                style={{
-                  fontSize: '0.8125rem',
-                  fontWeight: 600,
-                  color: isSelected ? tierColor : '#64748B',
-                }}
+                className="text-caption font-semibold"
+                style={{ color: isSelected ? tierColor : 'var(--text-muted)' }}
               >
                 {val}
               </span>
@@ -86,32 +80,16 @@ export default function ScaleQuestion({ question, onAnswer, tierColor = '#60A5FA
       </div>
 
       {/* Scale endpoint labels */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          padding: '0 0.25rem',
-          marginBottom: '1.5rem',
-        }}
-      >
+      <div className="flex justify-between px-1 mb-6">
         <span
-          style={{
-            fontSize: '0.75rem',
-            color: '#475569',
-            maxWidth: '35%',
-            lineHeight: 1.3,
-          }}
+          className="text-xs text-neutral-600 leading-tight"
+          style={{ maxWidth: '35%' }}
         >
           {labels[0]}
         </span>
         <span
-          style={{
-            fontSize: '0.75rem',
-            color: '#475569',
-            maxWidth: '35%',
-            lineHeight: 1.3,
-            textAlign: 'right',
-          }}
+          className="text-xs text-neutral-600 leading-tight text-right"
+          style={{ maxWidth: '35%' }}
         >
           {labels[4]}
         </span>
@@ -119,52 +97,34 @@ export default function ScaleQuestion({ question, onAnswer, tierColor = '#60A5FA
 
       {/* Sticky Continue — same pattern as SingleSelectQuestion */}
       <div
+        className="fixed bottom-0 left-0 right-0 px-6 pt-4 pb-6 z-10 max-w-[720px] mx-auto"
         style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          padding: '1rem 1.5rem 1.5rem',
-          background: 'linear-gradient(to top, #0D0D12 70%, transparent)',
-          zIndex: 10,
-          maxWidth: '720px',
-          margin: '0 auto',
+          background:
+            'linear-gradient(to top, var(--canvas-respondent) 70%, transparent)',
         }}
       >
         {selected !== null ? (
           <button
             type="button"
             onClick={handleContinue}
+            className={
+              'w-full py-3.5 rounded-lg text-body font-semibold cursor-pointer ' +
+              'transition-opacity duration-[120ms] hover:opacity-90'
+            }
             style={{
-              width: '100%',
-              padding: '0.875rem',
               background: tierColor,
-              color: '#0D0D12',
+              color: 'var(--canvas-respondent)',
               border: 'none',
-              borderRadius: '8px',
-              fontSize: '0.9375rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'opacity 0.12s ease',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.88')}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
           >
             Continue →
           </button>
         ) : (
           <div
-            style={{
-              width: '100%',
-              padding: '0.875rem',
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.06)',
-              borderRadius: '8px',
-              fontSize: '0.9375rem',
-              color: '#334155',
-              textAlign: 'center',
-              userSelect: 'none',
-            }}
+            className={
+              'w-full py-3.5 rounded-lg text-body text-center select-none ' +
+              'bg-white/[0.04] border border-white/[0.06] text-[#334155]'
+            }
           >
             Select a point on the scale above to continue
           </div>

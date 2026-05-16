@@ -3,6 +3,9 @@
 // S3-NEW-UX (final): Two-step selection + sticky Continue.
 // Q1 progressive disclosure: top 7 primary options + expandable extended section.
 // Sticky Continue lives in Question.jsx (wraps all renderers).
+//
+// S3-09: Migrated to Tailwind utility classes; tier colour passed in as prop.
+// AC4: Selected state uses SHAPE change — 2px outline radio → filled-ring radio.
 
 import { useState } from 'react';
 
@@ -16,20 +19,21 @@ const Q1_EXTENDED_ORDER = ['C', 'L', 'G', 'I', 'H', 'M'];
 
 function OptionRow({ option, isSelected, onSelect, tierColor, compact = false }) {
   const isNone = option.code === OPTION_NONE_CODE;
-  const size = compact ? '0.875rem' : '0.9375rem';
   const radioSize = compact ? '14px' : '18px';
   const radioFill = compact ? '4px' : '5px';
   const pad = compact ? '0.625rem 0.875rem' : '0.875rem 1rem';
+  const fontSize = compact ? '0.875rem' : '0.9375rem';
 
   return (
     <button
       type="button"
       onClick={() => onSelect(option)}
+      className={
+        'flex items-start gap-3 w-full rounded-lg cursor-pointer text-left ' +
+        'transition-all duration-[120ms] ' +
+        (compact ? 'mb-0' : 'mb-2')
+      }
       style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        gap: '0.75rem',
-        width: '100%',
         padding: pad,
         background: isSelected
           ? `${tierColor}14`
@@ -41,11 +45,6 @@ function OptionRow({ option, isSelected, onSelect, tierColor, compact = false })
           : isNone
             ? '1px solid rgba(255,255,255,0.04)'
             : '1px solid rgba(255,255,255,0.07)',
-        borderRadius: '8px',
-        cursor: 'pointer',
-        textAlign: 'left',
-        transition: 'all 0.12s ease',
-        marginBottom: compact ? '0' : '0.5rem',
       }}
       onMouseEnter={(e) => {
         if (!isSelected) {
@@ -58,44 +57,42 @@ function OptionRow({ option, isSelected, onSelect, tierColor, compact = false })
           e.currentTarget.style.borderColor = isNone
             ? 'rgba(255,255,255,0.04)'
             : 'rgba(255,255,255,0.07)';
-          e.currentTarget.style.background = isNone ? 'transparent' : 'rgba(255,255,255,0.02)';
+          e.currentTarget.style.background = isNone
+            ? 'transparent'
+            : 'rgba(255,255,255,0.02)';
         }
       }}
     >
+      {/* AC4: SHAPE indicator — 2px hollow ring → 5px filled ring */}
       <div
+        className="flex-shrink-0 rounded-full transition-[border] duration-[120ms]"
         style={{
-          flexShrink: 0,
           width: radioSize,
           height: radioSize,
-          borderRadius: '50%',
           border: isSelected
             ? `${radioFill} solid ${tierColor}`
-            : `2px solid rgba(255,255,255,0.2)`,
+            : '2px solid rgba(255,255,255,0.2)',
           marginTop: '2px',
-          transition: 'border 0.12s ease',
         }}
       />
-      <div style={{ flex: 1 }}>
+      <div className="flex-1">
         {!isNone && (
           <span
+            className="font-semibold mr-1.5 font-mono"
             style={{
               fontSize: '0.6875rem',
-              fontWeight: 600,
-              color: isSelected ? tierColor : '#475569',
-              marginRight: '0.375rem',
-              fontFamily: 'monospace',
+              color: isSelected ? tierColor : 'var(--text-muted)',
             }}
           >
             {option.code}
           </span>
         )}
         <span
-          style={{
-            fontSize: size,
-            color: isNone ? '#64748B' : '#E2E8F0',
-            lineHeight: 1.5,
-            fontStyle: isNone ? 'italic' : 'normal',
-          }}
+          className={
+            'leading-relaxed ' +
+            (isNone ? 'text-muted italic' : 'text-neutral-200')
+          }
+          style={{ fontSize }}
         >
           {option.text}
         </span>
@@ -136,71 +133,43 @@ function Q1Layout({ options, selectedCode, onSelect, tierColor, otherText, onOth
       <button
         type="button"
         onClick={() => setExtended((p) => !p)}
-        style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: '0.75rem',
-          width: '100%',
-          padding: '0.875rem 1rem',
-          background: 'rgba(255,255,255,0.02)',
-          border: '1px solid rgba(255,255,255,0.07)',
-          borderRadius: '8px',
-          cursor: 'pointer',
-          textAlign: 'left',
-          transition: 'all 0.12s ease',
-          marginBottom: '0.5rem',
-        }}
+        className={
+          'flex items-start gap-3 w-full px-4 py-3.5 rounded-lg cursor-pointer ' +
+          'text-left transition-all duration-[120ms] mb-2 ' +
+          'bg-white/[0.02] border border-white/[0.07] hover:bg-white/[0.03]'
+        }
         onMouseEnter={(e) => {
           e.currentTarget.style.borderColor = `${tierColor}40`;
-          e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)';
-          e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
         }}
       >
         {/* Square toggle indicator */}
         <div
+          className={
+            'flex-shrink-0 rounded border border-white/20 flex items-center ' +
+            'justify-center'
+          }
           style={{
-            flexShrink: 0,
             width: '18px',
             height: '18px',
-            borderRadius: '4px',
-            border: `1px solid rgba(255,255,255,0.2)`,
             marginTop: '2px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
           }}
         >
-          <span
-            style={{
-              fontSize: '0.75rem',
-              color: '#94A3B8',
-              lineHeight: 1,
-              fontWeight: 500,
-            }}
-          >
+          <span className="text-xs text-secondary leading-none font-medium">
             {extended ? '−' : '+'}
           </span>
         </div>
-        <span
-          style={{
-            fontSize: '0.9375rem',
-            color: '#94A3B8',
-            lineHeight: 1.5,
-            flex: 1,
-          }}
-        >
+        <span className="text-body text-secondary leading-relaxed flex-1">
           {extended
             ? "My guest's reason is not listed above — collapse"
             : "My guest's reason is not listed above — see more options"}
         </span>
         <span
+          className="flex-shrink-0 text-neutral-600"
           style={{
-            flexShrink: 0,
             fontSize: '0.625rem',
-            color: '#475569',
             marginTop: '4px',
             transform: extended ? 'rotate(180deg)' : 'none',
             transition: 'transform 0.2s',
@@ -213,13 +182,10 @@ function Q1Layout({ options, selectedCode, onSelect, tierColor, otherText, onOth
       {/* Extended options */}
       {extended && (
         <div
-          style={{
-            background: 'rgba(255,255,255,0.015)',
-            border: '1px solid rgba(255,255,255,0.05)',
-            borderRadius: '8px',
-            padding: '0.5rem 0.75rem',
-            marginBottom: '0.5rem',
-          }}
+          className={
+            'rounded-lg border border-white/[0.05] px-3 py-2 mb-2 ' +
+            'bg-white/[0.015]'
+          }
         >
           {extendedOptions.map((option, i) => {
             const isSelected = selectedCode === option.code;
@@ -261,9 +227,8 @@ function Q1Layout({ options, selectedCode, onSelect, tierColor, otherText, onOth
 function OtherInput({ tierColor, value, onChange, compact = false }) {
   return (
     <div
+      className="-mt-1 mb-3"
       style={{
-        marginTop: '-0.25rem',
-        marginBottom: '0.75rem',
         paddingLeft: compact ? '2.25rem' : '2.875rem',
       }}
     >
@@ -272,16 +237,12 @@ function OtherInput({ tierColor, value, onChange, compact = false }) {
         placeholder="Please specify..."
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        className={
+          'w-full px-3.5 py-2.5 rounded-md text-body outline-none box-border ' +
+          'bg-white/[0.04] text-neutral-200'
+        }
         style={{
-          width: '100%',
-          padding: '0.625rem 0.875rem',
-          background: 'rgba(255,255,255,0.04)',
           border: `1px solid ${tierColor}66`,
-          borderRadius: '6px',
-          color: '#E2E8F0',
-          fontSize: '0.9375rem',
-          outline: 'none',
-          boxSizing: 'border-box',
         }}
       />
     </div>
@@ -303,7 +264,8 @@ export default function SingleSelectQuestion({ question, onAnswer, tierColor = '
     selectedOption.text &&
     selectedOption.text.toLowerCase().includes('please specify');
 
-  const continueReady = selectedCode !== null && (!selectedIsOther || otherText.trim().length > 0);
+  const continueReady =
+    selectedCode !== null && (!selectedIsOther || otherText.trim().length > 0);
 
   function handleSelect(option) {
     setSelectedCode(option.code);
@@ -323,11 +285,7 @@ export default function SingleSelectQuestion({ question, onAnswer, tierColor = '
   const isQ1 = question.id === 'Q1';
 
   return (
-    <div
-      style={{
-        paddingBottom: '5rem',
-      }}
-    >
+    <div className="pb-20">
       {isQ1 ? (
         <Q1Layout
           options={regularOptions}
@@ -360,13 +318,7 @@ export default function SingleSelectQuestion({ question, onAnswer, tierColor = '
       {/* None option — always below all options, above sticky bar */}
       {noneOption && (
         <>
-          <div
-            style={{
-              height: '1px',
-              background: 'rgba(255,255,255,0.06)',
-              margin: '0.5rem 0 0.75rem',
-            }}
-          />
+          <div className="h-px bg-white/[0.06] mt-2 mb-3" />
           <OptionRow
             option={noneOption}
             isSelected={selectedCode === OPTION_NONE_CODE}
@@ -378,52 +330,34 @@ export default function SingleSelectQuestion({ question, onAnswer, tierColor = '
 
       {/* Sticky Continue — fixed to bottom, visible always, active when selection made */}
       <div
+        className="fixed bottom-0 left-0 right-0 px-6 pt-4 pb-6 z-10 max-w-[720px] mx-auto"
         style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          padding: '1rem 1.5rem 1.5rem',
-          background: 'linear-gradient(to top, #0D0D12 70%, transparent)',
-          zIndex: 10,
-          maxWidth: '720px',
-          margin: '0 auto',
+          background:
+            'linear-gradient(to top, var(--canvas-respondent) 70%, transparent)',
         }}
       >
         {continueReady ? (
           <button
             type="button"
             onClick={handleContinue}
+            className={
+              'w-full py-3.5 rounded-lg text-body font-semibold cursor-pointer ' +
+              'transition-opacity duration-[120ms] hover:opacity-90'
+            }
             style={{
-              width: '100%',
-              padding: '0.875rem',
               background: tierColor,
-              color: '#0D0D12',
+              color: 'var(--canvas-respondent)',
               border: 'none',
-              borderRadius: '8px',
-              fontSize: '0.9375rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'opacity 0.12s ease',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.88')}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
           >
             Continue →
           </button>
         ) : (
           <div
-            style={{
-              width: '100%',
-              padding: '0.875rem',
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.06)',
-              borderRadius: '8px',
-              fontSize: '0.9375rem',
-              color: '#334155',
-              textAlign: 'center',
-              userSelect: 'none',
-            }}
+            className={
+              'w-full py-3.5 rounded-lg text-body text-center select-none ' +
+              'bg-white/[0.04] border border-white/[0.06] text-[#334155]'
+            }
           >
             Select an option above to continue
           </div>
