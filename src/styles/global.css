@@ -48,17 +48,6 @@
   --episode-5: #8b5cf6; /* Violet  — What This Guest Actually Needs    */
   --episode-6: #eab308; /* Gold    — Value and What They Pay           */
   --episode-7: #10b981; /* Emerald — After the Stay                    */
-
-  /* ── Tier RGB triplets — used by giq-pulse animation ──────────────── */
-  /* Allows rgba(var(--tier-rgb), 0.5) for the EpisodeMap current-node   */
-  /* pulse without hardcoding the tier hex inside the animation rule.    */
-  --tier-amateur-rgb:      74, 222, 128;
-  --tier-professional-rgb: 96, 165, 250;
-  --tier-expert-rgb:       167, 139, 250;
-
-  /* Default the running pulse-tier-rgb to professional for safety.      */
-  /* QuestionScreen sets this to the active tier at runtime via JS.      */
-  --giq-tier-rgb: var(--tier-professional-rgb);
 }
 
 /* ── Base — respondent canvas applied to body ────────────────────────── */
@@ -99,23 +88,12 @@ body {
   border-radius: 2px;
 }
 
-/* ── EpisodeMap current-node pulse animation ────────────────────────── */
-/* Migrated from JS-injected style in EpisodeMap.jsx for cleaner global  */
-/* style management. The --giq-tier-rgb variable is set at runtime by    */
-/* EpisodeMap based on the active session tier.                          */
+/* ── EpisodeMap current-node indicator ──────────────────────────────── */
+/* No animation. The current episode node is visually differentiated by  */
+/* its filled tier-color centre dot, tinted background, and tier-color   */
+/* border — see EpisodeMap.jsx. The progress bar above the nodes is the  */
+/* dynamic indicator of within-episode progress.                         */
 /*                                                                       */
-/* Pattern: persistent 2px halo + outward expansion to 12px every 1.8s.  */
-/* The persistent halo makes the current node legible at any moment;     */
-/* the expansion adds kinetic "you are here" signal.                     */
-@keyframes giq-pulse {
-  0%, 100% {
-    box-shadow: 0 0 0 2px rgba(var(--giq-tier-rgb), 0.6);
-  }
-  50% {
-    box-shadow: 0 0 0 12px rgba(var(--giq-tier-rgb), 0);
-  }
-}
-
-.giq-node-current {
-  animation: giq-pulse 1.8s ease-in-out infinite;
-}
+/* Earlier iterations included an infinite box-shadow pulse animation.   */
+/* Removed because continuous motion on a question screen competes for   */
+/* the respondent's attention with the question itself.                  */

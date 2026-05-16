@@ -2,17 +2,22 @@
 // GuestIQ — Episode Map Component
 // S3-04: 7-node episode map with progress bar.
 // AC1: Progress bar fills proportionally within the current episode.
-// AC2: Completed episodes show checkmark, current episode pulses, future muted.
+// AC2: Completed episodes show checkmark, current episode static, future muted.
+//      (Earlier iterations included a pulse animation on the current node; it
+//       was removed in S3-09 because continuous motion competed with question
+//       readability. The current node is differentiated by its filled centre
+//       dot, tinted background, and tier-color border.)
 // AC3: Episode names read from questionnaire data — not hardcoded here.
 //
 // S3-09:
-//   - Removed ensurePulseStyle() — @keyframes giq-pulse is now in global.css
-//   - Tier hex and RGB values imported from src/constants/tierColors.js
+//   - Removed ensurePulseStyle() — JS-injected keyframe deprecated
+//   - Removed pulse animation entirely (calmer UX)
+//   - Tier hex imported from src/constants/tierColors.js
 //   - Static colours migrated to Tailwind utility classes / CSS variables
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import { getTierHex, getTierRgb } from '../../constants/tierColors';
+import { getTierHex } from '../../constants/tierColors';
 
 export default function EpisodeMap({
   episodes,           // array from questionnaire data
@@ -22,12 +27,6 @@ export default function EpisodeMap({
 }) {
   const [tooltip, setTooltip] = useState(null); // episode number being hovered
   const tierColor = getTierHex(tier);
-  const tierRgb = getTierRgb(tier);
-
-  // Set CSS variable for pulse animation colour — keyframe lives in global.css.
-  useEffect(() => {
-    document.documentElement.style.setProperty('--giq-tier-rgb', tierRgb);
-  }, [tierRgb]);
 
   return (
     <div className="max-w-[720px] mx-auto px-6">
@@ -84,8 +83,7 @@ export default function EpisodeMap({
               <div
                 className={
                   'rounded-full flex items-center justify-center ' +
-                  'transition-all duration-300 ' +
-                  (isCurrent ? 'giq-node-current' : '')
+                  'transition-all duration-300'
                 }
                 style={{
                   width: '20px',
