@@ -4,11 +4,16 @@
 // Hook text and subtext read from episodes data — not hardcoded here.
 // AC3: Continue button names the next episode.
 // AC4: curiosity_hook_viewed PostHog event fired by parent (QuestionScreen).
+//
+// S3-09: Migrated from inline hex styles to Tailwind utility classes.
+//   The tierColor prop is still used for accent in this commit (Commit 2.3).
+//   In Commit 3, this will switch to episode-accent colour per Visual Design
+//   System § 6.1.
 
 export default function CuriosityHookScreen({
   completedEpisode,   // episode object just completed
   nextEpisode,        // episode object coming next
-  tierColor,          // tier accent colour
+  tierColor,          // tier accent colour (replaced with episode accent in Commit 3)
   onContinue,         // fn() — advance to next episode
 }) {
   const hookText = completedEpisode?.curiosityHookText || '';
@@ -16,39 +21,24 @@ export default function CuriosityHookScreen({
 
   return (
     <div
-      style={{
-        minHeight: '100vh',
-        background: '#0D0D12',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem 1.5rem',
-        fontFamily: 'system-ui, -apple-system, sans-serif',
-        textAlign: 'center',
-      }}
+      className={
+        'min-h-screen bg-canvas-respondent flex flex-col items-center ' +
+        'justify-center text-center px-6 py-8'
+      }
     >
-      {/* Episode complete indicator */}
+      {/* Episode complete indicator — checkmark in tier-color ring */}
       <div
+        className="rounded-full flex items-center justify-center mb-7"
         style={{
           width: '48px',
           height: '48px',
-          borderRadius: '50%',
           background: `${tierColor}22`,
           border: `2px solid ${tierColor}`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: '1.75rem',
         }}
       >
         <span
-          style={{
-            fontSize: '1.25rem',
-            color: tierColor,
-            fontWeight: 700,
-            lineHeight: 1,
-          }}
+          className="text-heading-md font-bold leading-none"
+          style={{ color: tierColor }}
         >
           ✓
         </span>
@@ -56,13 +46,10 @@ export default function CuriosityHookScreen({
 
       {/* Episode name completed */}
       <p
+        className="text-caption font-semibold uppercase mb-4"
         style={{
-          fontSize: '0.8125rem',
-          color: tierColor,
-          fontWeight: 600,
           letterSpacing: '0.08em',
-          textTransform: 'uppercase',
-          marginBottom: '1rem',
+          color: tierColor,
         }}
       >
         {completedEpisode?.name} — complete
@@ -70,13 +57,10 @@ export default function CuriosityHookScreen({
 
       {/* Curiosity hook text — the engaging teaser for the next section */}
       <h2
+        className="font-semibold text-primary max-w-[520px] mb-10"
         style={{
           fontSize: 'clamp(1.25rem, 3vw, 1.625rem)',
-          fontWeight: 600,
-          color: '#F8FAFC',
           lineHeight: 1.35,
-          maxWidth: '520px',
-          marginBottom: '2.5rem',
         }}
       >
         {hookText}
@@ -84,12 +68,11 @@ export default function CuriosityHookScreen({
 
       {/* Thin divider */}
       <div
+        className="rounded-sm mb-10"
         style={{
           width: '40px',
           height: '2px',
           background: `${tierColor}60`,
-          borderRadius: '1px',
-          marginBottom: '2.5rem',
         }}
       />
 
@@ -97,19 +80,15 @@ export default function CuriosityHookScreen({
       <button
         type="button"
         onClick={onContinue}
+        className={
+          'px-10 py-3.5 rounded-lg text-body font-semibold cursor-pointer ' +
+          'transition-opacity duration-[120ms] hover:opacity-90'
+        }
         style={{
-          padding: '0.9375rem 2.5rem',
           background: tierColor,
-          color: '#0D0D12',
+          color: 'var(--canvas-respondent)',
           border: 'none',
-          borderRadius: '8px',
-          fontSize: '0.9375rem',
-          fontWeight: 600,
-          cursor: 'pointer',
-          transition: 'opacity 0.12s ease',
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.88')}
-        onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
       >
         {`Continue to ${nextName} →`}
       </button>

@@ -1,14 +1,18 @@
 // src/components/screens/CompletionScreen.jsx
 // S3-08 — Completion celebration screen and results display
-// Builds: badge grid, personal results, aggregate comparison chart (3+ sessions),
-// fires session_completed / results_viewed / aggregate_comparison_viewed.
+// Builds: badge grid (all 10, locked/earned), personal results, aggregate
+// comparison chart (3+ sessions); fires session_completed / results_viewed /
+// aggregate_comparison_viewed.
 //
 // SERVICE LAYER NOTE — supabase.js exports getDashboardData (NOT fetchDashboardData).
 // All Supabase calls go through src/services/supabase.js per API Spec v1.0 § 1.
 //
-// CONTRACT NOTE — earnedBadges is an array of badge DEFINITION OBJECTS produced by
-// useBadges.allBadges (each has id, name, color, ariaLabel, svgPath, description).
-// No keyed lookup is performed here.
+// CONTRACT NOTE — earnedBadges is an array of badge DEFINITION OBJECTS produced
+// by QuestionScreen's deterministic-final-badges resolution. Each has
+// {id, name, color, ariaLabel, svgPath, description, earned}. No keyed lookup.
+//
+// S3-09: Migrated from inline hex styles to Tailwind utility classes.
+//   Tier accent colour imported from src/constants/tierColors.js.
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
@@ -21,12 +25,14 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from 'recharts';
+
 import {
   trackSessionCompleted,
   trackResultsViewed,
   trackAggregateComparisonViewed,
 } from '../../services/analytics';
 import { getDashboardData } from '../../services/supabase';
+import { getTierHex, getTierLabel } from '../../constants/tierColors';
 
 // 12 intent categories — human-readable labels and short descriptions.
 // Keep in sync with branching_logic_specification_v10.md § 3 and
@@ -82,13 +88,6 @@ const INTENT_LABELS = {
   },
 };
 
-// Tier display names + accent colors (matching --tier-400 design tokens).
-const TIER_META = {
-  amateur: { label: 'Amateur', accent: '#4ADE80' },
-  professional: { label: 'Professional', accent: '#60A5FA' },
-  expert: { label: 'Expert', accent: '#A78BFA' },
-};
-
 // Q31 (service interaction style) — answer codes mapped to descriptors.
 // Source: hotel_questionnaire_all79.md § Module 4.
 const SERVICE_STYLE_LABELS = {
@@ -110,6 +109,8 @@ const UNLOCK_REQUIREMENTS = {
   'purpose-expert': 'Complete Episode 5 — Your Kind of Stay — to earn this.',
   'value-analyst': 'Complete Episode 6 — What It\u2019s Worth — to earn this.',
   'full-picture': 'Complete Episode 7 — After the Stay — to earn this.',
+  'professional-complete':
+    'Complete the Professional tier — go deeper across all dimensions — to earn this.',
   'expert-complete': 'Complete the Expert tier to earn this.',
 };
 
@@ -118,12 +119,13 @@ const UNLOCK_REQUIREMENTS = {
  *
  * Props:
  *  - tier: 'amateur' | 'professional' | 'expert'
- *  - earnedBadges: array of badge definition objects (each: {id, name, color, ...})
+ *  - earnedBadges: array of badge definition objects (each: {id, name, color,
+ *    ariaLabel, svgPath, description, earned})
  *  - intentCategory: string — Q1 taxonomy code (e.g. 'WORK-TRANS')
  *  - serviceStyleCode: string | null — Q31 answer code, or null if not asked
  *  - topPriorities: string[] — top 3 expectation labels (derived upstream)
  *  - tenseFrame: 'retrospective' | 'anticipatory'
- *  - sessionStartedAt: number — Date.now() at session start (for total_time_seconds)
+ *  - sessionStartedAt: number — Date.now() at session start (total time)
  *  - episodeCountCompleted: number — episodes finished
  *  - propertyId: string — for aggregate query and PostHog
  *  - onComplete: () => void — fires session.completeSession() on mount
@@ -143,7 +145,10 @@ export default function CompletionScreen({
   const [aggregateData, setAggregateData] = useState(null);
   const [aggregateError, setAggregateError] = useState(false);
 
-  const tierMeta = TIER_META[tier] || TIER_META.amateur;
+  // Tier accent — single source of truth from constants module.
+  const tierAccent = getTierHex(tier);
+  const tierLabel = getTierLabel(tier);
+
   const intentMeta = INTENT_LABELS[intentCategory] || {
     name: intentCategory || 'Unknown',
     description: '',
@@ -246,52 +251,39 @@ export default function CompletionScreen({
 
   return (
     <div
-      style={{
-        minHeight: '100vh',
-        background: '#0D0D12',
-        color: '#F8FAFC',
-        padding: '3rem 1.5rem',
-        fontFamily: 'system-ui, sans-serif',
-      }}
+      className="min-h-screen bg-canvas-respondent text-primary px-6 py-12"
       role="main"
       aria-labelledby="completion-heading"
     >
-      <div style={{ maxWidth: '720px', margin: '0 auto' }}>
+      <div className="max-w-[720px] mx-auto">
         {/* Heading */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          style={{ textAlign: 'center', marginBottom: '2.5rem' }}
+          className="text-center mb-10"
         >
           <div
+            className="text-caption uppercase mb-3 font-semibold"
             style={{
-              fontSize: '0.75rem',
-              textTransform: 'uppercase',
               letterSpacing: '0.15em',
-              color: tierMeta.accent,
-              marginBottom: '0.75rem',
-              fontWeight: 600,
+              color: tierAccent,
             }}
           >
-            {tierMeta.label} tier complete
+            {tierLabel} tier complete
           </div>
           <h1
             id="completion-heading"
-            style={{
-              fontSize: '2rem',
-              fontWeight: 600,
-              marginBottom: '0.75rem',
-            }}
+            className="text-display font-semibold mb-3"
           >
             ✦ You did it.
           </h1>
-          <p style={{ color: '#94A3B8', fontSize: '1rem' }}>
+          <p className="text-body text-secondary">
             Thank you for sharing your front-desk perspective.
           </p>
         </motion.div>
 
-        {/* Badge grid — all 9 badges always shown; unearned render as locked
+        {/* Badge grid — all badges always shown; unearned render as locked
             silhouettes to create aspirational signal toward upgrade */}
         {earnedBadges && earnedBadges.length > 0 && (() => {
           const earnedCount = earnedBadges.filter(
@@ -301,30 +293,24 @@ export default function CompletionScreen({
           return (
             <section
               aria-label={`${earnedCount} of ${totalCount} badges earned`}
-              style={{ marginBottom: '2.5rem' }}
+              className="mb-10"
             >
               <h2
-                style={{
-                  fontSize: '0.75rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.15em',
-                  color: '#94A3B8',
-                  marginBottom: '1rem',
-                  textAlign: 'center',
-                  fontWeight: 600,
-                }}
+                className={
+                  'text-caption uppercase text-secondary mb-4 text-center ' +
+                  'font-semibold'
+                }
+                style={{ letterSpacing: '0.15em' }}
               >
                 Badges &nbsp;·&nbsp;
-                <span style={{ color: '#F8FAFC' }}>
+                <span className="text-primary">
                   {earnedCount} of {totalCount} earned
                 </span>
               </h2>
               <div
+                className="grid gap-4 justify-items-center"
                 style={{
-                  display: 'grid',
                   gridTemplateColumns: 'repeat(auto-fit, minmax(96px, 1fr))',
-                  gap: '1rem',
-                  justifyItems: 'center',
                 }}
               >
                 {earnedBadges
@@ -333,7 +319,7 @@ export default function CompletionScreen({
                     const isEarned = badge.earned === true;
                     const color = badge.color || '#94A3B8';
                     // Locked badges render in muted grey, no fill, reduced
-                    // opacity. Earned badges render in full color with animation.
+                    // opacity. Earned badges render full colour with animation.
                     const displayColor = isEarned ? color : '#475569';
                     const titleText = isEarned
                       ? badge.ariaLabel || badge.name || 'Badge earned'
@@ -353,12 +339,8 @@ export default function CompletionScreen({
                             : { opacity: 1 }
                         }
                         transition={{ duration: 0.3 }}
+                        className="flex flex-col items-center text-center w-full"
                         style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          textAlign: 'center',
-                          width: '100%',
                           opacity: isEarned ? 1 : 0.35,
                           filter: isEarned ? 'none' : 'grayscale(60%)',
                         }}
@@ -391,12 +373,10 @@ export default function CompletionScreen({
                           )}
                         </svg>
                         <span
-                          style={{
-                            fontSize: '0.75rem',
-                            marginTop: '0.5rem',
-                            color: isEarned ? '#94A3B8' : '#64748B',
-                            lineHeight: 1.3,
-                          }}
+                          className={
+                            'text-xs mt-2 leading-tight ' +
+                            (isEarned ? 'text-secondary' : 'text-muted')
+                          }
                         >
                           {badge.name}
                         </span>
@@ -405,15 +385,7 @@ export default function CompletionScreen({
                   })}
               </div>
               {earnedCount < totalCount && (
-                <p
-                  style={{
-                    color: '#64748B',
-                    fontSize: '0.75rem',
-                    textAlign: 'center',
-                    marginTop: '1rem',
-                    fontStyle: 'italic',
-                  }}
-                >
+                <p className="text-muted text-xs text-center mt-4 italic">
                   Hover any locked badge to see how to earn it.
                 </p>
               )}
@@ -424,62 +396,41 @@ export default function CompletionScreen({
         {/* Personal results */}
         <section
           aria-label="Your personal results"
-          style={{
-            background: '#161620',
-            borderRadius: '12px',
-            padding: '1.5rem',
-            marginBottom: '2rem',
-          }}
+          className="bg-canvas-surface rounded-card p-6 mb-8"
         >
           <h2
-            style={{
-              fontSize: '0.75rem',
-              textTransform: 'uppercase',
-              letterSpacing: '0.15em',
-              color: '#94A3B8',
-              marginBottom: '0.75rem',
-              fontWeight: 600,
-            }}
+            className={
+              'text-caption uppercase text-secondary mb-3 font-semibold'
+            }
+            style={{ letterSpacing: '0.15em' }}
           >
             Your profile
           </h2>
-          <div style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+          <div className="text-heading-lg font-semibold mb-2">
             {intentMeta.name}
           </div>
           {intentMeta.description && (
-            <p style={{ color: '#94A3B8', fontSize: '0.9375rem', marginBottom: '1.25rem' }}>
+            <p className="text-secondary text-body mb-5">
               {intentMeta.description}
             </p>
           )}
 
           {topPriorities && topPriorities.length > 0 && (
-            <div style={{ marginBottom: '1.25rem' }}>
+            <div className="mb-5">
               <div
-                style={{
-                  fontSize: '0.75rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.15em',
-                  color: '#94A3B8',
-                  marginBottom: '0.5rem',
-                  fontWeight: 600,
-                }}
+                className={
+                  'text-caption uppercase text-secondary mb-2 font-semibold'
+                }
+                style={{ letterSpacing: '0.15em' }}
               >
                 Your top priorities
               </div>
-              <ul
-                style={{
-                  fontSize: '1rem',
-                  color: '#F8FAFC',
-                  listStyle: 'none',
-                  padding: 0,
-                  margin: 0,
-                }}
-              >
+              <ul className="text-body text-primary list-none p-0 m-0">
                 {topPriorities
                   .filter((label) => typeof label === 'string' && label.length > 0)
                   .slice(0, 3)
                   .map((label, idx) => (
-                    <li key={`${label}-${idx}`} style={{ padding: '0.25rem 0' }}>
+                    <li key={`${label}-${idx}`} className="py-1">
                       · {label}
                     </li>
                   ))}
@@ -490,18 +441,14 @@ export default function CompletionScreen({
           {serviceStyleCode && SERVICE_STYLE_LABELS[serviceStyleCode] && (
             <div>
               <div
-                style={{
-                  fontSize: '0.75rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.15em',
-                  color: '#94A3B8',
-                  marginBottom: '0.5rem',
-                  fontWeight: 600,
-                }}
+                className={
+                  'text-caption uppercase text-secondary mb-2 font-semibold'
+                }
+                style={{ letterSpacing: '0.15em' }}
               >
                 Service interaction style
               </div>
-              <p style={{ fontSize: '1rem', color: '#F8FAFC', margin: 0 }}>
+              <p className="text-body text-primary m-0">
                 {SERVICE_STYLE_LABELS[serviceStyleCode]}
               </p>
             </div>
@@ -514,26 +461,17 @@ export default function CompletionScreen({
           aggregateData.chart.length > 0 && (
             <section
               aria-label="How your priorities compare to other respondents"
-              style={{
-                background: '#161620',
-                borderRadius: '12px',
-                padding: '1.5rem',
-                marginBottom: '2rem',
-              }}
+              className="bg-canvas-surface rounded-card p-6 mb-8"
             >
               <h2
-                style={{
-                  fontSize: '0.75rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.15em',
-                  color: '#94A3B8',
-                  marginBottom: '0.25rem',
-                  fontWeight: 600,
-                }}
+                className={
+                  'text-caption uppercase text-secondary mb-1 font-semibold'
+                }
+                style={{ letterSpacing: '0.15em' }}
               >
                 How your colleagues responded
               </h2>
-              <p style={{ color: '#94A3B8', fontSize: '0.75rem', marginBottom: '1rem' }}>
+              <p className="text-secondary text-xs mb-4">
                 Based on {aggregateData.count} complete sessions at this property.
               </p>
               <div style={{ width: '100%', height: 240 }}>
@@ -559,12 +497,12 @@ export default function CompletionScreen({
                     />
                     <Tooltip
                       contentStyle={{
-                        background: '#161620',
+                        background: 'var(--canvas-surface)',
                         border: '1px solid #1F2B4A',
-                        color: '#F8FAFC',
+                        color: 'var(--text-primary)',
                       }}
                     />
-                    <Bar dataKey="count" fill={tierMeta.accent} radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="count" fill={tierAccent} radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -572,25 +510,12 @@ export default function CompletionScreen({
           )}
 
         {aggregateError && (
-          <p
-            style={{
-              color: '#64748B',
-              fontSize: '0.75rem',
-              textAlign: 'center',
-              marginBottom: '1.5rem',
-            }}
-          >
+          <p className="text-neutral-600 text-xs text-center mb-6">
             (Aggregate comparison unavailable right now — your responses are saved.)
           </p>
         )}
 
-        <div
-          style={{
-            textAlign: 'center',
-            color: '#64748B',
-            fontSize: '0.75rem',
-          }}
-        >
+        <div className="text-center text-neutral-600 text-xs">
           Your responses have been saved. You can close this window.
         </div>
       </div>
