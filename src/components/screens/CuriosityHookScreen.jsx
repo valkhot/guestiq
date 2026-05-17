@@ -5,40 +5,53 @@
 // AC3: Continue button names the next episode.
 // AC4: curiosity_hook_viewed PostHog event fired by parent (QuestionScreen).
 //
-// S3-09: Migrated from inline hex styles to Tailwind utility classes.
-//   The tierColor prop is still used for accent in this commit (Commit 2.3).
-//   In Commit 3, this will switch to episode-accent colour per Visual Design
-//   System § 6.1.
+// S3-09 Commit 3: Episode accent colour replaces tier colour per Visual Design
+//   System § 6. The hook is the celebration screen for the just-completed
+//   episode, so it uses that episode's accent — Episode 1's teal, Episode 2's
+//   amber, etc. Top accent bar (4px) anchors the episode identity visually.
+
+import { getEpisodeAccent } from '../../constants/episodeColors';
 
 export default function CuriosityHookScreen({
-  completedEpisode,   // episode object just completed
+  completedEpisode,   // episode object just completed (has .number, .name)
   nextEpisode,        // episode object coming next
-  tierColor,          // tier accent colour (replaced with episode accent in Commit 3)
   onContinue,         // fn() — advance to next episode
 }) {
   const hookText = completedEpisode?.curiosityHookText || '';
   const nextName = nextEpisode?.name || 'the next section';
+  const episodeNumber = completedEpisode?.number;
+  const accent = getEpisodeAccent(episodeNumber);
 
   return (
     <div
       className={
         'min-h-screen bg-canvas-respondent flex flex-col items-center ' +
-        'justify-center text-center px-6 py-8'
+        'justify-center text-center px-6 py-8 relative'
       }
     >
-      {/* Episode complete indicator — checkmark in tier-color ring */}
+      {/* 4px top accent bar — Visual Design System § 6.2 */}
+      <div
+        className="absolute top-0 left-0 right-0"
+        style={{
+          height: '4px',
+          background: accent,
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Episode complete indicator — checkmark in episode-accent ring */}
       <div
         className="rounded-full flex items-center justify-center mb-7"
         style={{
           width: '48px',
           height: '48px',
-          background: `${tierColor}22`,
-          border: `2px solid ${tierColor}`,
+          background: `${accent}22`,
+          border: `2px solid ${accent}`,
         }}
       >
         <span
           className="text-heading-md font-bold leading-none"
-          style={{ color: tierColor }}
+          style={{ color: accent }}
         >
           ✓
         </span>
@@ -49,7 +62,7 @@ export default function CuriosityHookScreen({
         className="text-caption font-semibold uppercase mb-4"
         style={{
           letterSpacing: '0.08em',
-          color: tierColor,
+          color: accent,
         }}
       >
         {completedEpisode?.name} — complete
@@ -72,7 +85,7 @@ export default function CuriosityHookScreen({
         style={{
           width: '40px',
           height: '2px',
-          background: `${tierColor}60`,
+          background: `${accent}60`,
         }}
       />
 
@@ -85,7 +98,7 @@ export default function CuriosityHookScreen({
           'transition-opacity duration-[120ms] hover:opacity-90'
         }
         style={{
-          background: tierColor,
+          background: accent,
           color: 'var(--canvas-respondent)',
           border: 'none',
         }}

@@ -34,7 +34,6 @@ import {
   BADGE_IDS,
   EPISODE_BADGE_MAP,
 } from '../badges/BadgeDefinitions';
-import { getTierHex } from '../../constants/tierColors';
 
 // Upgrade trigger: which episode completion triggers an upgrade prompt
 const UPGRADE_TRIGGERS = {
@@ -129,7 +128,6 @@ export default function QuestionScreen({
   const sessionStartedAtRef = useRef(Date.now());
 
   const lastEpisodeRef = useRef(null);
-  const tierColor = getTierHex(currentTier);
 
   const intentCategory = session.intentCategory || resumedSession?.intent_category || null;
 
@@ -588,7 +586,6 @@ export default function QuestionScreen({
         <CuriosityHookScreen
           completedEpisode={pendingHook.completedEpisode}
           nextEpisode={pendingHook.nextEpisode}
-          tierColor={tierColor}
           onContinue={handleHookContinueWithUpgrade}
         />
       ) : pendingUpgrade ? (
