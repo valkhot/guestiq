@@ -10,34 +10,45 @@
 //   Inline `style` is retained ONLY for runtime tier-colour values
 //   (hex-with-alpha suffixes like `${color}33` that Tailwind cannot emit
 //   from a prop at build time).
+// S3-10 (Commit 3): Tier cards migrated to Radix RadioGroup per NFR-019.
+//   The whole card is a RadioGroup.Item (renders as <button role="radio">),
+//   enlarging the click target and matching the visual affordance. The
+//   onValueChange handler fires handleTierSelect immediately — preserving
+//   the existing "select tier = start session" behaviour. Screen readers
+//   now announce "Choose your tier, radio group, 3 items" with each card
+//   announced as a radio option with checked state.
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
 
 import { trackWelcomeHookViewed, trackTierSelected } from '../../services/analytics';
 import { TIER_HEX } from '../../constants/tierColors';
 
-// TierCard — receives all content as props, zero hardcoded strings
-function TierCard({ tier, tierData, onSelect, isPopular }) {
+const TIER_ORDER = ['amateur', 'professional', 'expert'];
+
+// TierCard — rendered as a Radix RadioGroup.Item. The whole card is
+// interactive: clicking anywhere on it selects the tier and immediately
+// advances the session (via Root's onValueChange in the parent).
+function TierCard({ tier, tierData, isPopular, isHovered, onHover, onLeave }) {
   const color = TIER_HEX[tier];
 
   return (
-    <div
+    <RadioGroupPrimitive.Item
+      value={tier}
+      id={`tier-${tier}`}
+      aria-label={`${tierData.name} tier — ${tierData.descriptor}`}
       className={
         'relative bg-canvas-surface rounded-card p-6 flex flex-col gap-3 ' +
-        'cursor-pointer transition-[border-color,transform] duration-150'
+        'cursor-pointer text-left transition-[border-color,transform] ' +
+        'duration-150 w-full'
       }
       style={{
         // Dynamic tier border — alpha suffix not expressible in Tailwind from a prop
-        border: `1px solid ${color}33`,
+        border: `1px solid ${isHovered ? `${color}99` : `${color}33`}`,
+        transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
       }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = `${color}99`;
-        e.currentTarget.style.transform = 'translateY(-2px)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = `${color}33`;
-        e.currentTarget.style.transform = 'translateY(0)';
-      }}
+      onMouseEnter={onHover}
+      onMouseLeave={onLeave}
     >
       {/* Most Selected badge — Professional only */}
       {isPopular && (
@@ -48,6 +59,7 @@ function TierCard({ tier, tierData, onSelect, isPopular }) {
             'font-medium'
           }
           style={{ fontSize: '11px' }}
+          aria-hidden="true"
         >
           ★ Most selected
         </div>
@@ -71,36 +83,51 @@ function TierCard({ tier, tierData, onSelect, isPopular }) {
         {tierData.timeEstimate} · {tierData.questionCount} questions
       </div>
 
-      {/* CTA button */}
-      <button
-        type="button"
-        onClick={() => onSelect(tier)}
+      {/* CTA pseudo-button — visual call-to-action. Not a real button
+          (would be invalid HTML inside RadioGroup.Item which is already a
+          button). The whole Item is the click target. */}
+      <div
         className={
-          'mt-2 px-4 py-3 rounded-lg text-body font-medium w-full ' +
-          'transition-opacity duration-150 hover:opacity-90 cursor-pointer'
+          'mt-2 px-4 py-3 rounded-lg text-body font-medium w-full text-center'
         }
         style={{
           background: color,
           color: 'var(--canvas-respondent)',
-          border: 'none',
         }}
+        aria-hidden="true"
       >
         {tierData.ctaLabel}
-      </button>
-    </div>
+      </div>
+    </RadioGroupPrimitive.Item>
   );
 }
 
 // WelcomeScreen — the unified hook + tier selection screen
 // All content comes from props (uiCopy + tiers from useQuestionnaire hook)
-export default function WelcomeScreen({ uiCopy, tiers, onTierSelected, onNotNow, propertyId }) {
+export default function WelcomeScreen({
+  uiCopy,
+  tiers,
+  onTierSelected,
+  onNotNow,
+  propertyId,
+}) {
+  // Track which tier card is currently hovered, for the visual lift effect.
+  // Stored as state because Radix Item replaces the previous div, and we
+  // can't mutate currentTarget.style on a Radix component reliably across
+  // re-renders (hover state was previously inline; now we lift it to state
+  // so the inline style derives from a single source of truth).
+  const [hoveredTier, setHoveredTier] = useState(null);
+
   // AC5: Fire welcome_hook_viewed on render
   useEffect(() => {
     trackWelcomeHookViewed({ property_id: propertyId });
   }, [propertyId]);
 
-  // AC5: Fire tier_selected when tier card CTA clicked
-  function handleTierSelect(tier) {
+  // AC5: Fire tier_selected when a tier card is selected.
+  // Behaviour preserved: selecting a tier IMMEDIATELY starts the session.
+  // RadioGroup.Root.onValueChange fires here on click or keyboard activation.
+  function handleValueChange(tier) {
+    if (!tier) return;
     trackTierSelected({ tier, property_id: propertyId });
     onTierSelected(tier);
   }
@@ -126,6 +153,7 @@ export default function WelcomeScreen({ uiCopy, tiers, onTierSelected, onNotNow,
 
         {/* AC1: Hook text — renders immediately, no delay */}
         <h1
+          id="welcome-hook-heading"
           className="font-bold text-primary text-center mb-4"
           style={{
             fontSize: 'clamp(1.5rem, 4vw, 2rem)',
@@ -148,20 +176,27 @@ export default function WelcomeScreen({ uiCopy, tiers, onTierSelected, onNotNow,
 
         {/* AC2: Three tier cards — correct colors, descriptors, time/Q counts, CTAs */}
         {/* AC1: No Continue button — tier selection IS the start action */}
-        <div
+        {/* S3-10: RadioGroup.Root manages selection; onValueChange fires
+            handleValueChange which immediately advances the session. */}
+        <RadioGroupPrimitive.Root
+          value=""
+          onValueChange={handleValueChange}
+          aria-labelledby="welcome-hook-heading"
           className="grid gap-4 mb-8"
           style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}
         >
-          {['amateur', 'professional', 'expert'].map((tier) => (
+          {TIER_ORDER.map((tier) => (
             <TierCard
               key={tier}
               tier={tier}
               tierData={tiers[tier]}
-              onSelect={handleTierSelect}
               isPopular={tier === 'professional'}
+              isHovered={hoveredTier === tier}
+              onHover={() => setHoveredTier(tier)}
+              onLeave={() => setHoveredTier(null)}
             />
           ))}
-        </div>
+        </RadioGroupPrimitive.Root>
 
         {/* AC3 + AC9: Privacy notice — visible without scrolling, from uiCopy */}
         <div className="text-center mb-5">
