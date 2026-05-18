@@ -2,18 +2,28 @@
 // GuestIQ — Scale (Likert) Question Renderer
 // S3-NEW-UX (final): Sticky Continue bar matches SingleSelectQuestion pattern.
 // S3-09: Migrated to Tailwind utility classes; tier colour passed in as prop.
+// S3-10 (Commit 2): Underlying radio primitive migrated to Radix UI per
+//   NFR-019. The 5-point Likert is a horizontal RadioGroup with 5 Items
+//   (values "1" through "5"). RadioGroup.Root manages selection state and
+//   ARIA. RadioGroup.Item renders as <button role="radio"> with aria-checked
+//   automatic. orientation="horizontal" enables ←/→ arrow-key navigation
+//   between scale points.
 //
 // AC4: Selected state uses SHAPE change (border thickness 2px → 7px filled-ring)
-// alongside colour change — accessibility-compliant indicator.
+// alongside colour change — accessibility-compliant indicator. Preserved
+// exactly inside the Radix Item.
 
 import { useState } from 'react';
+import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
 
 export default function ScaleQuestion({ question, onAnswer, tierColor = '#60A5FA' }) {
   const [selected, setSelected] = useState(null);
   const labels = question.scale_labels || ['1', '2', '3', '4', '5'];
 
-  function handleSelect(value) {
-    setSelected(value);
+  // Radix Root works with string values; our internal state uses numbers.
+  // Convert at the boundary.
+  function handleValueChange(stringVal) {
+    setSelected(Number(stringVal));
   }
 
   function handleContinue() {
@@ -23,15 +33,22 @@ export default function ScaleQuestion({ question, onAnswer, tierColor = '#60A5FA
 
   return (
     <div className="pb-20">
-      {/* Scale buttons */}
-      <div className="grid grid-cols-5 gap-2 mb-3">
+      {/* Scale buttons — RadioGroup with 5 horizontal Items */}
+      <RadioGroupPrimitive.Root
+        value={selected !== null ? String(selected) : ''}
+        onValueChange={handleValueChange}
+        orientation="horizontal"
+        aria-label="Scale rating from 1 to 5"
+        className="grid grid-cols-5 gap-2 mb-3"
+      >
         {[1, 2, 3, 4, 5].map((val) => {
           const isSelected = selected === val;
           return (
-            <button
+            <RadioGroupPrimitive.Item
               key={val}
-              type="button"
-              onClick={() => handleSelect(val)}
+              value={String(val)}
+              id={`scale-${val}`}
+              aria-label={`Rating ${val} of 5`}
               className={
                 'px-2 py-4 rounded-lg cursor-pointer flex flex-col items-center ' +
                 'gap-2 transition-all duration-[120ms] ease-out'
@@ -67,6 +84,7 @@ export default function ScaleQuestion({ question, onAnswer, tierColor = '#60A5FA
                     ? `7px solid ${tierColor}`
                     : '2px solid rgba(255,255,255,0.2)',
                 }}
+                aria-hidden="true"
               />
               <span
                 className="text-caption font-semibold"
@@ -74,12 +92,12 @@ export default function ScaleQuestion({ question, onAnswer, tierColor = '#60A5FA
               >
                 {val}
               </span>
-            </button>
+            </RadioGroupPrimitive.Item>
           );
         })}
-      </div>
+      </RadioGroupPrimitive.Root>
 
-      {/* Scale endpoint labels */}
+      {/* Scale endpoint labels — descriptive context for the ends of the scale */}
       <div className="flex justify-between px-1 mb-6">
         <span
           className="text-xs text-neutral-600 leading-tight"
@@ -97,7 +115,9 @@ export default function ScaleQuestion({ question, onAnswer, tierColor = '#60A5FA
 
       {/* Sticky Continue — same pattern as SingleSelectQuestion */}
       <div
-        className="fixed bottom-0 left-0 right-0 px-6 pt-4 pb-6 z-10 max-w-[720px] mx-auto"
+        className={
+          'fixed bottom-0 left-0 right-0 px-6 pt-4 pb-6 z-10 max-w-[720px] mx-auto'
+        }
         style={{
           background:
             'linear-gradient(to top, var(--canvas-respondent) 70%, transparent)',
@@ -125,6 +145,7 @@ export default function ScaleQuestion({ question, onAnswer, tierColor = '#60A5FA
               'w-full py-3.5 rounded-lg text-body text-center select-none ' +
               'bg-white/[0.04] border border-white/[0.06] text-[#334155]'
             }
+            aria-live="polite"
           >
             Select a point on the scale above to continue
           </div>
