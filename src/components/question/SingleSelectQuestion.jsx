@@ -5,9 +5,18 @@
 // Sticky Continue lives in Question.jsx (wraps all renderers).
 //
 // S3-09: Migrated to Tailwind utility classes; tier colour passed in as prop.
-// AC4: Selected state uses SHAPE change — 2px outline radio → filled-ring radio.
+// S3-10 (Commit 1): Underlying radio primitive migrated to Radix UI per
+//   NFR-019. RadioGroup.Root manages selection state and ARIA. RadioGroup.Item
+//   replaces each option's outer button — Radix provides role="radio",
+//   aria-checked, roving tabindex, and arrow-key navigation automatically.
+//   AC4 SHAPE indicator (2px hollow ring → 5px filled ring on selection) is
+//   preserved as a child element inside each Item.
+//
+// All visual styling, hover handlers, Q1 progressive disclosure, "Other" input,
+// None option, and sticky Continue behaviour are preserved exactly.
 
 import { useState } from 'react';
+import * as RadioGroupPrimitive from '@radix-ui/react-radio-group';
 
 const OPTION_NONE_CODE = 'NONE';
 const OPTION_NONE_TEXT = 'None of these fit my situation';
@@ -17,7 +26,10 @@ const OPTION_NONE_TEXT = 'None of these fit my situation';
 const Q1_PRIMARY_ORDER = ['A', 'D', 'B', 'F', 'E', 'J', 'K'];
 const Q1_EXTENDED_ORDER = ['C', 'L', 'G', 'I', 'H', 'M'];
 
-function OptionRow({ option, isSelected, onSelect, tierColor, compact = false }) {
+// Single option rendered as a RadioGroup.Item. Item renders as a
+// <button role="radio">. Visual treatment (shape indicator, code letter,
+// option text, hover) sits inside the Item as children.
+function OptionItem({ option, isSelected, tierColor, compact = false }) {
   const isNone = option.code === OPTION_NONE_CODE;
   const radioSize = compact ? '14px' : '18px';
   const radioFill = compact ? '4px' : '5px';
@@ -25,9 +37,9 @@ function OptionRow({ option, isSelected, onSelect, tierColor, compact = false })
   const fontSize = compact ? '0.875rem' : '0.9375rem';
 
   return (
-    <button
-      type="button"
-      onClick={() => onSelect(option)}
+    <RadioGroupPrimitive.Item
+      value={option.code}
+      id={`opt-${option.code}`}
       className={
         'flex items-start gap-3 w-full rounded-lg cursor-pointer text-left ' +
         'transition-all duration-[120ms] ' +
@@ -74,6 +86,7 @@ function OptionRow({ option, isSelected, onSelect, tierColor, compact = false })
             : '2px solid rgba(255,255,255,0.2)',
           marginTop: '2px',
         }}
+        aria-hidden="true"
       />
       <div className="flex-1">
         {!isNone && (
@@ -97,12 +110,19 @@ function OptionRow({ option, isSelected, onSelect, tierColor, compact = false })
           {option.text}
         </span>
       </div>
-    </button>
+    </RadioGroupPrimitive.Item>
   );
 }
 
 // Q1-specific progressive disclosure layout
-function Q1Layout({ options, selectedCode, onSelect, tierColor, otherText, onOtherChange }) {
+// Renders inside an outer RadioGroup.Root (passed in from parent).
+function Q1Layout({
+  options,
+  selectedCode,
+  tierColor,
+  otherText,
+  onOtherChange,
+}) {
   const [extended, setExtended] = useState(false);
 
   const byCode = Object.fromEntries(options.map((o) => [o.code, o]));
@@ -116,20 +136,25 @@ function Q1Layout({ options, selectedCode, onSelect, tierColor, otherText, onOth
         const isOther = option.text?.toLowerCase().includes('please specify');
         return (
           <div key={option.code}>
-            <OptionRow
+            <OptionItem
               option={option}
               isSelected={isSelected}
-              onSelect={onSelect}
               tierColor={tierColor}
             />
             {isOther && isSelected && (
-              <OtherInput tierColor={tierColor} value={otherText} onChange={onOtherChange} />
+              <OtherInput
+                tierColor={tierColor}
+                value={otherText}
+                onChange={onOtherChange}
+              />
             )}
           </div>
         );
       })}
 
-      {/* Extended toggle — same size as option text */}
+      {/* Extended toggle — same size as option text. Not a radio item; a
+          plain expand/collapse button that lives as a sibling of Items
+          inside the RadioGroup.Root. */}
       <button
         type="button"
         onClick={() => setExtended((p) => !p)}
@@ -144,6 +169,7 @@ function Q1Layout({ options, selectedCode, onSelect, tierColor, otherText, onOth
         onMouseLeave={(e) => {
           e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)';
         }}
+        aria-expanded={extended}
       >
         {/* Square toggle indicator */}
         <div
@@ -156,6 +182,7 @@ function Q1Layout({ options, selectedCode, onSelect, tierColor, otherText, onOth
             height: '18px',
             marginTop: '2px',
           }}
+          aria-hidden="true"
         >
           <span className="text-xs text-secondary leading-none font-medium">
             {extended ? '−' : '+'}
@@ -174,6 +201,7 @@ function Q1Layout({ options, selectedCode, onSelect, tierColor, otherText, onOth
             transform: extended ? 'rotate(180deg)' : 'none',
             transition: 'transform 0.2s',
           }}
+          aria-hidden="true"
         >
           ▼
         </span>
@@ -200,10 +228,9 @@ function Q1Layout({ options, selectedCode, onSelect, tierColor, otherText, onOth
                   marginBottom: isLast ? 0 : '0.125rem',
                 }}
               >
-                <OptionRow
+                <OptionItem
                   option={option}
                   isSelected={isSelected}
-                  onSelect={onSelect}
                   tierColor={tierColor}
                   compact
                 />
@@ -235,6 +262,7 @@ function OtherInput({ tierColor, value, onChange, compact = false }) {
       <input
         type="text"
         placeholder="Please specify..."
+        aria-label="Please specify your option"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className={
@@ -249,7 +277,11 @@ function OtherInput({ tierColor, value, onChange, compact = false }) {
   );
 }
 
-export default function SingleSelectQuestion({ question, onAnswer, tierColor = '#60A5FA' }) {
+export default function SingleSelectQuestion({
+  question,
+  onAnswer,
+  tierColor = '#60A5FA',
+}) {
   const [selectedCode, setSelectedCode] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
   const [otherText, setOtherText] = useState('');
@@ -267,10 +299,21 @@ export default function SingleSelectQuestion({ question, onAnswer, tierColor = '
   const continueReady =
     selectedCode !== null && (!selectedIsOther || otherText.trim().length > 0);
 
-  function handleSelect(option) {
-    setSelectedCode(option.code);
+  // Build the lookup of all selectable options (regular + none if present).
+  // Used to resolve the selected option object when Radix fires onValueChange.
+  const allOptionsByCode = (() => {
+    const map = Object.fromEntries(regularOptions.map((o) => [o.code, o]));
+    if (noneOption) map[OPTION_NONE_CODE] = noneOption;
+    return map;
+  })();
+
+  // RadioGroup.Root onValueChange handler — receives the selected option code
+  // as a string, looks up the full option object, and updates local state.
+  function handleValueChange(newCode) {
+    const option = allOptionsByCode[newCode] || null;
+    setSelectedCode(newCode);
     setSelectedOption(option);
-    if (!option.text?.toLowerCase().includes('please specify')) {
+    if (!option?.text?.toLowerCase().includes('please specify')) {
       setOtherText('');
     }
   }
@@ -286,51 +329,65 @@ export default function SingleSelectQuestion({ question, onAnswer, tierColor = '
 
   return (
     <div className="pb-20">
-      {isQ1 ? (
-        <Q1Layout
-          options={regularOptions}
-          selectedCode={selectedCode}
-          onSelect={handleSelect}
-          tierColor={tierColor}
-          otherText={otherText}
-          onOtherChange={setOtherText}
-        />
-      ) : (
-        regularOptions.map((option) => {
-          const isSelected = selectedCode === option.code;
-          const isOther = option.text?.toLowerCase().includes('please specify');
-          return (
-            <div key={option.code}>
-              <OptionRow
-                option={option}
-                isSelected={isSelected}
-                onSelect={handleSelect}
-                tierColor={tierColor}
-              />
-              {isOther && isSelected && (
-                <OtherInput tierColor={tierColor} value={otherText} onChange={setOtherText} />
-              )}
-            </div>
-          );
-        })
-      )}
-
-      {/* None option — always below all options, above sticky bar */}
-      {noneOption && (
-        <>
-          <div className="h-px bg-white/[0.06] mt-2 mb-3" />
-          <OptionRow
-            option={noneOption}
-            isSelected={selectedCode === OPTION_NONE_CODE}
-            onSelect={handleSelect}
+      <RadioGroupPrimitive.Root
+        value={selectedCode ?? ''}
+        onValueChange={handleValueChange}
+        aria-label="Answer options"
+      >
+        {isQ1 ? (
+          <Q1Layout
+            options={regularOptions}
+            selectedCode={selectedCode}
             tierColor={tierColor}
+            otherText={otherText}
+            onOtherChange={setOtherText}
           />
-        </>
-      )}
+        ) : (
+          regularOptions.map((option) => {
+            const isSelected = selectedCode === option.code;
+            const isOther = option.text?.toLowerCase().includes('please specify');
+            return (
+              <div key={option.code}>
+                <OptionItem
+                  option={option}
+                  isSelected={isSelected}
+                  tierColor={tierColor}
+                />
+                {isOther && isSelected && (
+                  <OtherInput
+                    tierColor={tierColor}
+                    value={otherText}
+                    onChange={setOtherText}
+                  />
+                )}
+              </div>
+            );
+          })
+        )}
 
-      {/* Sticky Continue — fixed to bottom, visible always, active when selection made */}
+        {/* None option — always below all options, above sticky bar.
+            It is a RadioGroup.Item too (mutually exclusive with regular options). */}
+        {noneOption && (
+          <>
+            <div
+              className="h-px bg-white/[0.06] mt-2 mb-3"
+              aria-hidden="true"
+            />
+            <OptionItem
+              option={noneOption}
+              isSelected={selectedCode === OPTION_NONE_CODE}
+              tierColor={tierColor}
+            />
+          </>
+        )}
+      </RadioGroupPrimitive.Root>
+
+      {/* Sticky Continue — fixed to bottom, visible always, active when
+          selection made. NOT a radio item; lives outside RadioGroup.Root. */}
       <div
-        className="fixed bottom-0 left-0 right-0 px-6 pt-4 pb-6 z-10 max-w-[720px] mx-auto"
+        className={
+          'fixed bottom-0 left-0 right-0 px-6 pt-4 pb-6 z-10 max-w-[720px] mx-auto'
+        }
         style={{
           background:
             'linear-gradient(to top, var(--canvas-respondent) 70%, transparent)',
@@ -358,6 +415,7 @@ export default function SingleSelectQuestion({ question, onAnswer, tierColor = '
               'w-full py-3.5 rounded-lg text-body text-center select-none ' +
               'bg-white/[0.04] border border-white/[0.06] text-[#334155]'
             }
+            aria-live="polite"
           >
             Select an option above to continue
           </div>
