@@ -1,0 +1,23 @@
+{
+  "welcomeHookText": "You know hotel guests. What do they actually expect?",
+  "welcomeContextStatement": "This questionnaire captures what front desk professionals like you know about guest expectations across different stay types.",
+  "privacyNoticeText": "All answers are anonymous. Your responses contribute to aggregate research only.",
+  "voluntaryParticipationText": "Participation is voluntary. You may close this page at any time without consequence.",
+  "mostSelectedBadgeText": "Most selected",
+  "notNowLinkLabel": "Not now — maybe later",
+  "skipButtonLabel": "Skip — I'm done",
+  "continueButtonLabel": "Continue",
+  "disambiguationTitle": "Welcome back",
+  "disambiguationResumeText": "Resume my session — pick up where I left off",
+  "disambiguationNewSessionText": "Start fresh — I am someone new",
+  "downtimeTitle": "GuestIQ is temporarily unavailable",
+  "downtimeMessageText": "Your answers are saved. Please try again in a few minutes.",
+  "downtimeRetryLabel": "Try again",
+  "configErrorPrefix": "Configuration error —",
+  "enrichmentTitle": "One last thing — help us understand your expertise",
+  "enrichmentSubtitle": "Optional. Skip anytime.",
+  "enrichmentSkipLabel": "Skip — I'm done",
+  "enrichmentYearsLabel": "Years in hospitality",
+  "enrichmentInteractionsLabel": "Approximate weekly guest interactions",
+  "enrichmentShiftLabel": "Primary shift"
+}

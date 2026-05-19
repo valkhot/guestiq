@@ -1,0 +1,65 @@
+[
+  {
+    "number": 1,
+    "name": "Why You Stay",
+    "moduleMappings": [
+      1
+    ],
+    "curiosityHookText": "You know why guests come. Now we dig into how they decide.",
+    "curiosityHookSubtext": null
+  },
+  {
+    "number": 2,
+    "name": "Before You Arrive",
+    "moduleMappings": [
+      2
+    ],
+    "curiosityHookText": "Expectations form before the guest walks in.",
+    "curiosityHookSubtext": null
+  },
+  {
+    "number": 3,
+    "name": "Your Space",
+    "moduleMappings": [
+      3
+    ],
+    "curiosityHookText": "The room matters more than guests admit.",
+    "curiosityHookSubtext": null
+  },
+  {
+    "number": 4,
+    "name": "The Human Element",
+    "moduleMappings": [
+      4
+    ],
+    "curiosityHookText": "Service is where hotels win or lose.",
+    "curiosityHookSubtext": null
+  },
+  {
+    "number": 5,
+    "name": "Your Kind of Stay",
+    "moduleMappings": [
+      5
+    ],
+    "curiosityHookText": "Every stay type has its own set of non-negotiables.",
+    "curiosityHookSubtext": null
+  },
+  {
+    "number": 6,
+    "name": "What It's Worth",
+    "moduleMappings": [
+      6
+    ],
+    "curiosityHookText": "Value is always relative — relative to expectations.",
+    "curiosityHookSubtext": null
+  },
+  {
+    "number": 7,
+    "name": "After the Stay",
+    "moduleMappings": [
+      7
+    ],
+    "curiosityHookText": null,
+    "curiosityHookSubtext": null
+  }
+]

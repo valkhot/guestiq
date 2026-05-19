@@ -1,0 +1,50 @@
+{
+  "WORK-TRANS": {
+    "name": "Business Travel",
+    "description": "Work stays for meetings, site visits, or client engagements"
+  },
+  "WORK-EVENT": {
+    "name": "Conference and Events",
+    "description": "Work stays for conferences, trade shows, or professional events"
+  },
+  "WORK-EXT": {
+    "name": "Extended Assignment",
+    "description": "Extended work stays for projects or assignments away from home"
+  },
+  "LEIS-PLAN": {
+    "name": "Planned Leisure",
+    "description": "Planned holidays, city breaks, or vacations"
+  },
+  "LEIS-SOC": {
+    "name": "Social Occasion",
+    "description": "Leisure stays for personal events: weddings, reunions, celebrations"
+  },
+  "LEIS-EXP": {
+    "name": "Exploration",
+    "description": "Sightseeing, cultural experience, or exploring somewhere new"
+  },
+  "DISP-HOME": {
+    "name": "Home Displacement",
+    "description": "Staying because home is temporarily unavailable"
+  },
+  "DISP-TRANS": {
+    "name": "Life Transition",
+    "description": "Needing a neutral or private space during a personal transition"
+  },
+  "MED": {
+    "name": "Medical Adjacent",
+    "description": "Staying near a hospital, clinic, or health facility"
+  },
+  "FAM": {
+    "name": "Family Visit",
+    "description": "Visiting or supporting family"
+  },
+  "TRANSIT": {
+    "name": "In Transit",
+    "description": "Passing through — early flight, late arrival, or long layover"
+  },
+  "LOC-ESC": {
+    "name": "Local Escape",
+    "description": "Personal retreat close to home for rest or restoration"
+  }
+}

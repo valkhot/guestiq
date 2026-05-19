@@ -1,0 +1,26 @@
+{
+  "module5Routes": {
+    "WORK-TRANS": "5A",
+    "WORK-EVENT": "5A",
+    "WORK-EXT": "5A",
+    "LEIS-PLAN": "5B",
+    "LEIS-SOC": "5B",
+    "LEIS-EXP": "5B",
+    "DISP-HOME": "5C",
+    "DISP-TRANS": "5C",
+    "MED": "5D",
+    "FAM": "5E",
+    "TRANSIT": "5F",
+    "LOC-ESC": "5G"
+  },
+  "q2Routes": {
+    "A": null,
+    "B": "LEIS-PLAN",
+    "C": "WORK-TRANS",
+    "D": "FAM",
+    "E": "LEIS-EXP",
+    "F": "MED",
+    "NONE": null
+  },
+  "sameSectionSkipEnabled": true
+}

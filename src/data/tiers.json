@@ -1,0 +1,26 @@
+{
+  "amateur": {
+    "name": "Amateur",
+    "descriptor": "Quick take on the essentials — 20 focused questions",
+    "timeEstimate": "~5 minutes",
+    "questionCount": 20,
+    "ctaLabel": "Start as Amateur",
+    "colorToken": "amateur-400"
+  },
+  "professional": {
+    "name": "Professional",
+    "descriptor": "Deeper dive across all 7 modules — around 46 questions",
+    "timeEstimate": "~8 minutes",
+    "questionCount": 46,
+    "ctaLabel": "Start as Professional",
+    "colorToken": "professional-400"
+  },
+  "expert": {
+    "name": "Expert",
+    "descriptor": "The complete picture — all 7 modules, up to 66 questions",
+    "timeEstimate": "~16 minutes",
+    "questionCount": 66,
+    "ctaLabel": "Start as Expert",
+    "colorToken": "expert-400"
+  }
+}
