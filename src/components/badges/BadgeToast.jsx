@@ -1,20 +1,32 @@
 // src/components/badges/BadgeToast.jsx
 // GuestIQ — Badge award notification toast
 // Appears briefly when a badge is earned, then fades out.
-// Shows badge + name + description. Auto-dismisses after 2.5 seconds.
+// Shows badge + name + description. Auto-dismisses after 4.5 seconds.
+//
+// B-3-005 fix (found in S3-15 mobile test): the toast was rendering
+// bottom-right on mobile and overflowing the screen edge, partially
+// covering the sticky Continue button. Root cause was a CSS positioning
+// inheritance bug: an ancestor Framer Motion component applies `transform`
+// during animations, which causes `position: fixed` inside that ancestor
+// to resolve relative to the ancestor instead of the viewport. Fix:
+// render the toast through a React portal into document.body so it
+// escapes the transformed ancestor at the DOM level. The CSS values are
+// unchanged — they were correct; they were just being interpreted
+// against the wrong containing block.
 
 import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import Badge from './Badge';
 
 export default function BadgeToast({ definition, onDismiss }) {
-  // Auto-dismiss after 2.5s
+  // Auto-dismiss after 4.5s
   useEffect(() => {
     const timer = setTimeout(onDismiss, 4500);
     return () => clearTimeout(timer);
   }, [onDismiss]);
 
-  return (
+  const toast = (
     <motion.div
       initial={{ opacity: 0, y: 32, scale: 0.92 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -78,4 +90,12 @@ export default function BadgeToast({ definition, onDismiss }) {
       </div>
     </motion.div>
   );
+
+  // B-3-005: portal into document.body so the toast escapes any
+  // transformed ancestor (Framer Motion animations on parent components)
+  // and `position: fixed` resolves against the viewport as intended.
+  // SSR guard — return null if document is not defined (safety; the app
+  // is currently client-only but this keeps the component portable).
+  if (typeof document === 'undefined') return null;
+  return createPortal(toast, document.body);
 }
