@@ -2,18 +2,19 @@
 // GuestIQ — Standard Question Component (orchestrator)
 // S3-04: EpisodeMap integrated — progress bar and episode nodes on every screen.
 // S3-09: Migrated to Tailwind utility classes; tier colours from constants module.
+// B-3-001 fix (S3-12): multi_select now routes to the dedicated
+//   MultiSelectQuestion component. Previously it fell back to
+//   SingleSelectQuestion (a RadioGroup) and only allowed one selection.
 
 import SingleSelectQuestion from './SingleSelectQuestion';
+import MultiSelectQuestion from './MultiSelectQuestion';
 import ScaleQuestion from './ScaleQuestion';
 import EpisodeMap from './EpisodeMap';
 import { getTierHex } from '../../constants/tierColors';
 
-// NOTE: multi_select currently routes to SingleSelectQuestion.
-// This is tracked in proposed backlog story S3-19 — decide whether to build a
-// dedicated MultiSelectQuestion component or remove the misleading mapping.
 const QUESTION_RENDERERS = {
   single_select: SingleSelectQuestion,
-  multi_select:  SingleSelectQuestion,
+  multi_select:  MultiSelectQuestion,
   scale_5:       ScaleQuestion,
 };
 

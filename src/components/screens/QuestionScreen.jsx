@@ -2,6 +2,14 @@
 // GuestIQ — Question Screen
 // S3-07: Tier upgrade prompts after Episode 1 (Amateur) and Episode 4 (Professional).
 // S3-08: Captures Q31 service style + session timing + priorities for completion screen.
+// B-3-001 fix (S3-12): handleAnswer now accepts an array of codes for
+//   multi_select questions and writes one response row per selected code,
+//   per the entity_relationship_diagram_v10.md responses.answer_code spec
+//   ("Multi-select questions produce multiple response records").
+// B-3-002 fix (S3-13): handleAnswer is now guarded against re-entry. A
+//   answeringRef latch ensures that even if the renderer fires onAnswer more
+//   than once for a single question, only the first call writes rows. This
+//   is defence-in-depth alongside the submit latch in MultiSelectQuestion.
 
 import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence } from 'framer-motion';
@@ -128,6 +136,14 @@ export default function QuestionScreen({
   const sessionStartedAtRef = useRef(Date.now());
 
   const lastEpisodeRef = useRef(null);
+
+  // B-3-002: re-entry guard for handleAnswer. Set true while an answer is
+  // being persisted, reset once the question has advanced. If handleAnswer
+  // is somehow invoked twice for the same question (double-click, a stray
+  // duplicate onAnswer call), the second invocation returns immediately and
+  // writes nothing. This is defence-in-depth — the primary guard is the
+  // submit latch inside the renderer components.
+  const answeringRef = useRef(false);
 
   const intentCategory = session.intentCategory || resumedSession?.intent_category || null;
 
@@ -277,150 +293,280 @@ export default function QuestionScreen({
 
     if (!activeSessionId) return;
 
-    // Track answered question ID for upgrade resume logic
-    setAnsweredQuestionIds((prev) => {
-      const next = new Set(prev);
-      next.add(currentQuestion.id);
-      return next;
-    });
+    // B-3-002: re-entry guard. If a previous invocation for this question is
+    // still in flight (its inserts not finished), drop this call entirely.
+    // The ref is checked and set synchronously, before any await, so two
+    // calls in the same tick cannot both pass. It is released in a finally
+    // block once the answer is fully persisted and the screen has advanced.
+    if (answeringRef.current) return;
+    answeringRef.current = true;
 
-    const isNoneOption = answerCode === 'NONE';
-    const isScaleAnswer = answerCode?.startsWith('SCALE_');
+    try {
+      // Track answered question ID for upgrade resume logic
+      setAnsweredQuestionIds((prev) => {
+        const next = new Set(prev);
+        next.add(currentQuestion.id);
+        return next;
+      });
 
-    // S3-08: capture every response in a local map so the completion screen
-    // can show top priorities and Q31 service style without re-querying Supabase.
-    setResponsesByQid((prev) => ({
-      ...prev,
-      [currentQuestion.id]: {
-        answerCode,
-        scaleValue: isScaleAnswer
-          ? parseInt(answerCode.replace('SCALE_', ''), 10)
-          : null,
-        isNone: isNoneOption,
-      },
-    }));
+      // ── B-3-001: multi_select array handling ──────────────────────────
+      // MultiSelectQuestion calls onAnswer with an ARRAY of codes (and a
+      // parallel array of taxonomy codes). Multi_select questions never
+      // overlap the QR1/Q1/Q2/scale special branches below, so array input
+      // is handled fully here and the function returns early.
+      if (Array.isArray(answerCode)) {
+        const codes = answerCode;
+        const isNoneArray = codes.length === 1 && codes[0] === 'NONE';
 
-    if (currentQuestion.id === 'QR1') {
-      const frame = getTenseFrame(answerCode);
-      await session.setTenseFrameAndPersist(frame);
-      await insertResponse({
-        response_id: crypto.randomUUID(),
-        session_id: activeSessionId,
-        question_id: 'QR1',
-        answer_code: answerCode,
-        tense_frame: frame,
-        module_number: 0,
-        property_id: propertyId,
-      });
-      trackRoutingGateAnswered({
-        tense_frame: frame,
-        answer_option: answerCode,
-        property_id: propertyId,
-        ...(extraText ? { qr1_other_text: extraText } : {}),
-      });
-    } else if (currentQuestion.id === 'Q1' && !isNoneOption) {
-      // First Step earned silently — no toast. Intent Locked is the single visible moment.
-      badges.awardBadgeSilent(badges.BADGE_IDS.FIRST_STEP);
-      badges.awardBadge(badges.BADGE_IDS.INTENT_LOCKED);
-      await session.setIntentCategoryAndPersist(taxonomyCode);
-      await insertResponse({
-        response_id: crypto.randomUUID(),
-        session_id: activeSessionId,
-        question_id: 'Q1',
-        answer_code: answerCode,
-        tense_frame: activeTenseFrame,
-        module_number: 1,
-        property_id: propertyId,
-      });
-      trackQuestionAnswered({
-        question_id: 'Q1',
-        answer_code: answerCode,
-        module_number: 1,
-        tier: currentTier,
-        tense_frame: activeTenseFrame,
-        property_id: propertyId,
-      });
-    } else if (currentQuestion.id === 'Q2' && !isNoneOption && answerCode !== 'A') {
-      const secondaryIntent = getSecondaryIntentFromQ2Answer(answerCode);
-      if (secondaryIntent && secondaryIntent !== intentCategory) {
-        setSecondaryIntentCategory(secondaryIntent);
-        trackPurposeExpert({
-          primary_intent: intentCategory,
-          secondary_intent: secondaryIntent,
+        // Capture in the local response map. Store the full code list so any
+        // downstream derivation can see every selected code.
+        setResponsesByQid((prev) => ({
+          ...prev,
+          [currentQuestion.id]: {
+            answerCode: isNoneArray ? 'NONE' : codes.join(','),
+            answerCodes: codes,
+            scaleValue: null,
+            isNone: isNoneArray,
+          },
+        }));
+
+        if (isNoneArray) {
+          // B-3-003: write BOTH a responses row (answer_code='NONE') AND a
+          // none_flags row. Per the ERD (none_flags table): "A none-flag
+          // record is written in addition to the corresponding responses
+          // record (DFD-W5 + DFD-W7 both fire)." The responses NONE row was
+          // previously never written — exposed by S3-13 NFR-045.
+          await insertResponse({
+            response_id: crypto.randomUUID(),
+            session_id: activeSessionId,
+            question_id: currentQuestion.id,
+            answer_code: 'NONE',
+            tense_frame: activeTenseFrame,
+            module_number: currentQuestion.module,
+            property_id: propertyId,
+          });
+          await insertNoneFlag({
+            none_flag_id: crypto.randomUUID(),
+            session_id: activeSessionId,
+            question_id: currentQuestion.id,
+            property_id: propertyId,
+          });
+          trackNoneFlagSelected({
+            question_id: currentQuestion.id,
+            module_number: currentQuestion.module,
+            tier: currentTier,
+            property_id: propertyId,
+          });
+        } else {
+          // One response row per selected code, per the ERD spec. Inserts
+          // run in parallel (B-3-002): each row is independent with its own
+          // UUID, so there is no ordering requirement. Parallel inserts also
+          // shrink the submission window — the original sequential await
+          // loop kept the Continue button live for ~1.2s on a 6-option
+          // answer, which was what made the double-click double-write
+          // possible in the first place.
+          await Promise.all(
+            codes.map((code) =>
+              insertResponse({
+                response_id: crypto.randomUUID(),
+                session_id: activeSessionId,
+                question_id: currentQuestion.id,
+                answer_code: code,
+                tense_frame: activeTenseFrame,
+                module_number: currentQuestion.module,
+                property_id: propertyId,
+              })
+            )
+          );
+          codes.forEach((code) => {
+            trackQuestionAnswered({
+              question_id: currentQuestion.id,
+              answer_code: code,
+              module_number: currentQuestion.module,
+              tier: currentTier,
+              tense_frame: activeTenseFrame,
+              property_id: propertyId,
+            });
+          });
+        }
+
+        await advanceAfterAnswer(null);
+        return;
+      }
+      // ── end B-3-001 multi_select handling ─────────────────────────────
+
+      const isNoneOption = answerCode === 'NONE';
+      const isScaleAnswer = answerCode?.startsWith('SCALE_');
+
+      // S3-08: capture every response in a local map so the completion screen
+      // can show top priorities and Q31 service style without re-querying
+      // Supabase.
+      setResponsesByQid((prev) => ({
+        ...prev,
+        [currentQuestion.id]: {
+          answerCode,
+          scaleValue: isScaleAnswer
+            ? parseInt(answerCode.replace('SCALE_', ''), 10)
+            : null,
+          isNone: isNoneOption,
+        },
+      }));
+
+      if (currentQuestion.id === 'QR1') {
+        const frame = getTenseFrame(answerCode);
+        await session.setTenseFrameAndPersist(frame);
+        await insertResponse({
+          response_id: crypto.randomUUID(),
+          session_id: activeSessionId,
+          question_id: 'QR1',
+          answer_code: answerCode,
+          tense_frame: frame,
+          module_number: 0,
+          property_id: propertyId,
+        });
+        trackRoutingGateAnswered({
+          tense_frame: frame,
+          answer_option: answerCode,
+          property_id: propertyId,
+          ...(extraText ? { qr1_other_text: extraText } : {}),
+        });
+      } else if (currentQuestion.id === 'Q1' && !isNoneOption) {
+        // First Step earned silently — no toast. Intent Locked is the single
+        // visible moment.
+        badges.awardBadgeSilent(badges.BADGE_IDS.FIRST_STEP);
+        badges.awardBadge(badges.BADGE_IDS.INTENT_LOCKED);
+        await session.setIntentCategoryAndPersist(taxonomyCode);
+        await insertResponse({
+          response_id: crypto.randomUUID(),
+          session_id: activeSessionId,
+          question_id: 'Q1',
+          answer_code: answerCode,
+          tense_frame: activeTenseFrame,
+          module_number: 1,
+          property_id: propertyId,
+        });
+        trackQuestionAnswered({
+          question_id: 'Q1',
+          answer_code: answerCode,
+          module_number: 1,
+          tier: currentTier,
+          tense_frame: activeTenseFrame,
+          property_id: propertyId,
+        });
+      } else if (currentQuestion.id === 'Q2' && !isNoneOption && answerCode !== 'A') {
+        const secondaryIntent = getSecondaryIntentFromQ2Answer(answerCode);
+        if (secondaryIntent && secondaryIntent !== intentCategory) {
+          setSecondaryIntentCategory(secondaryIntent);
+          trackPurposeExpert({
+            primary_intent: intentCategory,
+            secondary_intent: secondaryIntent,
+            tier: currentTier,
+            property_id: propertyId,
+          });
+        }
+        await insertResponse({
+          response_id: crypto.randomUUID(),
+          session_id: activeSessionId,
+          question_id: 'Q2',
+          answer_code: answerCode,
+          tense_frame: activeTenseFrame,
+          module_number: 1,
+          property_id: propertyId,
+        });
+        trackQuestionAnswered({
+          question_id: 'Q2',
+          answer_code: answerCode,
+          module_number: 1,
+          tier: currentTier,
+          tense_frame: activeTenseFrame,
+          property_id: propertyId,
+        });
+      } else if (isScaleAnswer) {
+        const scaleValue = parseInt(answerCode.replace('SCALE_', ''), 10);
+        await insertScaleResponse({
+          scale_response_id: crypto.randomUUID(),
+          session_id: activeSessionId,
+          question_id: currentQuestion.id,
+          scale_value: scaleValue,
+          property_id: propertyId,
+        });
+        trackQuestionAnswered({
+          question_id: currentQuestion.id,
+          answer_code: answerCode,
+          module_number: currentQuestion.module,
+          tier: currentTier,
+          tense_frame: activeTenseFrame,
+          property_id: propertyId,
+        });
+      } else if (!isNoneOption) {
+        await insertResponse({
+          response_id: crypto.randomUUID(),
+          session_id: activeSessionId,
+          question_id: currentQuestion.id,
+          answer_code: answerCode,
+          tense_frame: activeTenseFrame,
+          module_number: currentQuestion.module,
+          property_id: propertyId,
+        });
+        trackQuestionAnswered({
+          question_id: currentQuestion.id,
+          answer_code: answerCode,
+          module_number: currentQuestion.module,
+          tier: currentTier,
+          tense_frame: activeTenseFrame,
+          property_id: propertyId,
+        });
+      }
+
+      if (isNoneOption) {
+        // B-3-003: write BOTH a responses row (answer_code='NONE') AND a
+        // none_flags row, per the ERD ("in addition to the corresponding
+        // responses record"). The responses NONE row was previously never
+        // written for single-select None either — exposed by S3-13 NFR-045.
+        await insertResponse({
+          response_id: crypto.randomUUID(),
+          session_id: activeSessionId,
+          question_id: currentQuestion.id,
+          answer_code: 'NONE',
+          tense_frame: activeTenseFrame,
+          module_number: currentQuestion.module,
+          property_id: propertyId,
+        });
+        await insertNoneFlag({
+          none_flag_id: crypto.randomUUID(),
+          session_id: activeSessionId,
+          question_id: currentQuestion.id,
+          property_id: propertyId,
+        });
+        trackNoneFlagSelected({
+          question_id: currentQuestion.id,
+          module_number: currentQuestion.module,
           tier: currentTier,
           property_id: propertyId,
         });
       }
-      await insertResponse({
-        response_id: crypto.randomUUID(),
-        session_id: activeSessionId,
-        question_id: 'Q2',
-        answer_code: answerCode,
-        tense_frame: activeTenseFrame,
-        module_number: 1,
-        property_id: propertyId,
-      });
-      trackQuestionAnswered({
-        question_id: 'Q2',
-        answer_code: answerCode,
-        module_number: 1,
-        tier: currentTier,
-        tense_frame: activeTenseFrame,
-        property_id: propertyId,
-      });
-    } else if (isScaleAnswer) {
-      const scaleValue = parseInt(answerCode.replace('SCALE_', ''), 10);
-      await insertScaleResponse({
-        scale_response_id: crypto.randomUUID(),
-        session_id: activeSessionId,
-        question_id: currentQuestion.id,
-        scale_value: scaleValue,
-        property_id: propertyId,
-      });
-      trackQuestionAnswered({
-        question_id: currentQuestion.id,
-        answer_code: answerCode,
-        module_number: currentQuestion.module,
-        tier: currentTier,
-        tense_frame: activeTenseFrame,
-        property_id: propertyId,
-      });
-    } else if (!isNoneOption) {
-      await insertResponse({
-        response_id: crypto.randomUUID(),
-        session_id: activeSessionId,
-        question_id: currentQuestion.id,
-        answer_code: answerCode,
-        tense_frame: activeTenseFrame,
-        module_number: currentQuestion.module,
-        property_id: propertyId,
-      });
-      trackQuestionAnswered({
-        question_id: currentQuestion.id,
-        answer_code: answerCode,
-        module_number: currentQuestion.module,
-        tier: currentTier,
-        tense_frame: activeTenseFrame,
-        property_id: propertyId,
-      });
-    }
 
-    if (isNoneOption) {
-      await insertNoneFlag({
-        none_flag_id: crypto.randomUUID(),
-        session_id: activeSessionId,
-        question_id: currentQuestion.id,
-        property_id: propertyId,
-      });
-      trackNoneFlagSelected({
-        question_id: currentQuestion.id,
-        module_number: currentQuestion.module,
-        tier: currentTier,
-        property_id: propertyId,
-      });
+      await advanceAfterAnswer(answerCode);
+    } finally {
+      // B-3-002: release the guard. By the time we reach here the answer is
+      // persisted and the screen has advanced (or completion has fired), so
+      // the next question's renderer — a fresh component instance — is free
+      // to submit. Released in finally so an insert error cannot wedge the
+      // guard permanently.
+      answeringRef.current = false;
     }
+  }
 
-    // Advance — check episode boundary and upgrade trigger
+  // ── Advance logic — shared by single-code and multi_select array paths ──
+  // Extracted (B-3-001) so the multi_select array branch and the single-code
+  // path use identical episode-boundary, upgrade-trigger, and completion
+  // logic. Behaviour is unchanged from the previous inline version.
+  //
+  // justAnsweredCode: the answer code that was just submitted. Used only for
+  // the Q31 service-style completion override (see below). The single-code
+  // path passes its answerCode; the multi_select path passes null because
+  // Q31 is a single_select question and never arrives via the array path.
+  async function advanceAfterAnswer(justAnsweredCode) {
     const nextIndex = currentIndex + 1;
 
     if (nextIndex >= tierQuestions.length) {
@@ -445,10 +591,12 @@ export default function QuestionScreen({
         // bypassing setState async to avoid a stale value in the handoff.
         const payload = buildCompletionPayload();
         payload.episodeCountCompleted = finalEpisodesCompleted;
-        // Latest Q31 may have just been added — re-read from local response
-        // map plus the just-captured currentQuestion if it was Q31.
-        if (currentQuestion.id === SERVICE_STYLE_QUESTION_ID) {
-          payload.serviceStyleCode = answerCode;
+        // Latest Q31 may have just been added — re-read from the just-
+        // captured answer code if the final question was Q31. responsesByQid
+        // is updated via setState (async) so it would be stale here; the
+        // explicit override bypasses the stale snapshot.
+        if (currentQuestion.id === SERVICE_STYLE_QUESTION_ID && justAnsweredCode) {
+          payload.serviceStyleCode = justAnsweredCode;
         }
         // Deterministic final-badges resolution.
         // React 18 batches setState — badges.allBadges may NOT include the
