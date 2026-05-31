@@ -3,7 +3,7 @@
 // Appears briefly when a badge is earned, then fades out.
 // Shows badge + name + description. Auto-dismisses after 4.5 seconds.
 //
-// B-3-005 fix (S3-15 mobile test, iteration 3):
+// B-3-005 fix (S3-15 mobile test, final iteration):
 //
 //   Earlier attempts: portal-rendered + outer-div/inner-motion.div
 //   structure. Both used `transform: translateX(-50%)` for horizontal
@@ -18,24 +18,28 @@
 //   reproduce in Chrome's mobile emulator because Chrome uses a
 //   different rendering engine.
 //
-//   Fix: centre via `left: 0; right: 0; margin: 0 auto` instead of
-//   transform. This iOS-safe pattern:
-//     - Spans the viewport horizontally with left:0 right:0
-//     - Caps actual width with max-width
-//     - Centres within that span via margin-auto
-//     - Uses NO transform anywhere on the toast itself
-//   Result: no transform conflicts with WebKit's fixed-positioning
-//   layer, no conflicts with Framer Motion's own transform animations
-//   on the same element.
+//   Fix:
+//     1. Centre via `left: 0; right: 0; margin: 0 auto` instead of
+//        transform — bypasses WebKit's transform-on-fixed-position
+//        quirks and avoids conflicts with Framer Motion's own
+//        transform animations on the same element.
+//     2. Anchor to the TOP of the viewport, not the bottom — iOS
+//        Safari's dynamic URL bar makes the bottom edge unstable
+//        during scroll, and bottom-anchoring caused the toast to
+//        overlap the sticky Continue button on the curiosity hook
+//        screens. Top-anchoring physically separates the toast from
+//        the button so they can't collide.
+//     3. Use `env(safe-area-inset-top)` so the toast respects the
+//        iPhone notch / Dynamic Island and isn't obscured by it.
+//     4. max-width uses `min(380px, calc(100% - 32px))` referencing
+//        100% of the containing block (the viewport via
+//        position: fixed + left:0; right:0), avoiding 100vw which on
+//        iOS Safari includes the area under the dynamic URL bar.
 //
-//   Also: max-width uses `min(380px, calc(100% - 32px))` referencing
-//   100% of the containing block (the viewport via position:fixed +
-//   left:0; right:0), avoiding 100vw which on iOS Safari includes the
-//   area under the dynamic URL bar.
-//
-//   Kept the React portal into document.body as defence-in-depth against
-//   any ancestor transform contexts (a separate CSS gotcha that didn't
-//   turn out to be the cause here but doesn't hurt to guard against).
+//   Kept the React portal into document.body as defence-in-depth
+//   against any ancestor transform contexts (a separate CSS gotcha
+//   that didn't turn out to be the cause here but doesn't hurt to
+//   guard against).
 
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
@@ -51,14 +55,18 @@ export default function BadgeToast({ definition, onDismiss }) {
 
   const toast = (
     <motion.div
-      initial={{ opacity: 0, y: 32, scale: 0.92 }}
+      initial={{ opacity: 0, y: -32, scale: 0.92 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -16, scale: 0.96 }}
       transition={{ duration: 0.25, ease: 'easeOut' }}
       style={{
-        // Positioning — iOS-safe centring without transform
+        // Positioning — top-anchored, iOS-safe centring without transform.
+        // Top-anchored (not bottom) to avoid competing with the sticky
+        // Continue button on mobile; iOS Safari's dynamic URL bar also
+        // makes the bottom of the viewport unstable during scroll.
+        // env(safe-area-inset-top) respects the iOS notch / Dynamic Island.
         position: 'fixed',
-        bottom: '6rem',
+        top: 'calc(env(safe-area-inset-top, 0px) + 1rem)',
         left: 0,
         right: 0,
         marginLeft: 'auto',
