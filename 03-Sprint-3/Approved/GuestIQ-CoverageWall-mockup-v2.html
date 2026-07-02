@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GuestIQ · Coverage wall</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Spectral:ital,wght@0,300;0,400;1,400&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#16141D;--ink-2:#1E1A27;--ink-3:#262031;--ink-4:#2D2638;--brass:#C8A24E;--brass-bright:#E7C879;--glow:#F4DC97;
+    --heading:#F1ECDF;--text:#EDE9F2;--mute:#8E8699;--mute-2:#615A70;--line:rgba(255,255,255,.08);--line-2:rgba(255,255,255,.12);--ok:#7FB389;
+    --serif:'Fraunces',serif;--story:'Spectral',serif;--mono:'Space Mono',monospace}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(130% 80% at 50% -10%,#221C2E 0%,var(--ink) 55%,#100E16 100%);background-attachment:fixed;
+    color:var(--text);font-family:var(--story);-webkit-font-smoothing:antialiased;padding:46px 22px 80px}
+  .wrap{max-width:920px;margin:0 auto}
+  .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--brass);text-align:center}
+  h1{font-family:var(--serif);font-weight:500;font-size:clamp(26px,5vw,40px);line-height:1.1;letter-spacing:-.015em;color:var(--heading);text-align:center;margin:11px 0 8px}
+  h1 .em{font-style:italic;font-weight:400;color:var(--brass-bright)}
+  .sub{font-family:var(--story);font-weight:300;font-size:16px;color:#CFC9D9;text-align:center;max-width:52ch;margin:0 auto 26px}
+
+  .recognition{text-align:center;max-width:48ch;margin:0 auto 30px;padding-bottom:28px;border-bottom:1px solid var(--line)}
+  .rec-line{font-family:var(--serif);font-weight:400;font-size:20px;line-height:1.4;color:#F2ECDE;margin-bottom:16px}
+  .rec-line b{color:var(--brass-bright);font-style:italic;font-weight:400}
+  .rec-icons{display:flex;gap:13px;justify-content:center;margin-bottom:16px}
+  .rec-icons .ri{width:46px;height:46px;border-radius:11px;border:1px solid rgba(200,162,78,.4);background:rgba(200,162,78,.06);display:flex;align-items:center;justify-content:center;color:var(--brass-bright)}
+  .rec-icons .ri svg{width:27px;height:27px}
+  .rec-thanks{font-family:var(--story);font-style:italic;font-size:15px;color:var(--mute);line-height:1.5}
+
+  .toggle{display:flex;gap:6px;justify-content:center;margin-bottom:30px}
+  .toggle button{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);background:none;border:1px solid var(--line-2);border-radius:999px;padding:9px 18px;cursor:pointer;transition:.2s}
+  .toggle button.on{color:var(--ink);background:var(--brass);border-color:var(--brass)}
+
+  .wall{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:680px){.wall{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:440px){.wall{grid-template-columns:1fr}}
+  .frame{border-radius:12px;overflow:hidden;border:1px solid var(--line);background:rgba(255,255,255,.012);position:relative}
+  .canvas{aspect-ratio:5/4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:11px;padding:14px;position:relative}
+  .pic{color:var(--brass)}.pic svg{width:42px;height:42px}
+  .pn{font-family:var(--serif);font-size:16px;color:var(--heading);text-align:center;line-height:1.15}
+  .band{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:9px;border-top:1px solid var(--line)}
+
+  .toggle-explainer{font-family:var(--story);font-style:italic;font-size:14px;color:var(--mute);text-align:center;max-width:50ch;margin:0 auto 24px;line-height:1.5}
+  .toggle-explainer b{color:var(--brass-bright);font-style:normal;font-weight:400}
+  .hexmark{color:var(--brass);font-style:normal}
+
+  .justmine{margin-top:28px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.012);padding:18px 20px}
+  .jm-head{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--brass);margin-bottom:4px}
+  .jm-sub{font-family:var(--story);font-style:italic;font-size:13.5px;color:var(--mute);margin-bottom:16px}
+  .jm-row{display:flex;gap:12px;flex-wrap:wrap}
+  .jmf{display:flex;flex-direction:column;align-items:center;gap:6px;width:92px}
+  .jmf .jc{width:92px;aspect-ratio:5/4;border-radius:9px;border:1px solid rgba(200,162,78,.4);background:rgba(200,162,78,.05);display:flex;align-items:center;justify-content:center;position:relative;color:var(--brass-bright)}
+  .jmf .jc svg{width:32px;height:32px}
+  .jmf .jc .pin{position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--ink-2);border:1px solid var(--line-2);color:#D69A4C}
+  .jmf .jc .pin::before{content:"";position:absolute;inset:2px;border-radius:50%;border:1.2px solid currentColor}
+  .jmf .jc .pin svg{width:11px;height:11px}
+  .jmf .jl{font-family:var(--mono);font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+
+  /* states */
+  .frame.vivid{border-color:rgba(200,162,78,.45);box-shadow:0 0 22px -8px rgba(231,200,121,.4)}
+  .frame.vivid .pic{color:var(--brass-bright)} .frame.vivid .band{color:var(--brass);background:rgba(200,162,78,.06)}
+  .frame.forming .pic{color:var(--mute)} .frame.forming .pn{color:#CFC9D9} .frame.forming .band{color:var(--mute)}
+  .frame.empty{border-style:dashed;border-color:var(--line-2)} .frame.empty .canvas{opacity:.5} .frame.empty .pic{color:var(--mute-2)} .frame.empty .pn{color:var(--mute)} .frame.empty .band{color:var(--mute-2)}
+  .frame.empty.call{border-color:rgba(200,162,78,.4)} .frame.empty.call .canvas{opacity:.75} .frame.empty.call .band{color:var(--brass);background:rgba(200,162,78,.05)}
+
+  /* yours pin */
+  .yours-pin{position:absolute;top:9px;right:9px;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(70% 70% at 50% 35%,var(--ink-3),var(--ink-2));border:1px solid var(--line-2);color:#D69A4C}
+  .yours-pin::before{content:"";position:absolute;inset:2px;border-radius:50%;border:1.3px solid currentColor}
+  .yours-pin svg{width:14px;height:14px}
+
+  .hooknote{font-family:var(--story);font-style:italic;font-size:15px;color:var(--mute);text-align:center;margin-top:24px}
+  .hooknote b{color:var(--brass-bright);font-style:normal;font-weight:400}
+
+  .divider{display:flex;align-items:center;gap:16px;margin:54px 0 30px;color:var(--mute-2)}
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+  .divider span{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase}
+
+  /* completed-range */
+  .crange{border:1px solid rgba(200,162,78,.25);border-radius:16px;background:linear-gradient(0deg,rgba(200,162,78,.04),rgba(200,162,78,.04)),rgba(255,255,255,.01);padding:34px 26px}
+  .crange .done{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ok);margin-bottom:14px}
+  .crange .done .tick{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--ok);display:inline-flex;align-items:center;justify-content:center;font-size:10px}
+  .crange h2{font-family:var(--serif);font-weight:500;font-size:25px;color:#F2ECDE;line-height:1.18;max-width:22ch;margin-bottom:8px}
+  .crange h2 .em{font-style:italic;color:var(--brass-bright)}
+  .crange .cs{font-family:var(--story);font-weight:300;font-size:15px;color:#CFC9D9;max-width:42ch;margin-bottom:24px}
+  .miniwall{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+  @media(max-width:600px){.miniwall{grid-template-columns:repeat(3,1fr)}}
+  .mf{aspect-ratio:1;border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line)}
+  .mf .mp{font-size:0;color:var(--brass)}.mf .mp svg{width:26px;height:26px}
+  .mf .ml{font-family:var(--mono);font-size:7.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);text-align:center}
+  .mf.mine{border-color:rgba(200,162,78,.45);background:rgba(200,162,78,.05)}.mf.mine .mp{color:var(--brass-bright)}
+  .mf.team{border-style:dashed;border-color:var(--line-2);opacity:.6;animation:breathe 2.8s ease-in-out infinite}.mf.team .mp{color:var(--mute-2)}
+  @keyframes breathe{0%,100%{opacity:.45}50%{opacity:.7}}
+  .watch{font-family:var(--story);font-style:italic;font-size:14px;color:var(--mute);text-align:center;margin-top:20px}
+
+  .note{font-family:var(--story);font-size:15.5px;color:#BDB7C6;line-height:1.75;max-width:64ch;margin:48px auto 0;border:1px solid var(--line);border-radius:14px;padding:26px 28px;background:rgba(255,255,255,.012)}
+  .note .nh{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);margin-bottom:14px}
+  .note b{color:var(--heading);font-weight:400}.note .em{color:var(--brass-bright);font-style:italic}
+  .note .row{margin-bottom:12px}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <symbol id="fox" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"><path d="M15 23 L11.5 7.5 L27 17.5"/><path d="M49 23 L52.5 7.5 L37 17.5"/><path d="M15 23 C13 33 18 45 32 53 C46 45 51 33 49 23 C43 19 38 17.5 32 17.5 C26 17.5 21 19 15 23 Z"/><path d="M24.5 31.5 L28.5 33"/><path d="M39.5 31.5 L35.5 33"/><path d="M27 40 L32 45.5 L37 40"/></g><circle cx="32" cy="46.6" r="1.5" fill="currentColor"/></symbol>
+  <symbol id="i-bus" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><rect x="6" y="11" width="20" height="14" rx="2"/><path d="M12 11 V8.5 A1.5 1.5 0 0 1 13.5 7 H18.5 A1.5 1.5 0 0 1 20 8.5 V11"/><path d="M6 17 H26"/></g></symbol>
+  <symbol id="i-flight" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M16 5 C18 7 18 11 18 14 L27 20 V22.5 L18 19.5 V24 L21 26 V27.5 L16 26 L11 27.5 V26 L14 24 V19.5 L5 22.5 V20 L14 14 C14 11 14 7 16 5 Z"/></g></symbol>
+  <symbol id="i-holiday" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><circle cx="16" cy="16" r="5"/><path d="M16 4 V7 M16 25 V28 M4 16 H7 M25 16 H28 M7.5 7.5 L9.7 9.7 M22.3 22.3 L24.5 24.5 M24.5 7.5 L22.3 9.7 M9.7 22.3 L7.5 24.5"/></g></symbol>
+  <symbol id="i-cruise" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M7 17 H25 L22.5 23 H9.5 Z"/><path d="M16 17 V8 L22 13 H16"/><path d="M4 26 C6 24.5 8 27.5 10 26 C12 24.5 14 27.5 16 26 C18 24.5 20 27.5 22 26 C24 24.5 26 27.5 28 26"/></g></symbol>
+  <symbol id="i-event" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><rect x="6" y="8" width="20" height="18" rx="2"/><path d="M6 13 H26 M11 5 V10 M21 5 V10"/><circle cx="16" cy="19" r="1.3" fill="currentColor" stroke="none"/></g></symbol>
+  <symbol id="i-medical" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><rect x="6" y="9" width="20" height="16" rx="3"/><path d="M16 13 V21 M12 17 H20"/></g></symbol>
+  <symbol id="i-crew" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M16 10 L26 16 L16 15 L6 16 Z"/><path d="M16 15 V22 M12 19 H20"/></g></symbol>
+  <symbol id="i-vip" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M16 6 L18.8 12.5 L26 13.2 L20.5 18 L22.2 25 L16 21.2 L9.8 25 L11.5 18 L6 13.2 L13.2 12.5 Z"/></g></symbol>
+</defs></svg>
+
+<div class="wrap">
+  <div class="eyebrow">The desk's guests</div>
+  <h1>Who the front desk <span class="em">knows.</span></h1>
+  <p class="sub">Every guest the desk could know — some known well, some started, some not yet read. The empty frames are where you can still help.</p>
+
+  <div class="recognition">
+    <p class="rec-line">You've brought <b>three guests</b> to life that no system here could see —</p>
+    <div class="rec-icons">
+      <span class="ri"><svg><use href="#i-bus"/></svg></span>
+      <span class="ri"><svg><use href="#i-flight"/></svg></span>
+      <span class="ri"><svg><use href="#i-event"/></svg></span>
+    </div>
+    <p class="rec-thanks">knowledge that lived only in your head, now on record. Thank you.</p>
+  </div>
+
+  <div class="toggle-explainer" style="margin-top:2px">Every guest the desk could know. The <span class="hexmark">⬡</span> marks the ones <b>you've</b> read — gaps first, so where you can still help is up top.</div>
+
+  <div class="wall">
+    <div class="frame empty call"><div class="canvas"><span class="pic"><svg><use href="#i-cruise"/></svg></span><div class="pn">The Cruise Guest</div></div><div class="band">Do you know them?</div></div>
+    <div class="frame empty"><div class="canvas"><span class="pic"><svg><use href="#i-medical"/></svg></span><div class="pn">The Medical-Stay Guest</div></div><div class="band">Do you know them?</div></div>
+    <div class="frame empty"><div class="canvas"><span class="pic" style="opacity:.5">·&nbsp;·&nbsp;·</span><div class="pn">Someone else</div></div><div class="band">Do you know them?</div></div>
+    <div class="frame forming"><div class="canvas"><span class="yours-pin"><svg><use href="#fox"/></svg></span><span class="pic"><svg><use href="#i-event"/></svg></span><div class="pn">The Event Guest</div></div><div class="band">Started</div></div>
+    <div class="frame forming"><div class="canvas"><span class="pic"><svg><use href="#i-holiday"/></svg></span><div class="pn">The Holiday Guest</div></div><div class="band">Started</div></div>
+    <div class="frame forming"><div class="canvas"><span class="pic"><svg><use href="#i-crew"/></svg></span><div class="pn">The Airline Crew</div></div><div class="band">Started</div></div>
+    <div class="frame vivid"><div class="canvas"><span class="yours-pin"><svg><use href="#fox"/></svg></span><span class="pic"><svg><use href="#i-bus"/></svg></span><div class="pn">The Business Guest</div></div><div class="band">Known well</div></div>
+    <div class="frame vivid"><div class="canvas"><span class="yours-pin"><svg><use href="#fox"/></svg></span><span class="pic"><svg><use href="#i-flight"/></svg></span><div class="pn">The Early-Flight Guest</div></div><div class="band">Known well</div></div>
+    <div class="frame vivid"><div class="canvas"><span class="pic"><svg><use href="#i-vip"/></svg></span><div class="pn">The Executive / VIP</div></div><div class="band">Known well</div></div>
+  </div>
+
+  <div class="hooknote">The desk still hasn't heard the <b>Cruise guest</b> — and you know them, don't you?</div>
+
+  <div class="divider"><span>and when you've read your whole range</span></div>
+
+  <!-- COMPLETED RANGE -->
+  <div class="crange">
+    <div class="done"><span class="tick">✓</span> Your range, on record</div>
+    <h2>You've brought every guest you know <span class="em">to life.</span></h2>
+    <p class="cs">That's your whole range on record — guests no system here could see. Nothing more to prove; this is plenty.</p>
+    <div class="miniwall">
+      <div class="mf mine"><span class="mp"><svg><use href="#i-bus"/></svg></span><span class="ml">Business</span></div>
+      <div class="mf mine"><span class="mp"><svg><use href="#i-flight"/></svg></span><span class="ml">Early flight</span></div>
+      <div class="mf mine"><span class="mp"><svg><use href="#i-event"/></svg></span><span class="ml">Event</span></div>
+      <div class="mf mine"><span class="mp"><svg><use href="#i-vip"/></svg></span><span class="ml">Exec / VIP</span></div>
+      <div class="mf mine"><span class="mp"><svg><use href="#i-holiday"/></svg></span><span class="ml">Holiday</span></div>
+      <div class="mf team"><span class="mp"><svg><use href="#i-cruise"/></svg></span><span class="ml">The desk's to fill</span></div>
+      <div class="mf team"><span class="mp"><svg><use href="#i-medical"/></svg></span><span class="ml">The desk's to fill</span></div>
+    </div>
+    <div class="watch">The rest aren't yours to carry — they're the desk's to fill. Watch them come in.</div>
+  </div>
+
+  <div class="note">
+    <div class="nh">How this wall behaves</div>
+    <div class="row"><b>Gaps first.</b> "Not yet" frames sit at the top — where you can still help is the first thing you see; the guests already known well settle to the bottom.</div>
+    <div class="row"><b>Status only, never numbers.</b> Frames read <b>Do you know them? · Started · Known well</b> — never "12 reads," never a ranking. The empty frames ask a real question rather than command, so an agent who doesn't know that guest just moves on — no thin, guessy data.</div>
+    <div class="row"><b>Your reads are marked, not separated.</b> The <span class="hexmark">⬡</span> badge pins the guests you've put on record right on the desk-wide wall — so no separate "mine" tab is needed. Your own portfolio is celebrated at the end-of-read gallery instead. <em>(A deliberate simplification of Value Model §4.2's two-view toggle — the pins + gallery cover it.)</em></div>
+    <div class="row"><b>Completed-range never nags.</b> When you've read every guest you truly know, it reframes to "this is plenty," and the rest become <b>the desk's to fill</b> — never "you're unfinished."</div>
+    <div class="row"><b>No promises, no depth here.</b> It doesn't claim your reads will become findings (that recognition comes collectively, at the GM debrief), and going deeper is offered mid-read only.</div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GuestIQ · Badge claim + onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Spectral:ital,wght@0,300;0,400&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#16141D;--ink-2:#1E1A27;--ink-3:#262031;--ink-4:#2D2638;--brass:#C8A24E;--brass-bright:#E7C879;--glow:#F4DC97;
+    --heading:#F1ECDF;--text:#EDE9F2;--mute:#8E8699;--mute-2:#615A70;--line:rgba(255,255,255,.08);--line-2:rgba(255,255,255,.12);
+    --serif:'Fraunces',serif;--story:'Spectral',serif;--mono:'Space Mono',monospace}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0f0d14;color:var(--text);font-family:var(--story);-webkit-font-smoothing:antialiased;padding:32px 18px 80px}
+  .wrap{max-width:600px;margin:0 auto}
+  .pagekick{font-family:var(--mono);font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--brass);text-align:center}
+  .pagetitle{font-family:var(--serif);font-weight:500;font-size:25px;color:var(--heading);text-align:center;margin:8px 0 4px}
+  .pagesub{font-family:var(--story);font-size:14px;color:var(--mute);text-align:center;max-width:52ch;margin:0 auto 20px}
+  .beatlabel{font-family:var(--mono);font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--mute-2);text-align:center;margin:32px 0 10px}
+
+  .screen{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
+    background:radial-gradient(120% 85% at 50% -5%,#221C2E 0%,#16141D 55%,#100E16 100%);
+    box-shadow:0 22px 55px -24px rgba(0,0,0,.7);padding:30px 28px 32px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--brass);text-align:center;margin-bottom:12px}
+  .h{font-family:var(--serif);font-weight:500;font-size:25px;line-height:1.16;letter-spacing:-.01em;color:#F2ECDE;text-align:center;margin-bottom:8px}
+  .sub{font-family:var(--story);font-weight:300;font-size:15px;line-height:1.5;color:#CFC9D9;text-align:center;max-width:40ch;margin:0 auto 24px}
+  .sub b{color:var(--brass-bright);font-weight:400}
+
+  /* coin */
+  .coin{border-radius:50%;display:inline-flex;align-items:center;justify-content:center;position:relative;
+    background:radial-gradient(70% 70% at 50% 34%,var(--ink-3),var(--ink-2));border:1px solid var(--line-2);color:var(--bc,var(--brass));
+    box-shadow:0 6px 16px -7px rgba(0,0,0,.6)}
+  .coin::before{content:"";position:absolute;border-radius:50%;border:2.3px solid currentColor}
+
+  /* claim grid */
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 10px;margin-bottom:8px}
+  @media(max-width:520px){.grid{grid-template-columns:repeat(3,1fr)}}
+  .pick{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;padding:6px 2px;border-radius:12px;transition:background .15s,transform .15s}
+  .pick:hover{background:rgba(255,255,255,.02);transform:translateY(-2px)}
+  .pick .coin{width:66px;height:66px}.pick .coin::before{inset:4px}.pick .coin svg{width:40px;height:40px}
+  .pick .nm{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+  .pick.sel .coin{box-shadow:0 0 0 1px var(--brass-bright),0 0 20px rgba(231,200,121,.35)}
+  .pick.sel .nm{color:var(--brass-bright)}
+  .claimfoot{font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:var(--mute-2);text-align:center;margin-top:14px}
+
+  /* confirm */
+  .big{width:132px;height:132px;margin:6px auto 0}.big::before{inset:7px;border-width:3px}.big svg{width:78px;height:78px}
+  .glowwrap{position:relative;display:flex;justify-content:center;margin-bottom:18px}
+  .glowwrap::after{content:"";position:absolute;width:180px;height:180px;top:-24px;border-radius:50%;background:radial-gradient(circle,rgba(231,200,121,.16),transparent 62%);pointer-events:none}
+  .confname{font-family:var(--serif);font-style:italic;font-weight:500;font-size:30px;color:var(--brass-bright);text-align:center;margin-bottom:10px}
+  .reassure{font-family:var(--story);font-size:15px;line-height:1.5;color:#CFC9D9;text-align:center;max-width:32ch;margin:0 auto 24px}
+  .reassure b{color:var(--heading);font-weight:400}
+  .cta{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);background:var(--brass);border:none;border-radius:2px;padding:14px 28px;cursor:pointer;display:block;margin:0 auto;transition:background .25s,transform .2s}
+  .cta:hover{background:var(--brass-bright);transform:translateY(-1px)}
+  .chips{display:flex;gap:8px;justify-content:center;margin-bottom:22px;flex-wrap:wrap}
+  .chip{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);border:1px solid var(--line-2);border-radius:999px;padding:5px 11px}
+
+  /* re-entry */
+  .mid{width:104px;height:104px;margin:2px auto 0}.mid::before{inset:6px;border-width:2.6px}.mid svg{width:62px;height:62px}
+  .reentry-tap{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--brass);margin-top:14px;text-align:center}
+  .switch{font-family:var(--story);font-size:13px;color:var(--mute-2);text-align:center;margin-top:16px;text-decoration:underline;text-underline-offset:3px}
+
+  .note{font-family:var(--story);font-size:14.5px;color:#BDB7C6;line-height:1.7;border:1px solid var(--line);border-radius:14px;padding:22px 24px;background:rgba(255,255,255,.012);margin-top:40px}
+  .note .nh{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);margin-bottom:12px}
+  .note b{color:var(--heading);font-weight:400}.note .row{margin-bottom:10px}.note .em{color:var(--brass-bright);font-style:italic}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <symbol id="fox" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M15 23 L11.5 7.5 L27 17.5"/><path d="M49 23 L52.5 7.5 L37 17.5"/><path d="M15 23 C13 33 18 45 32 53 C46 45 51 33 49 23 C43 19 38 17.5 32 17.5 C26 17.5 21 19 15 23 Z"/><path d="M24.5 31.5 L28.5 33"/><path d="M39.5 31.5 L35.5 33"/><path d="M27 40 L32 45.5 L37 40"/></g><circle cx="32" cy="46.6" r="1.5" fill="currentColor"/></symbol>
+  <symbol id="owl" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M19.5 19 L21.5 10.5 L27 17"/><path d="M44.5 19 L42.5 10.5 L37 17"/><path d="M15.5 25 C14.5 17.5 22 14 32 14 C42 14 49.5 17.5 48.5 25 C50.5 37 44 50.5 32 51.5 C20 50.5 13.5 37 15.5 25 Z"/><circle cx="24.5" cy="29.5" r="6.4"/><circle cx="39.5" cy="29.5" r="6.4"/><path d="M32 33.5 L29.4 38 L32 40.8 L34.6 38 Z"/><path d="M22 47 L20.5 50.5"/><path d="M42 47 L43.5 50.5"/></g><circle cx="24.5" cy="29.5" r="1.7" fill="currentColor"/><circle cx="39.5" cy="29.5" r="1.7" fill="currentColor"/></symbol>
+  <symbol id="bear" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"><circle cx="19.5" cy="19" r="6.8"/><circle cx="44.5" cy="19" r="6.8"/><path d="M15 30.5 C15 20 23 15 32 15 C41 15 49 20 49 30.5 C49 42 41 50.5 32 50.5 C23 50.5 15 42 15 30.5 Z"/><path d="M24 39.5 C24 34.5 27.5 32 32 32 C36.5 32 40 34.5 40 39.5 C40 43.5 36.5 46 32 46 C27.5 46 24 43.5 24 39.5 Z"/></g><circle cx="25.5" cy="29.5" r="1.8" fill="currentColor"/><circle cx="38.5" cy="29.5" r="1.8" fill="currentColor"/><path d="M29.4 37.5 C29.4 36 30.8 35.4 32 35.4 C33.2 35.4 34.6 36 34.6 37.5 C34.6 38.6 33.3 39.2 32 39.2 C30.7 39.2 29.4 38.6 29.4 37.5 Z" fill="currentColor"/></symbol>
+  <symbol id="hawk" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M23 16 C34 13 43 18 44 28 C44.5 34 41 43 33 47 C25 51 15 46 13 36 C11.5 27 14 19 23 16 Z"/><path d="M44 26 L54 28.5 C51 32 47.5 32.5 44.5 31"/><path d="M26 24 C31 21.5 38 22 42 25.5"/></g><circle cx="34" cy="28" r="2.3" fill="currentColor"/></symbol>
+  <symbol id="wolf" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M19 22 L15.5 7 L28 17"/><path d="M45 22 L48.5 7 L36 17"/><path d="M19 22 C16 29 16.5 34 19.5 37 L15.5 40 L23 39.5 C25 44 28 47 32 47 C36 47 39 44 41 39.5 L48.5 40 L44.5 37 C47.5 34 48 29 45 22 C39 17.5 37 16.5 32 16.5 C27 16.5 25 17.5 19 22 Z"/><path d="M24 30 L28.5 31.5"/><path d="M40 30 L35.5 31.5"/><path d="M28 41 L28 44 L36 44 L36 41"/></g><circle cx="32" cy="40" r="1.6" fill="currentColor"/></symbol>
+  <symbol id="hare" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M27.5 29 C24 21 22.5 11 25 4 C28 3 30 5.5 30 10 C30 17 29.5 24 29 29"/><path d="M36.5 29 C40 21 41.5 11 39 4 C36 3 34 5.5 34 10 C34 17 34.5 24 35 29"/><path d="M26 30 C23.5 34 24.5 42 32 47 C39.5 42 40.5 34 38 30 C36 27.5 34 27 32 27 C30 27 28 27.5 26 30 Z"/><path d="M29.5 41 L32 43.5 L34.5 41"/></g><circle cx="28.3" cy="35" r="1.5" fill="currentColor"/><circle cx="35.7" cy="35" r="1.5" fill="currentColor"/></symbol>
+  <symbol id="boar" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M20 23 L16.5 14 L26 20"/><path d="M44 23 L47.5 14 L38 20"/><path d="M20 23 C16.5 29 17.5 37 24 42 C27 44.5 29 46 32 46 C35 46 37 44.5 40 42 C46.5 37 47.5 29 44 23 C38 18.5 36 17.5 32 17.5 C28 17.5 26 18.5 20 23 Z"/><path d="M26 40 C26 36.5 28.5 35 32 35 C35.5 35 38 36.5 38 40 C38 43 35.5 44.5 32 44.5 C28.5 44.5 26 43 26 40 Z"/><path d="M27.5 44 C24.5 44.5 23 41.5 24 39"/><path d="M36.5 44 C39.5 44.5 41 41.5 40 39"/></g><circle cx="26" cy="28" r="1.5" fill="currentColor"/><circle cx="38" cy="28" r="1.5" fill="currentColor"/><circle cx="29.8" cy="39.5" r="1" fill="currentColor"/><circle cx="34.2" cy="39.5" r="1" fill="currentColor"/></symbol>
+  <symbol id="lynx" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M21 20 L17 5 L27.5 16"/><path d="M43 20 L47 5 L36.5 16"/><path d="M21 21 C18.5 27 18.5 31 21.5 34 L16.5 38 L24 37.5 C25.5 42 28.5 45 32 46 C35.5 45 38.5 42 40 37.5 L47.5 38 L42.5 34 C45.5 31 45.5 27 43 21 C38 17.5 36 16.5 32 16.5 C28 16.5 26 17.5 21 21 Z"/><path d="M28 38 L32 40.5 L36 38"/></g><circle cx="27" cy="29" r="1.6" fill="currentColor"/><circle cx="37" cy="29" r="1.6" fill="currentColor"/><circle cx="32" cy="42" r="1.3" fill="currentColor"/></symbol>
+  <symbol id="hedgehog" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M20 39 C20 31 25.5 27 32 27 C38.5 27 44 31 44 39 C44 45 38.5 49.5 32 49.5 C25.5 49.5 20 45 20 39 Z"/><path d="M17 33 L20 21.5 L24.5 31 L28.5 19.5 L32 30 L35.5 19.5 L39.5 31 L44 21.5 L47 33"/><path d="M18 32.5 C22 28 42 28 46 32.5"/></g><circle cx="27" cy="38" r="1.4" fill="currentColor"/><circle cx="37" cy="38" r="1.4" fill="currentColor"/><circle cx="32" cy="44.5" r="2" fill="currentColor"/></symbol>
+  <symbol id="badger" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><circle cx="22" cy="19.5" r="4"/><circle cx="42" cy="19.5" r="4"/><path d="M19 25 C17 31 18 38 23 43 C27 46.5 29.5 49 32 51.5 C34.5 49 37 46.5 41 43 C46 38 47 31 45 25 C39 21 37 20 32 20 C27 20 25 21 19 25 Z"/><path d="M26.5 22 C25.5 30 25.5 38 27.5 44"/><path d="M37.5 22 C38.5 30 38.5 38 36.5 44"/></g><circle cx="26.5" cy="31" r="1.4" fill="currentColor"/><circle cx="37.5" cy="31" r="1.4" fill="currentColor"/><circle cx="32" cy="47" r="1.6" fill="currentColor"/></symbol>
+  <symbol id="ram" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M26 22 C24.5 31 26 41 32 46 C38 41 39.5 31 38 22 C36 19 33.5 18.5 32 18.5 C30.5 18.5 28 19 26 22 Z"/><path d="M26 23.5 C22 22 19.5 23 19 26"/><path d="M38 23.5 C42 22 44.5 23 45 26"/><path d="M26 21 C18 18 11 22.5 12.5 29.5 C13.2 34 18 35.5 21 32 C23 29.5 21.8 26 19.3 26.8"/><path d="M38 21 C46 18 53 22.5 51.5 29.5 C50.8 34 46 35.5 43 32 C41 29.5 42.2 26 44.7 26.8"/></g><circle cx="29" cy="30" r="1.4" fill="currentColor"/><circle cx="35" cy="30" r="1.4" fill="currentColor"/><circle cx="32" cy="43.5" r="1.5" fill="currentColor"/></symbol>
+  <symbol id="tortoise" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M13 41 C13 28 21.5 21 32 21 C42.5 21 51 28 51 41 C51 42.5 50 43.5 48 43.5 L16 43.5 C14 43.5 13 42.5 13 41 Z"/><path d="M32 21 L32 43.5"/><path d="M22 24 C24 31 24 38 22.5 43.5"/><path d="M42 24 C40 31 40 38 41.5 43.5"/><path d="M15.5 35 C24 32 40 32 48.5 35"/><path d="M50 39 C54 38 56.5 40 55.5 43 C54.5 45.5 51 45.5 49 43"/><path d="M22 43.5 L20.5 47.5 L25 47.5"/><path d="M41 43.5 L44 47.5 L39.5 47.5"/></g><circle cx="53" cy="41.5" r="1" fill="currentColor"/></symbol>
+</defs></svg>
+
+<div class="wrap">
+  <div class="pagekick">GuestIQ · first run · claim + re-entry</div>
+  <div class="pagetitle">Becoming a badge</div>
+  <p class="pagesub">On shared desk PCs the agent has no login — they're an anonymous coin. Claimed once, tapped each shift, never a score.</p>
+
+  <!-- CLAIM -->
+  <div class="beatlabel">Step · pick your badge (first run only)</div>
+  <div class="screen">
+    <div class="eyebrow">First time here</div>
+    <div class="h">Pick your badge.</div>
+    <div class="sub">Choose an animal — it's <b>you</b> here, every shift. Anonymous, and never a score. No name, no sign-in.</div>
+    <div class="grid">
+      <div class="pick sel"><span class="coin" style="--bc:#D69A4C"><svg><use href="#fox"/></svg></span><span class="nm">Fox</span></div>
+      <div class="pick"><span class="coin" style="--bc:#6E84B0"><svg><use href="#owl"/></svg></span><span class="nm">Owl</span></div>
+      <div class="pick"><span class="coin" style="--bc:#C8A24E"><svg><use href="#bear"/></svg></span><span class="nm">Bear</span></div>
+      <div class="pick"><span class="coin" style="--bc:#B5663F"><svg><use href="#hawk"/></svg></span><span class="nm">Hawk</span></div>
+      <div class="pick"><span class="coin" style="--bc:#9AA0AE"><svg><use href="#wolf"/></svg></span><span class="nm">Wolf</span></div>
+      <div class="pick"><span class="coin" style="--bc:#E4D9C2"><svg><use href="#hedgehog"/></svg></span><span class="nm">Hedgehog</span></div>
+      <div class="pick"><span class="coin" style="--bc:#4E8C86"><svg><use href="#badger"/></svg></span><span class="nm">Badger</span></div>
+      <div class="pick"><span class="coin" style="--bc:#C77B6B"><svg><use href="#hare"/></svg></span><span class="nm">Hare</span></div>
+      <div class="pick"><span class="coin" style="--bc:#8A3A33"><svg><use href="#boar"/></svg></span><span class="nm">Boar</span></div>
+      <div class="pick"><span class="coin" style="--bc:#CBB37E"><svg><use href="#lynx"/></svg></span><span class="nm">Lynx</span></div>
+      <div class="pick"><span class="coin" style="--bc:#8DA67E"><svg><use href="#ram"/></svg></span><span class="nm">Ram</span></div>
+      <div class="pick"><span class="coin" style="--bc:#8E6E97"><svg><use href="#tortoise"/></svg></span><span class="nm">Tortoise</span></div>
+    </div>
+    <div class="claimfoot">whichever you tap becomes yours — you can't be identified by it</div>
+  </div>
+
+  <!-- CONFIRM -->
+  <div class="beatlabel">Then · it's yours</div>
+  <div class="screen">
+    <div class="eyebrow">Claimed</div>
+    <div class="glowwrap"><span class="coin big" style="--bc:#D69A4C"><svg><use href="#fox"/></svg></span></div>
+    <div class="confname">You're the Fox.</div>
+    <div class="reassure">That's you here now. It just marks your reads as <b>yours</b> — nothing more.</div>
+    <div class="chips"><span class="chip">Not a name</span><span class="chip">Not a score</span><span class="chip">Just you</span></div>
+    <button class="cta">Start reading →</button>
+  </div>
+
+  <!-- RE-ENTRY -->
+  <div class="beatlabel">Every shift after · re-entry (no re-claim)</div>
+  <div class="screen">
+    <div class="eyebrow">Welcome back</div>
+    <div class="glowwrap"><span class="coin mid" style="--bc:#D69A4C"><svg><use href="#fox"/></svg></span></div>
+    <div class="confname" style="font-size:26px">Welcome back, Fox.</div>
+    <div class="reassure">Continue where you stopped.</div>
+    <button class="cta">Continue →</button>
+    <div class="reentry-tap">— or tap your coin to begin —</div>
+    <div class="switch">Not the Fox? Switch badge</div>
+  </div>
+
+  <div class="note">
+    <div class="nh">The design calls here</div>
+    <div class="row"><b>1 · Claimed once, then just tapped.</b> First run: pick from the 12. Every shift after, the agent doesn't re-claim — they land on <em>"Welcome back, Fox"</em> and tap through.</div>
+    <div class="row"><b>2 · Named at the moment of claim.</b> "You're the Fox" — the animal-only name (colour stays visual). It's reinforced later at grounding ("Alright, Fox").</div>
+    <div class="row"><b>3 · Identity, never a score.</b> The claim screen says it plainly — <em>not a name, not a score, just you</em> — and there's no PII, no login, no key. It can't identify the person; it only marks that a read is theirs.</div>
+    <div class="row"><b>4 · A gentle way out.</b> On a shared PC the last badge might not be yours — "Not the Fox? Switch badge" lets the next person claim/select theirs without confusion.</div>
+    <div class="row"><span class="em">Plain-language (NFR-TONE-02):</span> "Pick up where you left off" → <b>"Continue where you stopped"</b>. "Switch badge" reads clearly and stays.</div>
+  </div>
+</div>
+</body>
+</html>

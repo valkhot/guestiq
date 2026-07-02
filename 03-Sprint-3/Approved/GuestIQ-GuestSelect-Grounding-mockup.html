@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GuestIQ · Guest-select + Grounding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Spectral:ital,wght@0,300;0,400;1,400&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#16141D;--ink-2:#1E1A27;--ink-3:#262031;--ink-4:#2D2638;--brass:#C8A24E;--brass-bright:#E7C879;
+    --heading:#F1ECDF;--text:#EDE9F2;--mute:#8E8699;--mute-2:#615A70;--line:rgba(255,255,255,.08);--line-2:rgba(255,255,255,.12);
+    --serif:'Fraunces',serif;--story:'Spectral',serif;--mono:'Space Mono',monospace}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0f0d14;color:var(--text);font-family:var(--story);-webkit-font-smoothing:antialiased;padding:30px 20px 70px}
+  .wrap{max-width:1040px;margin:0 auto}
+  .pagekick{font-family:var(--mono);font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--brass);text-align:center}
+  .pagetitle{font-family:var(--serif);font-weight:500;font-size:26px;color:var(--heading);text-align:center;margin:8px 0 4px}
+  .pagesub{font-family:var(--story);font-size:14px;color:var(--mute);text-align:center;max-width:62ch;margin:0 auto 30px}
+
+  .screen{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);
+    background:radial-gradient(120% 80% at 50% -8%,#221C2E 0%,#16141D 55%,#100E16 100%);
+    box-shadow:0 24px 60px -24px rgba(0,0,0,.7);padding:26px 30px 30px;max-width:640px;margin:0 auto}
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px}
+  .brand{font-family:var(--mono);font-size:9px;letter-spacing:.26em;color:var(--mute-2)}.brand b{color:var(--brass);font-weight:400}
+  .me{display:flex;align-items:center;gap:9px}
+  .me .cn{font-family:var(--mono);font-size:8px;letter-spacing:.1em;color:var(--mute);text-transform:uppercase;text-align:right;line-height:1.4}
+  .me .cn b{display:block;font-family:var(--serif);font-style:italic;font-size:15px;color:var(--brass-bright);letter-spacing:0;text-transform:none}
+  .coin{width:44px;height:44px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;position:relative;
+    background:radial-gradient(70% 70% at 50% 35%,var(--ink-3),var(--ink-2));border:1px solid var(--line-2);color:#D69A4C;box-shadow:0 4px 12px -5px rgba(0,0,0,.6)}
+  .coin::before{content:"";position:absolute;inset:3.5px;border-radius:50%;border:1.8px solid currentColor}
+  .coin svg{width:26px;height:26px}
+
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--brass);text-align:center;margin-bottom:12px}
+  .h{font-family:var(--serif);font-weight:500;font-size:25px;line-height:1.2;letter-spacing:-.01em;color:#F2ECDE;text-align:center;margin-bottom:6px}
+  .sub{font-family:var(--story);font-weight:300;font-size:15px;color:var(--mute);text-align:center;max-width:46ch;margin:0 auto 26px}
+
+  /* persona grid */
+  .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:560px){.pgrid{grid-template-columns:1fr}}
+  .pcard{display:flex;align-items:center;gap:13px;padding:13px 15px;border-radius:10px;background:var(--ink-3);border:1px solid var(--line);cursor:pointer;transition:border-color .2s,background .2s,transform .15s}
+  .pcard:hover{border-color:var(--line-2);background:var(--ink-4);transform:translateY(-1px)}
+  .pcard.sel{border-color:var(--brass);background:linear-gradient(0deg,rgba(200,162,78,.07),rgba(200,162,78,.07)),var(--ink-3)}
+  .picon{width:34px;height:34px;flex:none;color:var(--brass);display:flex;align-items:center;justify-content:center}
+  .picon svg{width:26px;height:26px}
+  .pcard.sel .picon{color:var(--brass-bright)}
+  .ptext .pn{font-family:var(--serif);font-size:16px;color:var(--heading);line-height:1.15}
+  .ptext .pd{font-family:var(--story);font-style:italic;font-size:12.5px;color:var(--mute);margin-top:2px;line-height:1.3}
+
+  /* grounding screen */
+  .ground{text-align:center;padding:14px 0 6px}
+  .persona-chip{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);border:1px solid rgba(200,162,78,.3);border-radius:999px;padding:5px 13px;margin-bottom:24px}
+  .persona-chip .dot{width:5px;height:5px;border-radius:50%;background:var(--brass)}
+  .greet{font-family:var(--serif);font-style:italic;font-weight:400;font-size:20px;color:var(--brass-bright);margin-bottom:14px}
+  .gprompt{font-family:var(--serif);font-weight:500;font-size:26px;line-height:1.22;color:#F2ECDE;max-width:18ch;margin:0 auto 16px}
+  .ghint{font-family:var(--story);font-weight:300;font-size:16px;line-height:1.5;color:#D3CDDD;max-width:38ch;margin:0 auto 30px}
+  .cta{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);background:var(--brass);border:none;border-radius:2px;padding:15px 30px;cursor:pointer;transition:background .25s,transform .2s}
+  .cta:hover{background:var(--brass-bright);transform:translateY(-1px)}
+  .rail{display:flex;gap:6px;justify-content:center;margin-top:26px}
+  .rail i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.14)}.rail i.on{width:18px;border-radius:3px;background:var(--brass)}
+
+  .label{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);text-align:center;margin:40px 0 16px}
+  .note{font-family:var(--story);font-size:14px;color:var(--mute);line-height:1.7;max-width:72ch;margin:36px auto 0}
+  .note b{color:var(--heading);font-weight:400}.note .em{color:var(--brass-bright);font-style:italic}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <symbol id="fox" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"><path d="M15 23 L11.5 7.5 L27 17.5"/><path d="M49 23 L52.5 7.5 L37 17.5"/><path d="M15 23 C13 33 18 45 32 53 C46 45 51 33 49 23 C43 19 38 17.5 32 17.5 C26 17.5 21 19 15 23 Z"/><path d="M24.5 31.5 L28.5 33"/><path d="M39.5 31.5 L35.5 33"/><path d="M27 40 L32 45.5 L37 40"/></g><circle cx="32" cy="46.6" r="1.5" fill="currentColor"/></symbol>
+  <!-- persona icons (simple line) -->
+  <symbol id="i-bus" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><rect x="6" y="11" width="20" height="14" rx="2"/><path d="M12 11 V8.5 A1.5 1.5 0 0 1 13.5 7 H18.5 A1.5 1.5 0 0 1 20 8.5 V11"/><path d="M6 17 H26"/></g></symbol>
+  <symbol id="i-flight" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M16 5 C18 7 18 11 18 14 L27 20 V22.5 L18 19.5 V24 L21 26 V27.5 L16 26 L11 27.5 V26 L14 24 V19.5 L5 22.5 V20 L14 14 C14 11 14 7 16 5 Z"/></g></symbol>
+  <symbol id="i-holiday" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><circle cx="16" cy="16" r="5"/><path d="M16 4 V7 M16 25 V28 M4 16 H7 M25 16 H28 M7.5 7.5 L9.7 9.7 M22.3 22.3 L24.5 24.5 M24.5 7.5 L22.3 9.7 M9.7 22.3 L7.5 24.5"/></g></symbol>
+  <symbol id="i-cruise" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M7 17 H25 L22.5 23 H9.5 Z"/><path d="M16 17 V8 L22 13 H16"/><path d="M4 26 C6 24.5 8 27.5 10 26 C12 24.5 14 27.5 16 26 C18 24.5 20 27.5 22 26 C24 24.5 26 27.5 28 26"/></g></symbol>
+  <symbol id="i-event" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><rect x="6" y="8" width="20" height="18" rx="2"/><path d="M6 13 H26 M11 5 V10 M21 5 V10"/><circle cx="16" cy="19" r="1.3" fill="currentColor" stroke="none"/></g></symbol>
+  <symbol id="i-medical" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><rect x="6" y="9" width="20" height="16" rx="3"/><path d="M16 13 V21 M12 17 H20"/></g></symbol>
+  <symbol id="i-crew" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M16 10 L26 16 L16 15 L6 16 Z"/><path d="M16 15 V22 M12 19 H20"/></g></symbol>
+  <symbol id="i-vip" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M16 6 L18.8 12.5 L26 13.2 L20.5 18 L22.2 25 L16 21.2 L9.8 25 L11.5 18 L6 13.2 L13.2 12.5 Z"/></g></symbol>
+  <symbol id="i-other" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="16" r="1.4" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.4" fill="currentColor" stroke="none"/><circle cx="23" cy="16" r="1.4" fill="currentColor" stroke="none"/></g></symbol>
+</defs></svg>
+
+<div class="wrap">
+  <div class="pagekick">GuestIQ · before the read</div>
+  <div class="pagetitle">Pick a guest you know — straight into the read</div>
+  <p class="pagesub">One step before answering: choose the guest type you genuinely know. Selecting takes you straight into the first question, which grounds you in one specific real guest — no separate screen.</p>
+
+  <!-- STEP 1 · SELECT -->
+  <div class="screen">
+    <div class="topbar">
+      <div class="brand">GUEST<b>IQ</b></div>
+      <div class="me"><span class="cn">recorded as<b>Fox</b></span><span class="coin"><svg><use href="#fox"/></svg></span></div>
+    </div>
+    <div class="eyebrow">Step one</div>
+    <div class="h">Which guest do you know best?</div>
+    <div class="sub">Pick the kind you've checked in many times — the one you could read with your eyes closed.</div>
+
+    <div class="pgrid">
+      <div class="pcard sel"><span class="picon"><svg><use href="#i-bus"/></svg></span><span class="ptext"><span class="pn">Business</span><span class="pd">Here to work — short stays, early starts</span></span></div>
+      <div class="pcard"><span class="picon"><svg><use href="#i-flight"/></svg></span><span class="ptext"><span class="pn">Early flight / late arrival</span><span class="pd">Odd hours — pre-dawn out, or in past midnight</span></span></div>
+      <div class="pcard"><span class="picon"><svg><use href="#i-holiday"/></svg></span><span class="ptext"><span class="pn">Holiday</span><span class="pd">Here for the city, in no rush</span></span></div>
+      <div class="pcard"><span class="picon"><svg><use href="#i-cruise"/></svg></span><span class="ptext"><span class="pn">Cruise</span><span class="pd">A night either side of the ship</span></span></div>
+      <div class="pcard"><span class="picon"><svg><use href="#i-event"/></svg></span><span class="ptext"><span class="pn">Event</span><span class="pd">A wedding, conference, or game in town</span></span></div>
+      <div class="pcard"><span class="picon"><svg><use href="#i-medical"/></svg></span><span class="ptext"><span class="pn">Medical</span><span class="pd">Here for treatment, or near someone who is</span></span></div>
+      <div class="pcard"><span class="picon"><svg><use href="#i-crew"/></svg></span><span class="ptext"><span class="pn">Airline crew</span><span class="pd">A layover — sleep by day, gone by dawn</span></span></div>
+      <div class="pcard"><span class="picon"><svg><use href="#i-vip"/></svg></span><span class="ptext"><span class="pn">Executive / VIP</span><span class="pd">Discreet, particular, used to being looked after</span></span></div>
+      <div class="pcard"><span class="picon"><svg><use href="#i-other"/></svg></span><span class="ptext"><span class="pn">Someone else</span><span class="pd">A regular who doesn't fit the rest</span></span></div>
+    </div>
+    <div class="rail"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+  </div>
+
+  <div class="label">↓ straight into the read — no extra screen</div>
+
+  <!-- STREAMLINED: first question carries the grounding -->
+  <div class="screen">
+    <div class="topbar">
+      <div class="brand">GUEST<b>IQ</b></div>
+      <div class="me"><span class="cn">recorded as<b>Fox</b></span><span class="coin"><svg><use href="#fox"/></svg></span></div>
+    </div>
+    <div class="persona-chip" style="display:flex;width:max-content;margin:0 auto 22px"><span class="dot"></span>Reading · the Business guest</div>
+    <div style="font-family:var(--serif);font-weight:500;font-size:23px;line-height:1.28;color:#F2ECDE;margin-bottom:7px">
+      <span style="color:var(--brass-bright);font-style:italic;font-weight:400">Picture one business traveller you know well.</span> What do they quietly notice — but would never mention at the desk?</div>
+    <div style="font-family:var(--story);font-style:italic;font-size:13.5px;color:var(--mute);margin-bottom:18px">The first question does the grounding — then every question after just says "they."</div>
+    <div style="display:flex;flex-direction:column;gap:8px;opacity:.5">
+      <div style="height:44px;border-radius:8px;background:var(--ink-3);border:1px solid var(--line)"></div>
+      <div style="height:44px;border-radius:8px;background:var(--ink-3);border:1px solid var(--line)"></div>
+      <div style="height:44px;border-radius:8px;background:var(--ink-3);border:1px solid var(--line)"></div>
+    </div>
+    <div class="rail"><i></i><i class="on"></i><i></i><i></i><i></i></div>
+  </div>
+
+  <div class="note">
+    <b>The design calls here:</b><br><br>
+    <b>1 · Guest-select is where "do I know this guest?" is decided</b> — the agent only picks a type they've read many times, which is why the read screen needs no per-question skip.<br>
+    <b>2 · Nine personas</b> from the v4.2 routing — Business · Early flight/late arrival · Holiday · Cruise · Event · Medical · Airline crew · Executive/VIP · Someone else — each with a one-line "is this you?" descriptor. <em>(Descriptors approved for The Cascade's mix.)</em><br>
+    <b>3 · No separate grounding screen</b> <em>(decided — save the step)</em>. Instead, the <b>first question carries the grounding</b> ("Picture one business traveller you know well…"); every question after it simply refers to "they." The projection prime is kept; the extra tap is gone.<br>
+    <b>4 · No PII trap.</b> The agent holds the guest in their own head — GuestIQ never asks for a name, room, or any real detail. Grounding stays private to the agent.<br><br>
+    Spec note for Claude Code: the grounding lead-in shows <b>only on the first question</b> of a read; Q2+ drop it.
+  </div>
+</div>
+</body>
+</html>

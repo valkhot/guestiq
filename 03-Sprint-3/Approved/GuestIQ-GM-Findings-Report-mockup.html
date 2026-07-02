@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GuestIQ · GM Findings Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Spectral:ital,wght@0,300;0,400;0,500;1,400&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4EFE3;--sheet:#FBF8F0;--card:#FFFFFF;--ink:#23201A;--ink-soft:#514B3F;--mute:#8B8272;
+    --rule:#E2DAC8;--rule-2:#D6CCB6;--brass:#9A7233;--brass-soft:#B08A45;--brass-line:rgba(154,114,51,.32);
+    --teal:#0F6E68;--risk:#A0503B;--ok:#4F6B4A;
+    --serif:'Fraunces',serif;--story:'Spectral',serif;--mono:'Space Mono',monospace}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--story);-webkit-font-smoothing:antialiased;padding:40px 18px 80px}
+  .sheet{max-width:720px;margin:0 auto;background:var(--sheet);border:1px solid var(--rule-2);border-radius:4px;
+    box-shadow:0 30px 70px -40px rgba(60,45,20,.4);padding:0}
+  .inner{padding:44px 48px 40px}
+  @media(max-width:600px){.inner{padding:32px 24px}}
+
+  /* masthead */
+  .mast{border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:8px}
+  .mast .row1{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px}
+  .brand{font-family:var(--mono);font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--brass)}
+  .conf{font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+  h1{font-family:var(--serif);font-weight:600;font-size:34px;line-height:1.05;letter-spacing:-.02em;color:var(--ink);margin:14px 0 0}
+  .meta{font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:var(--mute);margin-top:10px;display:flex;gap:14px;flex-wrap:wrap}
+
+  /* synthesis */
+  .synth{font-family:var(--story);font-weight:400;font-size:19px;line-height:1.5;color:var(--ink);border-left:3px solid var(--brass);padding:4px 0 4px 18px;margin:26px 0 8px}
+  .synth b{font-weight:500}
+
+  .sec-h{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--brass);margin:34px 0 4px;padding-bottom:8px;border-bottom:1px solid var(--rule)}
+
+  /* finding */
+  .finding{padding:24px 0;border-bottom:1px solid var(--rule)}
+  .f-top{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+  .f-num{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--ink);font-weight:700}
+  .chip{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:3px;border:1px solid var(--rule-2);color:var(--ink-soft)}
+  .chip.lever{background:rgba(15,110,104,.07);border-color:rgba(15,110,104,.3);color:var(--teal)}
+  .chip.wit{background:rgba(79,107,74,.08);border-color:rgba(79,107,74,.3);color:var(--ok)}
+  .chip.inf{background:rgba(160,80,59,.06);border-color:rgba(160,80,59,.3);color:var(--risk)}
+  .f-head{font-family:var(--serif);font-weight:500;font-size:22px;line-height:1.24;color:var(--ink);margin-bottom:14px}
+  .pull{font-family:var(--story);font-style:italic;font-weight:400;font-size:19px;line-height:1.5;color:var(--brass);border-left:2px solid var(--brass-soft);padding:2px 0 2px 16px;margin:0 0 14px}
+  .pull .attr{display:block;font-style:normal;font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:var(--mute);text-transform:uppercase;margin-top:7px}
+  .evid{font-family:var(--story);font-size:15.5px;line-height:1.6;color:var(--ink-soft);margin-bottom:12px}
+  .evid .ct{font-family:var(--mono);font-size:13px;color:var(--ink);background:rgba(154,114,51,.1);padding:1px 5px;border-radius:3px;white-space:nowrap}
+  .reveal{font-family:var(--story);font-size:15.5px;line-height:1.55;color:var(--ink)}
+  .reveal .lbl{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--brass);display:block;margin-bottom:4px}
+  .reveal .backstop{display:block;font-style:italic;font-size:13.5px;color:var(--mute);margin-top:8px}
+
+  /* early signals */
+  .signals{background:var(--paper);border:1px solid var(--rule-2);border-radius:5px;padding:20px 22px;margin:26px 0}
+  .signals .lead{font-family:var(--story);font-size:14px;color:var(--ink-soft);font-style:italic;margin-bottom:12px}
+  .sig{font-family:var(--story);font-size:14.5px;line-height:1.5;color:var(--ink);padding:7px 0;border-top:1px dotted var(--rule-2)}
+  .sig .n{font-family:var(--mono);font-size:11px;color:var(--mute);margin-right:8px}
+
+  /* confirmations */
+  .confirm{font-family:var(--story);font-size:15px;line-height:1.6;color:var(--ink-soft);margin:24px 0;padding:18px 20px;background:rgba(79,107,74,.05);border-radius:5px}
+  .confirm .k{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ok);margin-bottom:7px}
+
+  /* confidence panel */
+  .conf-panel{border:1px solid var(--rule-2);border-radius:5px;padding:20px 22px;margin:26px 0}
+  .conf-panel .k{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass);margin-bottom:10px}
+  .conf-panel ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .conf-panel li{font-family:var(--story);font-size:13.5px;line-height:1.45;color:var(--ink-soft);padding-left:16px;position:relative}
+  .conf-panel li::before{content:"—";position:absolute;left:0;color:var(--brass-soft)}
+  .conf-panel li b{color:var(--ink);font-weight:500}
+
+  /* close */
+  .close{font-family:var(--serif);font-weight:400;font-size:20px;line-height:1.4;color:var(--ink);text-align:center;padding:30px 10px 6px}
+  .close b{font-weight:600}
+  .foot{border-top:1px solid var(--rule);margin-top:26px;padding-top:16px;font-family:var(--mono);font-size:8.5px;letter-spacing:.04em;line-height:1.7;color:var(--mute);text-align:center}
+
+  .note{font-family:var(--story);font-size:14.5px;color:#5a5346;line-height:1.7;border:1px solid var(--rule-2);border-radius:10px;padding:22px 24px;background:var(--paper);max-width:720px;margin:34px auto 0}
+  .note .nh{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);margin-bottom:12px}
+  .note b{color:var(--ink);font-weight:500}.note .row{margin-bottom:9px}
+</style>
+</head>
+<body>
+
+<div class="sheet">
+  <div class="inner">
+
+    <!-- MASTHEAD -->
+    <div class="mast">
+      <div class="row1"><span class="brand">GuestIQ · Front-Desk Findings</span><span class="conf">Confidential · In-house · GM only</span></div>
+      <h1>What your front desk sees.</h1>
+      <div class="meta"><span>The Cascade · Seattle</span><span>Pilot readout</span><span>Front desk: 9 reps</span><span>No guest data · no AI</span></div>
+    </div>
+
+    <!-- 1 · SYNTHESIS -->
+    <p class="synth">Across the weekday guests who fill your rooms, your desk keeps meeting the same unmet needs — and quietly absorbing the same friction — <b>little of which reaches your reviews, your dashboards, or your P&L.</b></p>
+
+    <!-- 2 · HEADLINE FINDINGS -->
+    <div class="sec-h">The findings</div>
+
+    <!-- FINDING 01 -->
+    <div class="finding">
+      <div class="f-top"><span class="f-num">FINDING 01</span><span class="chip lever">Desk-controllable</span><span class="chip wit">Witnessed</span></div>
+      <div class="f-head">Your weekday-volume guests skip the restaurant — and ask the desk for what it doesn't offer.</div>
+      <blockquote class="pull">"They ask for coffee at 5 a.m. every single morning, and we have nothing to give them."<span class="attr">— one rep, verbatim</span></blockquote>
+      <p class="evid">Business, transit, and cruise guests — your weekday rooms — consistently eat elsewhere or leave before the restaurant opens (<span class="ct">all 18 reps</span> who play these segments agree). The same guests repeatedly ask the desk for <b>coffee before the café opens</b>, <b>quick grab-and-go food</b>, and <b>small forgotten items</b> — chargers, contact-lens solution, an umbrella.</p>
+      <p class="reveal"><span class="lbl">What this reveals</span>An unmet in-house convenience need among the segments that fill your weekday rooms.<span class="backstop">This says nothing about the restaurant's overall value — it serves your leisure guests and outside diners, which the survey can't see.</span></p>
+    </div>
+
+    <!-- FINDING 02 -->
+    <div class="finding">
+      <div class="f-top"><span class="f-num">FINDING 02</span><span class="chip lever">Desk-controllable</span><span class="chip wit">Witnessed</span></div>
+      <div class="f-head">Early-flight and business guests take on early-morning noise — and tell you, never your reviews.</div>
+      <blockquote class="pull">"The 4 a.m. crowd going down for airport cars wakes the whole low floor — they mention it at checkout, then say they won't bother writing it up."<span class="attr">— one rep, verbatim</span></blockquote>
+      <p class="evid">Reps report early-departure guests on low, street-facing, and lift-adjacent rooms are regularly disturbed at dawn (<span class="ct">6 of 9 reps</span>). It surfaces at the desk, not in written feedback.</p>
+      <p class="reveal"><span class="lbl">What this reveals</span>A recurring sleep-disruption pattern for early-departure guests that your review channels never capture.</p>
+    </div>
+
+    <!-- FINDING 03 -->
+    <div class="finding">
+      <div class="f-top"><span class="f-num">FINDING 03</span><span class="chip lever">Brand / property-level</span><span class="chip wit">Witnessed</span></div>
+      <div class="f-head">Cruise guests who don't rebook are leaving over logistics, not price.</div>
+      <blockquote class="pull">"It's never the room rate — it's the early bag-hold and the port shuttle. When we can't help with those, they don't come back."<span class="attr">— one rep, verbatim</span></blockquote>
+      <p class="evid">Where reps can read why cruise guests don't return, the reasons cluster on <b>luggage timing and port transfer</b>, not cost (<span class="ct">5 of 7 reps</span> who see cruise guests). Marked <b>brand-level</b>: the lever likely sits outside the desk.</p>
+      <p class="reveal"><span class="lbl">What this reveals</span>A logistics gap — not a pricing one — shaping whether cruise guests rebook.</p>
+    </div>
+
+    <!-- FINDING 04 -->
+    <div class="finding">
+      <div class="f-top"><span class="f-num">FINDING 04</span><span class="chip lever">Property-level</span><span class="chip inf">Part inferred</span></div>
+      <div class="f-head">Your reps keep a private mental list of rooms they won't give certain guests.</div>
+      <blockquote class="pull">"Everyone at the desk knows which rooms not to give a light sleeper or a long-stay medical guest. It's not written anywhere — you just learn it."<span class="attr">— one rep, verbatim</span></blockquote>
+      <p class="evid">Independently, reps describe the same informal room-avoidance knowledge — certain floors kept from light sleepers, medical-stay, and VIP guests (<span class="ct">7 of 9 reps</span>). Part of the "why" is their read, not always witnessed — shown as directional.</p>
+      <p class="reveal"><span class="lbl">What this reveals</span>Hard-won allocation knowledge that lives only in your reps' heads — invisible to the PMS, and lost when they leave.</p>
+    </div>
+
+    <!-- 3 · EARLY SIGNALS -->
+    <div class="signals">
+      <div class="sec-h" style="margin-top:0;border:none;padding:0;color:var(--ink)">Early signals — watch</div>
+      <p class="lead">These came up, but from too few reports to call a finding yet. Worth watching in the full pilot.</p>
+      <div class="sig"><span class="n">▸</span>A few reps sense event-block guests want later, quieter check-in than the standard flow allows — thin so far.</div>
+      <div class="sig"><span class="n">▸</span>Scattered mentions that medical-stay guests would value a quiet-floor guarantee — not yet convergent.</div>
+    </div>
+
+    <!-- 4 · CONFIRMATIONS -->
+    <p class="confirm"><span class="k">And where your instincts are right</span>The survey also confirms what you'd expect: business guests need fast Wi-Fi and a quiet room, the gym is marginal, and your leisure guests genuinely value the restaurant. No surprises there — table-stakes, working as they should. Worth knowing, but not findings.</p>
+
+    <!-- 5 · CONFIDENCE PANEL -->
+    <div class="conf-panel">
+      <div class="k">How to read this</div>
+      <ul>
+        <li>These are patterns your front desk <b>convergently believes</b> — not external fact, and not proof.</li>
+        <li><b>No guest data and no outside source</b> was used. Nothing was generated by AI; the readout is computed directly from what reps answered.</li>
+        <li>Counts are <b>raw</b> — "6 of 9 reps," never percentages — and <b>never tied to a name</b>.</li>
+        <li><b>Witnessed</b> means reps see it directly; <b>inferred</b> means it's their read, shown as directional.</li>
+        <li>Thin signals are shown, but <b>not treated as findings</b>.</li>
+      </ul>
+    </div>
+
+    <!-- 6 · CLOSE -->
+    <p class="close">These are the patterns your front desk sees — the ones that rarely surface anywhere else.<br><b>The decisions are yours.</b></p>
+
+    <div class="foot">GuestIQ · Deterministic readout (no AI) · Count-or-quote (no coding) · CF-sink / table-stakes suppressed · Raw counts, never names<br>Access: Ctrl + Alt + A + PIN · auto-locks on exit · in-house-guest slice only</div>
+
+  </div>
+</div>
+
+<div class="note">
+  <div class="nh">Every guardrail is doing visible work here</div>
+  <div class="row"><b>Findings, never recommendations.</b> Each finding ends at "what this reveals" — the gap, never a "you should." No <em>add / cut / shift</em> anywhere.</div>
+  <div class="row"><b>Raw counts, never percentages, never names.</b> "18 reps," "6 of 9" — shown as mono counts; no name is ever attached to an answer.</div>
+  <div class="row"><b>Lead with the quote.</b> Where a verbatim line exists it's the pull-quote up top — displayed, never coded or themed.</div>
+  <div class="row"><b>Lever tags are informational.</b> Desk-controllable vs brand-level tells the GM where the lever sits — it doesn't instruct.</div>
+  <div class="row"><b>In-house-only backstop.</b> Finding 01 explicitly says it makes no claim about the restaurant overall — GuestIQ only sees the in-house slice.</div>
+  <div class="row"><b>CF-sink suppressed; thin signals quarantined.</b> Wi-Fi / clean room appear only as confirmations ("instincts right"), never findings; sub-floor items sit in "early signals — watch," not the headline.</div>
+  <div class="row"><b>Convergent belief ≠ fact, no AI.</b> The confidence panel states it plainly; the masthead and footer repeat "no guest data · no AI."<br><br>
+  <span style="color:var(--brass)"><b>Canvas note:</b></span> this is the <b>second canvas</b> — a light "findings dossier," flatter and document-like, distinct from the agents' dark cinematic app. It updates the provisional GM-canvas token (was "flatter ink-2"/dark) to <b>light dossier</b>. Access stays behind Ctrl+Alt+A+PIN (LOCKED spec).</div>
+</div>
+</body>
+</html>

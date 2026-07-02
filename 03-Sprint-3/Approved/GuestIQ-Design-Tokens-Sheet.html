@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GuestIQ · Design Tokens (warm-midnight-lobby)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Spectral:ital,wght@0,300;0,400;1,300;1,400&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16141D; --ink-2:#1E1A27; --ink-3:#262031; --ink-4:#2D2638;
+    --parchment:#EFE7D6; --parchment-2:#E4D9C2; --parchment-ink:#2C271F;
+    --brass:#C8A24E; --brass-bright:#E7C879; --glow:#F4DC97; --thread:rgba(200,162,78,.55);
+    --text:#EDE9F2; --heading:#F1ECDF; --mute:#8E8699; --mute-2:#615A70; --parchment-mute:#7A6F58;
+    --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.12);
+    --ok:#7FB389; --warn:#D9A441; --bad:#C77B6B; --cool:#6E84B0;
+    --serif:'Fraunces',serif; --story:'Spectral',serif; --mono:'Space Mono',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(130% 80% at 50% -10%,#221C2E 0%,var(--ink) 55%,#100E16 100%);
+    background-attachment:fixed;color:var(--text);font-family:var(--story);font-weight:300;
+    -webkit-font-smoothing:antialiased;padding:54px 28px 90px;line-height:1.5}
+  .wrap{max-width:980px;margin:0 auto}
+
+  header{border-bottom:1px solid var(--line);padding-bottom:26px;margin-bottom:44px}
+  .kicker{font-family:var(--mono);font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--brass)}
+  h1{font-family:var(--serif);font-weight:500;font-size:clamp(30px,5vw,46px);line-height:1.08;letter-spacing:-.015em;color:var(--heading);margin:14px 0 10px}
+  h1 .em{font-style:italic;font-weight:400;color:var(--brass-bright)}
+  .sub{font-family:var(--story);font-weight:300;font-size:17px;color:#CFC9D9;max-width:60ch}
+  .ratified{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--mute);margin-top:14px}
+  .ratified b{color:var(--ok);font-weight:400}
+
+  section{margin:46px 0}
+  .sechead{display:flex;align-items:baseline;gap:14px;margin-bottom:22px;border-bottom:1px solid var(--line);padding-bottom:12px}
+  .secnum{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--mute-2)}
+  .sectitle{font-family:var(--serif);font-weight:500;font-size:22px;color:var(--heading)}
+  .secnote{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--mute);margin-left:auto}
+
+  /* swatches */
+  .swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+  .sw{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--ink-2)}
+  .sw .chip{height:62px}
+  .sw .meta{padding:9px 11px}
+  .sw .nm{font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:var(--heading)}
+  .sw .hx{font-family:var(--mono);font-size:10px;color:var(--mute);margin-top:2px}
+  .sw .use{font-family:var(--story);font-style:italic;font-size:11.5px;color:var(--mute);margin-top:5px;line-height:1.35}
+
+  /* type specimens */
+  .type-row{border-bottom:1px solid var(--line);padding:18px 0;display:grid;grid-template-columns:110px 1fr;gap:18px;align-items:baseline}
+  .type-row:last-child{border-bottom:none}
+  .type-label{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--mute);line-height:1.5}
+  .type-label b{display:block;color:var(--heading);font-weight:400;letter-spacing:.04em;margin-bottom:3px}
+  .sp-hero{font-family:var(--serif);font-weight:500;font-size:40px;line-height:1.1;letter-spacing:-.015em;color:var(--heading)}
+  .sp-hero .em{font-style:italic;font-weight:400;color:var(--brass-bright)}
+  .sp-h2{font-family:var(--serif);font-weight:500;font-size:28px;color:var(--heading)}
+  .sp-lead{font-family:var(--story);font-weight:300;font-size:20px;line-height:1.55;color:#D7D1E0}
+  .sp-body{font-family:var(--story);font-weight:400;font-size:16px;color:var(--text)}
+  .sp-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--brass)}
+  .sp-label{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+  .sp-data{font-family:var(--mono);font-size:13px;letter-spacing:.02em;color:var(--text)}
+
+  .families{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:30px}
+  @media(max-width:720px){.families{grid-template-columns:1fr}}
+  .fam{border:1px solid var(--line);border-radius:8px;padding:18px;background:rgba(255,255,255,.015)}
+  .fam .glyphs{font-size:30px;line-height:1.1;color:var(--heading);margin-bottom:10px}
+  .fam .role{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--brass);margin-bottom:4px}
+  .fam .fname{font-family:var(--mono);font-size:12px;color:var(--mute)}
+  .fam.f1 .glyphs{font-family:var(--serif);font-weight:500}
+  .fam.f2 .glyphs{font-family:var(--story);font-weight:400}
+  .fam.f3 .glyphs{font-family:var(--mono);font-size:24px}
+
+  /* spacing */
+  .scale-row{display:flex;align-items:center;gap:16px;padding:7px 0;font-family:var(--mono);font-size:11px;color:var(--mute)}
+  .scale-row .bar{height:14px;background:linear-gradient(90deg,var(--brass),var(--brass-bright));border-radius:2px}
+  .scale-row .tok{width:120px;color:var(--heading)}
+
+  /* radius + elevation */
+  .boxes{display:flex;flex-wrap:wrap;gap:18px}
+  .rbox{width:120px}
+  .rbox .b{height:74px;background:var(--ink-3);border:1px solid var(--line-2)}
+  .rbox .l{font-family:var(--mono);font-size:10px;color:var(--mute);margin-top:8px;letter-spacing:.04em}
+  .rbox .l b{color:var(--heading);font-weight:400}
+  .ebox{width:150px}
+  .ebox .b{height:78px;background:var(--ink-3);border-radius:8px}
+  .ebox .l{font-family:var(--mono);font-size:10px;color:var(--mute);margin-top:10px}
+  .ebox .l b{color:var(--heading);font-weight:400;display:block;margin-bottom:2px}
+
+  /* two-canvas */
+  .canvases{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:720px){.canvases{grid-template-columns:1fr}}
+  .canvas{border:1px solid var(--line);border-radius:10px;overflow:hidden;height:150px;position:relative;padding:16px}
+  .canvas .tag{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+  .canvas .desc{font-family:var(--story);font-style:italic;font-size:13px;margin-top:7px;line-height:1.4}
+  .c-agent{background:radial-gradient(120% 90% at 50% -8%,#221C2E 0%,var(--ink) 55%,#100E16 100%)}
+  .c-agent .tag{color:var(--brass)} .c-agent .desc{color:#CFC9D9}
+  .c-report{background:var(--ink-2);background-image:repeating-linear-gradient(var(--line) 0 1px,transparent 1px 30px)}
+  .c-report .tag{color:var(--cool)} .c-report .desc{color:var(--mute)}
+
+  .cta{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);
+    background:var(--brass);border:none;border-radius:2px;padding:13px 26px;cursor:pointer;margin-top:8px;
+    transition:background .25s ease,transform .2s ease}
+  .cta:hover{background:var(--brass-bright);transform:translateY(-1px)}
+  .motion-note{font-family:var(--mono);font-size:11px;color:var(--mute);line-height:1.8;margin-top:14px}
+  .motion-note b{color:var(--heading);font-weight:400}
+
+  footer{margin-top:60px;border-top:1px solid var(--line);padding-top:18px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--mute-2)}
+
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="kicker">GuestIQ · Design Tokens · v0.1</div>
+    <h1>The warm-midnight-lobby <span class="em">token system.</span></h1>
+    <p class="sub">The single source every surface inherits from — palette, type, spacing, radius, elevation, motion. Consolidated from the ratified Alternative 2 mockups; not invented fresh.</p>
+    <p class="ratified"><b>✓ Ratified</b> — Alternative 2 (warm-midnight-lobby), chosen from the 3-way first-screen comparison.</p>
+  </header>
+
+  <!-- COLOUR -->
+  <section>
+    <div class="sechead"><span class="secnum">01</span><span class="sectitle">Colour</span><span class="secnote">spend boldness on brass; keep the rest quiet</span></div>
+
+    <p class="sp-label" style="margin:6px 0 12px">Ink — the canvas</p>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#16141D"></div><div class="meta"><div class="nm">ink</div><div class="hx">#16141D</div><div class="use">Base canvas (agent).</div></div></div>
+      <div class="sw"><div class="chip" style="background:#1E1A27"></div><div class="meta"><div class="nm">ink-2</div><div class="hx">#1E1A27</div><div class="use">Raised surface; report canvas.</div></div></div>
+      <div class="sw"><div class="chip" style="background:#262031"></div><div class="meta"><div class="nm">ink-3</div><div class="hx">#262031</div><div class="use">Cards, tiles, selected.</div></div></div>
+      <div class="sw"><div class="chip" style="background:#2D2638"></div><div class="meta"><div class="nm">ink-4</div><div class="hx">#2D2638</div><div class="use">Elevated / hover.</div></div></div>
+    </div>
+
+    <p class="sp-label" style="margin:22px 0 12px">Parchment — the light, the paper</p>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#EFE7D6"></div><div class="meta"><div class="nm">parchment</div><div class="hx">#EFE7D6</div><div class="use">Headings on ink; light surfaces.</div></div></div>
+      <div class="sw"><div class="chip" style="background:#E4D9C2"></div><div class="meta"><div class="nm">parchment-2</div><div class="hx">#E4D9C2</div><div class="use">Secondary light.</div></div></div>
+      <div class="sw"><div class="chip" style="background:#2C271F"></div><div class="meta"><div class="nm">parchment-ink</div><div class="hx">#2C271F</div><div class="use">Dark text on parchment.</div></div></div>
+    </div>
+
+    <p class="sp-label" style="margin:22px 0 12px">Brass — the single accent</p>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#C8A24E"></div><div class="meta"><div class="nm">brass</div><div class="hx">#C8A24E</div><div class="use">Primary accent, CTA, eyebrow.</div></div></div>
+      <div class="sw"><div class="chip" style="background:#E7C879"></div><div class="meta"><div class="nm">brass-bright</div><div class="hx">#E7C879</div><div class="use">Emphasis, italic em, hover.</div></div></div>
+      <div class="sw"><div class="chip" style="background:#F4DC97"></div><div class="meta"><div class="nm">glow</div><div class="hx">#F4DC97</div><div class="use">Active glow, constellation star.</div></div></div>
+      <div class="sw"><div class="chip" style="background:rgba(200,162,78,.55)"></div><div class="meta"><div class="nm">thread</div><div class="hx">rgba(200,162,78,.55)</div><div class="use">Constellation threads (end-of-read).</div></div></div>
+    </div>
+
+    <p class="sp-label" style="margin:22px 0 12px">Text &amp; lines on ink</p>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#EDE9F2"></div><div class="meta"><div class="nm">text</div><div class="hx">#EDE9F2</div><div class="use">Body on ink.</div></div></div>
+      <div class="sw"><div class="chip" style="background:#F1ECDF"></div><div class="meta"><div class="nm">heading</div><div class="hx">#F1ECDF</div><div class="use">Display/headings.</div></div></div>
+      <div class="sw"><div class="chip" style="background:#8E8699"></div><div class="meta"><div class="nm">mute</div><div class="hx">#8E8699</div><div class="use">Secondary text.</div></div></div>
+      <div class="sw"><div class="chip" style="background:#615A70"></div><div class="meta"><div class="nm">mute-2</div><div class="hx">#615A70</div><div class="use">Tertiary, captions.</div></div></div>
+      <div class="sw"><div class="chip" style="background:#7A6F58"></div><div class="meta"><div class="nm">parchment-mute</div><div class="hx">#7A6F58</div><div class="use">Warm caption tone.</div></div></div>
+      <div class="sw"><div class="chip" style="background:#0e0c14;border-bottom:1px solid rgba(255,255,255,.12)"></div><div class="meta"><div class="nm">line / line-2</div><div class="hx">wht .08 / .12</div><div class="use">Hairline dividers.</div></div></div>
+    </div>
+
+    <p class="sp-label" style="margin:22px 0 12px">Status — used sparingly, never alarming</p>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#7FB389"></div><div class="meta"><div class="nm">ok</div><div class="hx">#7FB389</div><div class="use">Validation / agreement ✓.</div></div></div>
+      <div class="sw"><div class="chip" style="background:#D9A441"></div><div class="meta"><div class="nm">warn</div><div class="hx">#D9A441</div><div class="use">Caution (distinct from brass).</div></div></div>
+      <div class="sw"><div class="chip" style="background:#C77B6B"></div><div class="meta"><div class="nm">bad</div><div class="hx">#C77B6B</div><div class="use">Error — terracotta, not red.</div></div></div>
+      <div class="sw"><div class="chip" style="background:#6E84B0"></div><div class="meta"><div class="nm">cool</div><div class="hx">#6E84B0</div><div class="use">Secondary data / report canvas.</div></div></div>
+    </div>
+  </section>
+
+  <!-- TYPE -->
+  <section>
+    <div class="sechead"><span class="secnum">02</span><span class="sectitle">Typography</span><span class="secnote">display restrained · body warm · mono for data</span></div>
+    <div class="families">
+      <div class="fam f1"><div class="role">Display</div><div class="glyphs">Aa Gg</div><div class="fname">Fraunces — 400 / 500 / italic</div></div>
+      <div class="fam f2"><div class="role">Body / story</div><div class="glyphs">Aa Gg</div><div class="fname">Spectral — 300 / 400 / italic</div></div>
+      <div class="fam f3"><div class="role">Utility / data</div><div class="glyphs">Aa Gg</div><div class="fname">Space Mono — 400</div></div>
+    </div>
+
+    <div class="type-row"><div class="type-label"><b>hero</b>Fraunces 500<br>clamp 28–46 · -.015em</div><div class="sp-hero">You see things <span class="em">none of our systems do.</span></div></div>
+    <div class="type-row"><div class="type-label"><b>h2</b>Fraunces 500<br>clamp 24–34</div><div class="sp-h2">First — pick your badge</div></div>
+    <div class="type-row"><div class="type-label"><b>lead</b>Spectral 300<br>clamp 16–20 · 1.55</div><div class="sp-lead">A place to put down what you know about the guests you read every day.</div></div>
+    <div class="type-row"><div class="type-label"><b>body</b>Spectral 400<br>15–16 · 1.5</div><div class="sp-body">Counts, never names — no answer is ever traced to you.</div></div>
+    <div class="type-row"><div class="type-label"><b>eyebrow</b>Space Mono<br>11 · .4em · upper</div><div class="sp-eyebrow">Front desk</div></div>
+    <div class="type-row"><div class="type-label"><b>label</b>Space Mono<br>11 · .16em · upper</div><div class="sp-label">01 — Welcome</div></div>
+    <div class="type-row"><div class="type-label"><b>data</b>Space Mono<br>13 · .02em</div><div class="sp-data">7 of 9 personas · 41 reads</div></div>
+  </section>
+
+  <!-- SPACING -->
+  <section>
+    <div class="sechead"><span class="secnum">03</span><span class="sectitle">Spacing</span><span class="secnote">4px base · used as 1=4 … 16=64</span></div>
+    <div class="scale-row"><span class="tok">space-1 · 4</span><span class="bar" style="width:4px"></span></div>
+    <div class="scale-row"><span class="tok">space-2 · 8</span><span class="bar" style="width:8px"></span></div>
+    <div class="scale-row"><span class="tok">space-3 · 12</span><span class="bar" style="width:12px"></span></div>
+    <div class="scale-row"><span class="tok">space-4 · 16</span><span class="bar" style="width:16px"></span></div>
+    <div class="scale-row"><span class="tok">space-5 · 20</span><span class="bar" style="width:20px"></span></div>
+    <div class="scale-row"><span class="tok">space-6 · 24</span><span class="bar" style="width:24px"></span></div>
+    <div class="scale-row"><span class="tok">space-7 · 28</span><span class="bar" style="width:28px"></span></div>
+    <div class="scale-row"><span class="tok">space-8 · 32</span><span class="bar" style="width:32px"></span></div>
+    <div class="scale-row"><span class="tok">space-10 · 40</span><span class="bar" style="width:40px"></span></div>
+    <div class="scale-row"><span class="tok">space-12 · 48</span><span class="bar" style="width:48px"></span></div>
+    <div class="scale-row"><span class="tok">space-16 · 64</span><span class="bar" style="width:64px"></span></div>
+  </section>
+
+  <!-- RADIUS -->
+  <section>
+    <div class="sechead"><span class="secnum">04</span><span class="sectitle">Radius</span><span class="secnote">sharp buttons · soft frames — the dossier edge</span></div>
+    <div class="boxes">
+      <div class="rbox"><div class="b" style="border-radius:2px"></div><div class="l"><b>sharp · 2</b>Buttons, the dossier edge</div></div>
+      <div class="rbox"><div class="b" style="border-radius:4px"></div><div class="l"><b>sm · 4</b>Inputs, small chips</div></div>
+      <div class="rbox"><div class="b" style="border-radius:8px"></div><div class="l"><b>md · 8</b>Cards, tiles, guests</div></div>
+      <div class="rbox"><div class="b" style="border-radius:14px"></div><div class="l"><b>lg · 14</b>Screen frames, panels</div></div>
+      <div class="rbox"><div class="b" style="border-radius:999px;height:32px;margin-top:42px"></div><div class="l"><b>pill · 999</b>Badge, dots</div></div>
+    </div>
+  </section>
+
+  <!-- ELEVATION -->
+  <section>
+    <div class="sechead"><span class="secnum">05</span><span class="sectitle">Elevation</span><span class="secnote">depth by shadow, never by brightness</span></div>
+    <div class="boxes">
+      <div class="ebox"><div class="b" style="box-shadow:0 1px 3px rgba(0,0,0,.25)"></div><div class="l"><b>e1</b>0 1px 3px /.25 — card</div></div>
+      <div class="ebox"><div class="b" style="box-shadow:0 8px 24px -10px rgba(0,0,0,.45)"></div><div class="l"><b>e2</b>0 8px 24px -10px /.45 — raised</div></div>
+      <div class="ebox"><div class="b" style="box-shadow:0 18px 40px -16px rgba(20,16,28,.55)"></div><div class="l"><b>e3</b>0 18px 40px -16px — screen float</div></div>
+      <div class="ebox"><div class="b" style="box-shadow:0 0 18px rgba(231,200,121,.35);border:1px solid var(--brass-bright)"></div><div class="l"><b>glow</b>brass selected state</div></div>
+    </div>
+  </section>
+
+  <!-- MOTION -->
+  <section>
+    <div class="sechead"><span class="secnum">06</span><span class="sectitle">Motion</span><span class="secnote">orchestrated, not scattered · reduced-motion respected</span></div>
+    <button class="cta">Hover me — Let's get it down →</button>
+    <div class="motion-note">
+      <b>fast</b> .2s ease — micro (hover lift, tile select)<br>
+      <b>base</b> .25s ease — colour/state changes<br>
+      <b>slow</b> .7s ease — CTA reveal, cross-fades<br>
+      <b>entrance</b> 1s cubic-bezier(.2,.7,.2,1) — screen rise-in (one orchestrated moment per screen)<br>
+      <b>reduced-motion</b> — all motion removed under <span style="color:var(--brass)">prefers-reduced-motion</span>.
+    </div>
+  </section>
+
+  <!-- TWO CANVAS -->
+  <section>
+    <div class="sechead"><span class="secnum">07</span><span class="sectitle">Two canvases</span><span class="secnote">agent ≠ GM/Console — never blend</span></div>
+    <div class="canvases">
+      <div class="canvas c-agent"><div class="tag">Agent canvas</div><div class="desc">Cinematic — radial ink, centred, brass accent. The read &amp; the value layer.</div></div>
+      <div class="canvas c-report"><div class="tag">GM report / Console canvas</div><div class="desc">Calmer, flatter — ruled ink-2, tabular, cool secondary. (Exact spec set when we design the report.)</div></div>
+    </div>
+  </section>
+
+  <footer>GuestIQ · Design Tokens v0.1 · warm-midnight-lobby (ratified Alt 2) · consolidated from existing mockups · codified in tailwind.config.js · NOT yet developer-final — review before lock</footer>
+
+</div>
+</body>
+</html>

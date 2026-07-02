@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GuestIQ — Pilot Findings</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F4F3EE; --card:#FBFAF6; --ink:#1A1E22; --ink-soft:#525960;
+    --teal:#0F6E68; --teal-tint:#0f6e6814; --amber:#946317; --amber-tint:#94631714;
+    --sage:#4F6B4A; --rule:#DCD9CF;
+    --serif:'Newsreader',Georgia,'Times New Roman',serif;
+    --sans:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);
+    line-height:1.6;-webkit-font-smoothing:antialiased;padding:0 20px}
+  .wrap{max-width:740px;margin:0 auto;padding:56px 0 80px}
+  @media(prefers-reduced-motion:no-preference){
+    .fade{opacity:0;transform:translateY(8px);animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards}
+    .fade:nth-child(2){animation-delay:.05s}.fade:nth-child(3){animation-delay:.1s}
+    @keyframes rise{to{opacity:1;transform:none}}
+  }
+
+  /* masthead */
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--teal);font-weight:500}
+  .mast{display:flex;justify-content:space-between;align-items:baseline;
+    flex-wrap:wrap;gap:8px;margin-bottom:30px}
+  .badge{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--amber);border:1px solid var(--amber);
+    border-radius:2px;padding:3px 7px}
+  .meta{font-family:var(--mono);font-size:12px;color:var(--ink-soft);margin-top:4px}
+
+  /* synthesis */
+  .synth{font-family:var(--serif);font-size:27px;line-height:1.32;font-weight:400;
+    letter-spacing:-.01em;margin:6px 0 4px}
+  .synth b{font-weight:600}
+  .hr{height:1px;background:var(--rule);border:0;margin:38px 0}
+  .hr.teal{background:linear-gradient(90deg,var(--teal) 0 64px,var(--rule) 64px)}
+
+  /* finding */
+  .find{background:var(--card);border:1px solid var(--rule);border-radius:6px;
+    padding:26px 28px;margin:20px 0}
+  .find-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .num{font-family:var(--mono);font-size:13px;color:var(--ink);font-weight:500;
+    letter-spacing:.05em}
+  .chip{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;
+    text-transform:uppercase;padding:3px 8px;border-radius:100px;font-weight:500}
+  .chip.lever{color:var(--ink-soft);border:1px solid var(--rule)}
+  .chip.strong{color:var(--teal);background:var(--teal-tint)}
+  .chip.dir{color:var(--amber);background:var(--amber-tint)}
+  .find h2{font-family:var(--serif);font-size:22px;line-height:1.28;font-weight:500;
+    letter-spacing:-.01em;margin-bottom:12px}
+  .find p{font-size:15px;color:var(--ink);margin-bottom:14px}
+  .counts{font-family:var(--mono);font-size:12.5px;color:var(--teal);
+    line-height:1.7;padding:10px 14px;background:var(--teal-tint);border-radius:4px;
+    margin-bottom:16px}
+  blockquote{font-family:var(--serif);font-style:italic;font-size:18px;
+    line-height:1.45;color:var(--ink);border-left:2px solid var(--teal);
+    padding:2px 0 2px 18px;margin:0 0 16px}
+  .reveal{font-size:14.5px;color:var(--ink-soft);border-top:1px dashed var(--rule);
+    padding-top:13px}
+  .reveal b{color:var(--ink);font-weight:600}
+
+  /* watch */
+  .watch{border:1px solid var(--amber);border-left-width:3px;border-radius:6px;
+    padding:22px 26px;margin:20px 0;background:#fcfaf4}
+  .watch h3{font-family:var(--serif);font-size:18px;font-weight:500;margin-bottom:6px}
+  .watch .lead{font-size:13.5px;color:var(--ink-soft);margin-bottom:14px}
+  .watch ul{list-style:none}
+  .watch li{font-size:14.5px;padding:9px 0;border-top:1px solid var(--rule)}
+  .watch li .tag{font-family:var(--mono);font-size:11px;color:var(--amber);
+    margin-left:4px}
+
+  /* confirm */
+  .confirm{border-left:3px solid var(--sage);padding:4px 0 4px 18px;margin:28px 0;
+    font-size:15px;color:var(--ink)}
+  .confirm .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--sage);display:block;margin-bottom:6px}
+
+  /* confidence */
+  .conf{background:#efeee8;border-radius:6px;padding:22px 26px;margin:30px 0 0}
+  .conf .k{font-family:var(--mono);font-size:11px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px}
+  .conf p{font-size:13.5px;color:var(--ink-soft);line-height:1.66}
+
+  /* close */
+  .close{font-family:var(--serif);font-size:21px;line-height:1.4;font-weight:400;
+    text-align:left;margin:44px 0 0;color:var(--ink)}
+  .close b{font-weight:600}
+  a:focus-visible,*:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="mast fade">
+    <div>
+      <div class="eyebrow">GuestIQ · Pilot Findings</div>
+      <div class="meta">The Cascade · Downtown Seattle · 200 rooms</div>
+    </div>
+    <div style="text-align:right">
+      <span class="badge">Illustrative · simulated data</span>
+      <div class="meta">10 front-desk reps · 6 guest types</div>
+    </div>
+  </header>
+
+  <p class="synth fade">Two patterns run through every report: the guests who fill your weekday rooms aren't using what you've invested in — and the guests most likely to leave are doing it <b>silently</b>, where your reviews can't see them.</p>
+
+  <hr class="hr teal fade">
+
+  <!-- FINDING 01 -->
+  <section class="find">
+    <div class="find-top">
+      <span class="num">FINDING 01</span>
+      <span class="chip lever">Desk-controllable</span>
+      <span class="chip strong">Witnessed · strong</span>
+    </div>
+    <h2>Your weekday-volume guests skip the restaurant — and ask the desk for what it doesn't offer.</h2>
+    <p>Business, transit, and cruise guests consistently don't use the restaurant for dinner — they eat out with clients, leave before it opens, or eat on the ship. At the same time, they keep asking the front desk for things the hotel doesn't sell: coffee before the café opens, quick food to take away, and small forgotten items — chargers, contact-lens solution, an umbrella, cruise sea-sickness pills.</p>
+    <div class="counts">18 of 18 reps playing these segments → skip dinner&nbsp;&nbsp;·&nbsp;&nbsp;leisure guests 4 of 4 → use and value it</div>
+    <blockquote>"They ask for coffee at 5am every single morning, and we have nothing to give them."</blockquote>
+    <div class="reveal"><b>What this reveals:</b> an unmet in-house convenience need among the segments that fill your weekday rooms. This says nothing about the restaurant's overall value — it serves your leisure guests and your outside diners, which this survey can't see.</div>
+  </section>
+
+  <!-- FINDING 02 -->
+  <section class="find">
+    <div class="find-top">
+      <span class="num">FINDING 02</span>
+      <span class="chip lever">Desk-controllable</span>
+      <span class="chip dir">Complaint witnessed · outcome inferred</span>
+    </div>
+    <h2>Business and transit guests complain about early-morning noise — to you, never to your reviews.</h2>
+    <p>The most common thing these guests raise at the desk is noise that wakes them around 5am — air-con cycling, corridor sound. They mention it at check-out, often or almost always. They rarely write it in a review. Reps believe most then quietly never return.</p>
+    <div class="counts">noise: business 6 of 8 · transit 4 of 5&nbsp;&nbsp;·&nbsp;&nbsp;"says nothing, never returns": business 6 of 8</div>
+    <blockquote>"They tell us at check-out the AC kept them up. It never shows up online. We just don't see them again."</blockquote>
+    <div class="reveal"><b>What this reveals:</b> a churn signal your review score can't show, because the complaint never reaches it. The complaint itself is witnessed; the "never returns" is the reps' read, not confirmed.</div>
+  </section>
+
+  <!-- FINDING 03 -->
+  <section class="find">
+    <div class="find-top">
+      <span class="num">FINDING 03</span>
+      <span class="chip lever">Property / brand-level</span>
+      <span class="chip dir">Witnessed · directional</span>
+    </div>
+    <h2>Cruise guests who don't book are leaving over logistics, not price.</h2>
+    <p>When a cruise guest enquires but books elsewhere, reps point to the same two things: nowhere to leave the car for the week, and no way to store luggage before boarding. Price is rarely the reason.</p>
+    <div class="counts">cruise turn-away: 4 of 5 reps name logistics, not price</div>
+    <blockquote>"They ask if they can leave the car for the week and drop bags before the ship. When we say no, they book somewhere else."</blockquote>
+    <div class="reveal"><b>What this reveals:</b> cruise demand you're losing at the enquiry stage — and a lost enquiry leaves no record, so it never appears in your booking data.</div>
+  </section>
+
+  <!-- FINDING 04 -->
+  <section class="find">
+    <div class="find-top">
+      <span class="num">FINDING 04</span>
+      <span class="chip lever">Property-level</span>
+      <span class="chip strong">Witnessed · strong</span>
+    </div>
+    <h2>Your reps keep a private list of rooms they won't give certain guests.</h2>
+    <p>Staff quietly avoid assigning specific rooms to light-sleeping and business guests — rooms by the lift, low rooms on the street side, and ones where the air-con or kitchen vents are loud.</p>
+    <div class="counts">business / transit: 5 of 8 reps name specific rooms they avoid</div>
+    <blockquote>"Never put a business guest in the room over the kitchen — the vents run at 5am."</blockquote>
+    <div class="reveal"><b>What this reveals:</b> specific rooms are quietly lowering satisfaction for your highest-volume guests — a pattern no system records, because the avoidance happens in reps' heads.</div>
+  </section>
+
+  <!-- WATCH -->
+  <section class="watch">
+    <h3>Early signals — watch</h3>
+    <p class="lead">These came up, but from too few reports to call a finding yet. Worth watching in the full pilot.</p>
+    <ul>
+      <li>From a few tenured reps' written examples: some of your most valuable regulars are not top loyalty members — and in some cases the reason a regular keeps returning was a specific staff member, not the hotel itself. <span class="tag">3 reps · open answers · thin</span></li>
+      <li>Service may slip in peak summer — parking and check-in especially. <span class="tag">2 reps · thin</span></li>
+    </ul>
+  </section>
+
+  <!-- CONFIRM -->
+  <p class="confirm"><span class="k">And where your instincts are right</span>The survey also confirms what you'd expect: business guests need fast Wi-Fi and a quiet room, the gym is marginal, and your leisure guests genuinely value the restaurant. No surprises — and that's worth knowing too.</p>
+
+  <!-- CONFIDENCE -->
+  <section class="conf">
+    <div class="k">How to read this</div>
+    <p>These are patterns your front desk convergently believes — not external fact. No guest data or outside source was used. Counts are raw (for example, 6 of 8 reps), never percentages. "Witnessed" means reps see it directly; "inferred" means it is their read. Thin signals are shown, but not treated as findings.</p>
+  </section>
+
+  <!-- CLOSE -->
+  <p class="close">These are the patterns your front desk sees that your other systems can't. <b>The decisions are yours.</b></p>
+
+</div>
+</body>
+</html>

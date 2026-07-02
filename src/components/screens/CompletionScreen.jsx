@@ -1,8 +1,11 @@
 // src/components/screens/CompletionScreen.jsx
 // S3-08 — Completion celebration screen and results display
-// Builds: badge grid (all 10, locked/earned), personal results, aggregate
-// comparison chart (3+ sessions); fires session_completed / results_viewed /
-// aggregate_comparison_viewed.
+// S3-16: Added onContinueToEnrichment prop and Continue button at the
+//   bottom of the screen. The button transitions to the optional
+//   enrichment screen. The button replaces the "you can close this window"
+//   terminal message; the message moves to the enrichment screen's
+//   dismiss path. Session is_complete=true is set on this screen's mount
+//   (via onComplete prop), so the enrichment is purely additive.
 //
 // SERVICE LAYER NOTE — supabase.js exports getDashboardData (NOT fetchDashboardData).
 // All Supabase calls go through src/services/supabase.js per API Spec v1.0 § 1.
@@ -129,6 +132,8 @@ const UNLOCK_REQUIREMENTS = {
  *  - episodeCountCompleted: number — episodes finished
  *  - propertyId: string — for aggregate query and PostHog
  *  - onComplete: () => void — fires session.completeSession() on mount
+ *  - onContinueToEnrichment: () => void — S3-16, called when respondent
+ *      clicks Continue. Transitions to the optional enrichment screen.
  */
 export default function CompletionScreen({
   tier,
@@ -141,6 +146,7 @@ export default function CompletionScreen({
   episodeCountCompleted = 0,
   propertyId,
   onComplete,
+  onContinueToEnrichment,
 }) {
   const [aggregateData, setAggregateData] = useState(null);
   const [aggregateError, setAggregateError] = useState(false);
@@ -515,9 +521,32 @@ export default function CompletionScreen({
           </p>
         )}
 
-        <div className="text-center text-neutral-600 text-xs">
-          Your responses have been saved. You can close this window.
-        </div>
+        {/* S3-16: Continue to optional enrichment screen. The previous
+            "You can close this window" terminal message has moved to the
+            enrichment screen's dismiss path. */}
+        {typeof onContinueToEnrichment === 'function' ? (
+          <div className="text-center mt-2">
+            <button
+              type="button"
+              onClick={onContinueToEnrichment}
+              className={
+                'inline-block rounded-lg px-6 py-3 text-body cursor-pointer ' +
+                'bg-professional-400/10 border border-professional-400 ' +
+                'text-professional-400'
+              }
+            >
+              Continue →
+            </button>
+            <p className="text-neutral-600 text-xs mt-3">
+              Your responses are saved. One quick optional question on the
+              next screen.
+            </p>
+          </div>
+        ) : (
+          <div className="text-center text-neutral-600 text-xs">
+            Your responses have been saved. You can close this window.
+          </div>
+        )}
       </div>
     </div>
   );

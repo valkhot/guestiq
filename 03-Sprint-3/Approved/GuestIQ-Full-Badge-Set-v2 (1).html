@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GuestIQ · Full Badge Set v2 (12)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Spectral:ital,wght@0,400&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#16141D;--ink-2:#1E1A27;--ink-3:#262031;--brass:#C8A24E;--brass-bright:#E7C879;
+    --heading:#F1ECDF;--text:#EDE9F2;--mute:#8E8699;--mute-2:#615A70;--line:rgba(255,255,255,.08);--line-2:rgba(255,255,255,.12);
+    --serif:'Fraunces',serif;--story:'Spectral',serif;--mono:'Space Mono',monospace}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(130% 80% at 50% -10%,#221C2E 0%,var(--ink) 55%,#100E16 100%);
+    background-attachment:fixed;color:var(--text);font-family:var(--story);min-height:100vh;padding:52px 26px 80px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:900px;margin:0 auto}
+  .kicker{font-family:var(--mono);font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:var(--brass)}
+  h1{font-family:var(--serif);font-weight:500;font-size:clamp(28px,5vw,42px);margin:12px 0 8px;letter-spacing:-.012em;color:var(--heading)}
+  h1 .em{font-style:italic;font-weight:400;color:var(--brass-bright)}
+  .sub{font-family:var(--story);font-size:16px;color:#CFC9D9;max-width:62ch}
+  .sechead{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);
+    border-bottom:1px solid var(--line);padding-bottom:10px;margin:42px 0 28px;display:flex}
+  .sechead .r{margin-left:auto;color:var(--mute-2)}
+
+  .coin{width:100px;height:100px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;position:relative;
+    background:radial-gradient(70% 70% at 50% 35%,var(--ink-3),var(--ink-2));border:1px solid var(--line-2);
+    box-shadow:0 8px 20px -8px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.04);color:var(--bc)}
+  .coin::before{content:"";position:absolute;inset:6px;border-radius:50%;border:2.3px solid currentColor}
+  .coin svg{width:66px;height:66px}
+  .coin.sm{width:46px;height:46px}.coin.sm::before{inset:3px;border-width:1.8px}.coin.sm svg{width:31px;height:31px}
+
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:26px 14px}
+  @media(max-width:720px){.grid{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:480px){.grid{grid-template-columns:repeat(2,1fr)}}
+  .badge{display:flex;flex-direction:column;align-items:center;gap:11px}
+  .badge .nm{font-family:var(--serif);font-style:italic;font-size:17px;color:var(--brass-bright)}
+  .badge .cl{font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute-2);margin-top:-7px}
+  .badge.new .nm::after{content:" ✦";color:var(--brass);font-size:10px}
+
+  .smallrow{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+  .st{display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--mono);font-size:9px;color:var(--mute);letter-spacing:.06em}
+
+  .note{font-family:var(--story);font-size:14px;color:var(--mute);line-height:1.7;max-width:70ch}
+  .note b{color:var(--heading);font-weight:400}.note .em{color:var(--brass-bright);font-style:italic}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="fox" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M15 23 L11.5 7.5 L27 17.5"/><path d="M49 23 L52.5 7.5 L37 17.5"/><path d="M15 23 C13 33 18 45 32 53 C46 45 51 33 49 23 C43 19 38 17.5 32 17.5 C26 17.5 21 19 15 23 Z"/><path d="M24.5 31.5 L28.5 33"/><path d="M39.5 31.5 L35.5 33"/><path d="M27 40 L32 45.5 L37 40"/></g><circle cx="32" cy="46.6" r="1.5" fill="currentColor"/></symbol>
+
+  <symbol id="owl" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M19.5 19 L21.5 10.5 L27 17"/><path d="M44.5 19 L42.5 10.5 L37 17"/><path d="M15.5 25 C14.5 17.5 22 14 32 14 C42 14 49.5 17.5 48.5 25 C50.5 37 44 50.5 32 51.5 C20 50.5 13.5 37 15.5 25 Z"/><circle cx="24.5" cy="29.5" r="6.4"/><circle cx="39.5" cy="29.5" r="6.4"/><path d="M32 33.5 L29.4 38 L32 40.8 L34.6 38 Z"/><path d="M22 47 L20.5 50.5"/><path d="M42 47 L43.5 50.5"/></g><circle cx="24.5" cy="29.5" r="1.7" fill="currentColor"/><circle cx="39.5" cy="29.5" r="1.7" fill="currentColor"/></symbol>
+
+  <symbol id="bear" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"><circle cx="19.5" cy="19" r="6.8"/><circle cx="44.5" cy="19" r="6.8"/><path d="M15 30.5 C15 20 23 15 32 15 C41 15 49 20 49 30.5 C49 42 41 50.5 32 50.5 C23 50.5 15 42 15 30.5 Z"/><path d="M24 39.5 C24 34.5 27.5 32 32 32 C36.5 32 40 34.5 40 39.5 C40 43.5 36.5 46 32 46 C27.5 46 24 43.5 24 39.5 Z"/></g><circle cx="25.5" cy="29.5" r="1.8" fill="currentColor"/><circle cx="38.5" cy="29.5" r="1.8" fill="currentColor"/><path d="M29.4 37.5 C29.4 36 30.8 35.4 32 35.4 C33.2 35.4 34.6 36 34.6 37.5 C34.6 38.6 33.3 39.2 32 39.2 C30.7 39.2 29.4 38.6 29.4 37.5 Z" fill="currentColor"/></symbol>
+
+  <symbol id="hawk" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M23 16 C34 13 43 18 44 28 C44.5 34 41 43 33 47 C25 51 15 46 13 36 C11.5 27 14 19 23 16 Z"/><path d="M44 26 L54 28.5 C51 32 47.5 32.5 44.5 31"/><path d="M26 24 C31 21.5 38 22 42 25.5"/></g><circle cx="34" cy="28" r="2.3" fill="currentColor"/></symbol>
+
+  <symbol id="wolf" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M19 22 L15.5 7 L28 17"/><path d="M45 22 L48.5 7 L36 17"/><path d="M19 22 C16 29 16.5 34 19.5 37 L15.5 40 L23 39.5 C25 44 28 47 32 47 C36 47 39 44 41 39.5 L48.5 40 L44.5 37 C47.5 34 48 29 45 22 C39 17.5 37 16.5 32 16.5 C27 16.5 25 17.5 19 22 Z"/><path d="M24 30 L28.5 31.5"/><path d="M40 30 L35.5 31.5"/><path d="M28 41 L28 44 L36 44 L36 41"/></g><circle cx="32" cy="40" r="1.6" fill="currentColor"/></symbol>
+
+  <symbol id="hare" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M27.5 29 C24 21 22.5 11 25 4 C28 3 30 5.5 30 10 C30 17 29.5 24 29 29"/><path d="M36.5 29 C40 21 41.5 11 39 4 C36 3 34 5.5 34 10 C34 17 34.5 24 35 29"/><path d="M26 30 C23.5 34 24.5 42 32 47 C39.5 42 40.5 34 38 30 C36 27.5 34 27 32 27 C30 27 28 27.5 26 30 Z"/><path d="M29.5 41 L32 43.5 L34.5 41"/></g><circle cx="28.3" cy="35" r="1.5" fill="currentColor"/><circle cx="35.7" cy="35" r="1.5" fill="currentColor"/></symbol>
+
+  <symbol id="boar" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M20 23 L16.5 14 L26 20"/><path d="M44 23 L47.5 14 L38 20"/><path d="M20 23 C16.5 29 17.5 37 24 42 C27 44.5 29 46 32 46 C35 46 37 44.5 40 42 C46.5 37 47.5 29 44 23 C38 18.5 36 17.5 32 17.5 C28 17.5 26 18.5 20 23 Z"/><path d="M26 40 C26 36.5 28.5 35 32 35 C35.5 35 38 36.5 38 40 C38 43 35.5 44.5 32 44.5 C28.5 44.5 26 43 26 40 Z"/><path d="M27.5 44 C24.5 44.5 23 41.5 24 39"/><path d="M36.5 44 C39.5 44.5 41 41.5 40 39"/></g><circle cx="26" cy="28" r="1.5" fill="currentColor"/><circle cx="38" cy="28" r="1.5" fill="currentColor"/><circle cx="29.8" cy="39.5" r="1" fill="currentColor"/><circle cx="34.2" cy="39.5" r="1" fill="currentColor"/></symbol>
+
+  <symbol id="lynx" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M21 20 L17 5 L27.5 16"/><path d="M43 20 L47 5 L36.5 16"/><path d="M21 21 C18.5 27 18.5 31 21.5 34 L16.5 38 L24 37.5 C25.5 42 28.5 45 32 46 C35.5 45 38.5 42 40 37.5 L47.5 38 L42.5 34 C45.5 31 45.5 27 43 21 C38 17.5 36 16.5 32 16.5 C28 16.5 26 17.5 21 21 Z"/><path d="M28 38 L32 40.5 L36 38"/></g><circle cx="27" cy="29" r="1.6" fill="currentColor"/><circle cx="37" cy="29" r="1.6" fill="currentColor"/><circle cx="32" cy="42" r="1.3" fill="currentColor"/></symbol>
+
+  <!-- NEW · HEDGEHOG -->
+  <symbol id="hedgehog" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M20 39 C20 31 25.5 27 32 27 C38.5 27 44 31 44 39 C44 45 38.5 49.5 32 49.5 C25.5 49.5 20 45 20 39 Z"/><path d="M17 33 L20 21.5 L24.5 31 L28.5 19.5 L32 30 L35.5 19.5 L39.5 31 L44 21.5 L47 33"/><path d="M18 32.5 C22 28 42 28 46 32.5"/></g><circle cx="27" cy="38" r="1.4" fill="currentColor"/><circle cx="37" cy="38" r="1.4" fill="currentColor"/><circle cx="32" cy="44.5" r="2" fill="currentColor"/></symbol>
+
+  <!-- NEW · BADGER -->
+  <symbol id="badger" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><circle cx="22" cy="19.5" r="4"/><circle cx="42" cy="19.5" r="4"/><path d="M19 25 C17 31 18 38 23 43 C27 46.5 29.5 49 32 51.5 C34.5 49 37 46.5 41 43 C46 38 47 31 45 25 C39 21 37 20 32 20 C27 20 25 21 19 25 Z"/><path d="M26.5 22 C25.5 30 25.5 38 27.5 44"/><path d="M37.5 22 C38.5 30 38.5 38 36.5 44"/></g><circle cx="26.5" cy="31" r="1.4" fill="currentColor"/><circle cx="37.5" cy="31" r="1.4" fill="currentColor"/><circle cx="32" cy="47" r="1.6" fill="currentColor"/></symbol>
+
+  <!-- NEW · RAM -->
+  <symbol id="ram" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M26 22 C24.5 31 26 41 32 46 C38 41 39.5 31 38 22 C36 19 33.5 18.5 32 18.5 C30.5 18.5 28 19 26 22 Z"/><path d="M26 23.5 C22 22 19.5 23 19 26"/><path d="M38 23.5 C42 22 44.5 23 45 26"/><path d="M26 21 C18 18 11 22.5 12.5 29.5 C13.2 34 18 35.5 21 32 C23 29.5 21.8 26 19.3 26.8"/><path d="M38 21 C46 18 53 22.5 51.5 29.5 C50.8 34 46 35.5 43 32 C41 29.5 42.2 26 44.7 26.8"/></g><circle cx="29" cy="30" r="1.4" fill="currentColor"/><circle cx="35" cy="30" r="1.4" fill="currentColor"/><circle cx="32" cy="43.5" r="1.5" fill="currentColor"/></symbol>
+
+  <!-- NEW · TORTOISE -->
+  <symbol id="tortoise" viewBox="0 0 64 64"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M13 41 C13 28 21.5 21 32 21 C42.5 21 51 28 51 41 C51 42.5 50 43.5 48 43.5 L16 43.5 C14 43.5 13 42.5 13 41 Z"/><path d="M32 21 L32 43.5"/><path d="M22 24 C24 31 24 38 22.5 43.5"/><path d="M42 24 C40 31 40 38 41.5 43.5"/><path d="M15.5 35 C24 32 40 32 48.5 35"/><path d="M50 39 C54 38 56.5 40 55.5 43 C54.5 45.5 51 45.5 49 43"/><path d="M22 43.5 L20.5 47.5 L25 47.5"/><path d="M41 43.5 L44 47.5 L39.5 47.5"/></g><circle cx="53" cy="41.5" r="1" fill="currentColor"/></symbol>
+</defs></svg>
+
+<div class="wrap">
+  <div class="kicker">GuestIQ · Identity Badge · the set (v2)</div>
+  <h1>Twelve, <span class="em">all distinct.</span></h1>
+  <p class="sub">Birds (crane / swan / heron) and the Marten swapped out for shapes that can't be confused. ✦ marks the four new ones.</p>
+
+  <div class="sechead"><span>The set · full size</span><span class="r">✦ = new this round</span></div>
+  <div class="grid">
+    <div class="badge"><div class="coin" style="--bc:#D69A4C"><svg><use href="#fox"/></svg></div><div class="nm">Fox</div><div class="cl">amber</div></div>
+    <div class="badge"><div class="coin" style="--bc:#6E84B0"><svg><use href="#owl"/></svg></div><div class="nm">Owl</div><div class="cl">slate</div></div>
+    <div class="badge"><div class="coin" style="--bc:#C8A24E"><svg><use href="#bear"/></svg></div><div class="nm">Bear</div><div class="cl">brass</div></div>
+    <div class="badge"><div class="coin" style="--bc:#B5663F"><svg><use href="#hawk"/></svg></div><div class="nm">Hawk</div><div class="cl">rust</div></div>
+    <div class="badge"><div class="coin" style="--bc:#9AA0AE"><svg><use href="#wolf"/></svg></div><div class="nm">Wolf</div><div class="cl">pewter</div></div>
+    <div class="badge new"><div class="coin" style="--bc:#E4D9C2"><svg><use href="#hedgehog"/></svg></div><div class="nm">Hedgehog</div><div class="cl">ivory</div></div>
+    <div class="badge new"><div class="coin" style="--bc:#4E8C86"><svg><use href="#badger"/></svg></div><div class="nm">Badger</div><div class="cl">teal</div></div>
+    <div class="badge"><div class="coin" style="--bc:#C77B6B"><svg><use href="#hare"/></svg></div><div class="nm">Hare</div><div class="cl">clay</div></div>
+    <div class="badge"><div class="coin" style="--bc:#8A3A33"><svg><use href="#boar"/></svg></div><div class="nm">Boar</div><div class="cl">oxblood</div></div>
+    <div class="badge"><div class="coin" style="--bc:#CBB37E"><svg><use href="#lynx"/></svg></div><div class="nm">Lynx</div><div class="cl">sand</div></div>
+    <div class="badge new"><div class="coin" style="--bc:#8DA67E"><svg><use href="#ram"/></svg></div><div class="nm">Ram</div><div class="cl">sage</div></div>
+    <div class="badge new"><div class="coin" style="--bc:#8E6E97"><svg><use href="#tortoise"/></svg></div><div class="nm">Tortoise</div><div class="cl">plum</div></div>
+  </div>
+
+  <div class="sechead"><span>Small — does each still read?</span><span class="r">tray / wall size</span></div>
+  <div class="smallrow">
+    <div class="st"><div class="coin sm" style="--bc:#D69A4C"><svg><use href="#fox"/></svg></div>Fox</div>
+    <div class="st"><div class="coin sm" style="--bc:#6E84B0"><svg><use href="#owl"/></svg></div>Owl</div>
+    <div class="st"><div class="coin sm" style="--bc:#C8A24E"><svg><use href="#bear"/></svg></div>Bear</div>
+    <div class="st"><div class="coin sm" style="--bc:#B5663F"><svg><use href="#hawk"/></svg></div>Hawk</div>
+    <div class="st"><div class="coin sm" style="--bc:#9AA0AE"><svg><use href="#wolf"/></svg></div>Wolf</div>
+    <div class="st"><div class="coin sm" style="--bc:#E4D9C2"><svg><use href="#hedgehog"/></svg></div>Hedgehog</div>
+    <div class="st"><div class="coin sm" style="--bc:#4E8C86"><svg><use href="#badger"/></svg></div>Badger</div>
+    <div class="st"><div class="coin sm" style="--bc:#C77B6B"><svg><use href="#hare"/></svg></div>Hare</div>
+    <div class="st"><div class="coin sm" style="--bc:#8A3A33"><svg><use href="#boar"/></svg></div>Boar</div>
+    <div class="st"><div class="coin sm" style="--bc:#CBB37E"><svg><use href="#lynx"/></svg></div>Lynx</div>
+    <div class="st"><div class="coin sm" style="--bc:#8DA67E"><svg><use href="#ram"/></svg></div>Ram</div>
+    <div class="st"><div class="coin sm" style="--bc:#8E6E97"><svg><use href="#tortoise"/></svg></div>Tortoise</div>
+  </div>
+
+  <div class="sechead"><span>The set now</span></div>
+  <p class="note">
+    Fox · Owl · Bear · Hawk · Wolf · <b class="em">Hedgehog</b> · <b class="em">Badger</b> · Hare · Boar · Lynx · <b class="em">Ram</b> · <b class="em">Tortoise</b>.<br><br>
+    No two share a silhouette now — spiky, striped, horned, shelled, long-eared, tusked all read apart at a glance. <b>Two I'd still keep half an eye on:</b> <b>Wolf</b> (a touch fox-like — I can broaden it further if it bothers you) and <b>Lynx</b> (the cat with tufts). Say the word and I'll tune either; otherwise this is the set.
+  </p>
+</div>
+</body>
+</html>

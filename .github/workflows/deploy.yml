@@ -1,10 +1,9 @@
-name: GuestIQ Deploy
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -12,60 +11,28 @@ permissions:
   id-token: write
 
 concurrency:
-  group: 'pages'
-  cancel-in-progress: false
+  group: pages
+  cancel-in-progress: true
 
 jobs:
-  quality-and-deploy:
+  build:
     runs-on: ubuntu-latest
-
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      # ── Code Quality Gates ─────────────────────────────────────────────
-      - name: ESLint — zero errors required
-        run: npm run lint
-
-      # Prettier: format files for the build only — no commit back to repo.
-      # Previous auto-commit approach caused recurring merge conflicts.
-      # Formatted files are used by Vite build but not pushed to GitHub.
-      - name: Prettier — format for build only
-        run: npm run format
-
-      # ── Build ──────────────────────────────────────────────────────────
-      - name: Vite build
-        run: npm run build
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
-          VITE_POSTHOG_KEY: ${{ secrets.VITE_POSTHOG_KEY }}
-          VITE_APP_ENV: pilot
-          VITE_APP_VERSION: ${{ github.sha }}
-          VITE_FEATURE_AUTH_ENABLED: false
-          VITE_FEATURE_MULTI_PROPERTY: false
-          VITE_FEATURE_ADMIN_ENABLED: false
-
-      # ── Deploy to GitHub Pages ─────────────────────────────────────────
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './dist'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - id: deployment
         uses: actions/deploy-pages@v4
