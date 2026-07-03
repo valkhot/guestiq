@@ -1,0 +1,2896 @@
+{
+  "meta": {
+    "instrument": "GuestIQ Questionnaire",
+    "version": "4.2",
+    "source": "v4.2-Complete (gold pass) + v4.1 carry items",
+    "goldMap": "v0.4",
+    "note": "Complete instrument. Gold tags are hidden from the agent and used only by the report engine. Delivery order: routing -> core spine -> pro (+battery core +add-on) -> expert (+battery deep)."
+  },
+  "goldTagLegend": {
+    "BS": "blind-spot",
+    "BS+": "high-value blind-spot",
+    "CON": "contradiction",
+    "MW": "mis-weight",
+    "CF": "confirm (expected)",
+    "CF-sink": "table-stakes; collected but SUPPRESSED from findings"
+  },
+  "routing": {
+    "L1": {
+      "id": "L1",
+      "type": "single",
+      "prompt": "Why is this guest staying with you?",
+      "grounding": "Picture one guest you know who fits — answer as them.",
+      "options": [
+        {
+          "key": "business",
+          "label": "Business"
+        },
+        {
+          "key": "early_flight",
+          "label": "Early flight / late arrival"
+        },
+        {
+          "key": "holiday",
+          "label": "Holiday"
+        },
+        {
+          "key": "cruise",
+          "label": "Cruise"
+        },
+        {
+          "key": "event",
+          "label": "Event"
+        },
+        {
+          "key": "medical",
+          "label": "Medical"
+        },
+        {
+          "key": "crew",
+          "label": "Airline crew"
+        },
+        {
+          "key": "vip",
+          "label": "Executive / VIP"
+        },
+        {
+          "key": "other",
+          "label": "Someone else",
+          "verbatim": true
+        }
+      ]
+    },
+    "L2": {
+      "id": "L2",
+      "type": "single",
+      "prompt": "Who are they travelling as?",
+      "note": "Party routing — unchanged from v4.1. C opens Family add-on; D–H open Group add-on.",
+      "options": [
+        {
+          "key": "solo",
+          "label": "On their own"
+        },
+        {
+          "key": "couple",
+          "label": "A couple"
+        },
+        {
+          "key": "family",
+          "label": "A family with children"
+        },
+        {
+          "key": "company_group",
+          "label": "A work / company group"
+        },
+        {
+          "key": "social_group",
+          "label": "A wedding or social group"
+        },
+        {
+          "key": "cruise_group",
+          "label": "A cruise group"
+        },
+        {
+          "key": "sports_group",
+          "label": "A sports or concert group"
+        },
+        {
+          "key": "tour_group",
+          "label": "A tour group"
+        }
+      ]
+    }
+  },
+  "spine": {
+    "core": [
+      {
+        "id": "P1",
+        "type": "single",
+        "depth": "core",
+        "prompt": "Some guests almost book, then pick a different place. What is the most common reason?",
+        "options": [
+          {
+            "key": "price_too_high",
+            "label": "Price too high",
+            "tag": "CF"
+          },
+          {
+            "key": "no_rooms_free_for_their_date",
+            "label": "No rooms free for their dates",
+            "tag": "CF"
+          },
+          {
+            "key": "location_not_right",
+            "label": "Location not right",
+            "tag": "BS"
+          },
+          {
+            "key": "a_rule_they_did_not_like",
+            "label": "A rule they did not like (deposit, cancellation)",
+            "tag": "MW"
+          },
+          {
+            "key": "something_they_read_online",
+            "label": "Something they read online",
+            "tag": "CF"
+          },
+          {
+            "key": "a_better_choice_somewhere_el",
+            "label": "A better choice somewhere else",
+            "tag": "CF"
+          },
+          {
+            "key": "booking_was_too_hard",
+            "label": "Booking was too hard",
+            "tag": "BS"
+          },
+          {
+            "key": "this_rarely_happens",
+            "label": "This rarely happens",
+            "tag": null
+          }
+        ]
+      },
+      {
+        "id": "P1b",
+        "type": "observer",
+        "depth": "core",
+        "prompt": "Where do they book instead?",
+        "exampleOptional": true,
+        "options": [
+          {
+            "key": "a_cheaper_hotel_nearby",
+            "label": "a cheaper hotel nearby",
+            "tag": "CF"
+          },
+          {
+            "key": "a_nicer_hotel",
+            "label": "a nicer hotel",
+            "tag": "CF"
+          },
+          {
+            "key": "a_hotel_closer_to_where_they",
+            "label": "a hotel closer to where they're going",
+            "tag": "BS"
+          },
+          {
+            "key": "a_chain_they_re_loyal_to",
+            "label": "a chain they're loyal to",
+            "tag": "CF"
+          },
+          {
+            "key": "an_airbnb_short_let",
+            "label": "an Airbnb / short-let",
+            "tag": "BS"
+          },
+          {
+            "key": "a_cruise_or_package_deal",
+            "label": "a cruise or package deal",
+            "tag": "BS"
+          },
+          {
+            "key": "a_place_with_parking_or_a_sh",
+            "label": "a place with parking or a shuttle",
+            "tag": "BS"
+          },
+          {
+            "key": "they_didn_t_book_elsewhere_j",
+            "label": "they didn't book elsewhere — just didn't come",
+            "tag": "CON"
+          },
+          {
+            "key": "not_sure",
+            "label": "not sure",
+            "tag": null
+          },
+          {
+            "key": "other",
+            "label": "other",
+            "tag": null,
+            "verbatim": true
+          }
+        ]
+      },
+      {
+        "id": "P2",
+        "type": "observer",
+        "depth": "core",
+        "prompt": "Silent complaints they never write in a review.",
+        "note": "GoldMap §4",
+        "exampleOptional": true,
+        "followUps": [
+          "FREQ"
+        ],
+        "options": [
+          {
+            "key": "noise_poor_sleep_5am_hvac_co",
+            "label": "noise / poor sleep — 5am HVAC, corridor",
+            "tag": "BS+"
+          },
+          {
+            "key": "not_clean",
+            "label": "not clean",
+            "tag": "CF"
+          },
+          {
+            "key": "waiting_at_check_in",
+            "label": "waiting at check-in",
+            "tag": "MW"
+          },
+          {
+            "key": "a_surprise_charge",
+            "label": "a surprise charge",
+            "tag": "BS"
+          },
+          {
+            "key": "how_a_staff_member_treated_t",
+            "label": "how a staff member treated them",
+            "tag": "BS"
+          },
+          {
+            "key": "room_too_hot_cold",
+            "label": "room too hot / cold",
+            "tag": "BS"
+          },
+          {
+            "key": "something_broken",
+            "label": "something broken",
+            "tag": "CF"
+          },
+          {
+            "key": "promised_but_not_given",
+            "label": "promised but not given",
+            "tag": "BS"
+          },
+          {
+            "key": "early_morning_disturbance",
+            "label": "early-morning disturbance",
+            "tag": "BS+"
+          },
+          {
+            "key": "slow_or_no_response_to_a_req",
+            "label": "slow or no response to a request",
+            "tag": "BS"
+          },
+          {
+            "key": "other",
+            "label": "other",
+            "tag": null,
+            "verbatim": true
+          }
+        ]
+      },
+      {
+        "id": "P3",
+        "type": "observer",
+        "depth": "core",
+        "prompt": "Rooms you try NOT to give this guest.",
+        "note": "GoldMap §4",
+        "exampleOptional": true,
+        "options": [
+          {
+            "key": "too_noisy",
+            "label": "too noisy (street, lift, air-con)",
+            "tag": "BS"
+          },
+          {
+            "key": "weak_air_con_heat",
+            "label": "weak air-con / heat",
+            "tag": "BS"
+          },
+          {
+            "key": "too_small",
+            "label": "too small",
+            "tag": "CF"
+          },
+          {
+            "key": "old_or_worn",
+            "label": "old or worn",
+            "tag": "CF"
+          },
+          {
+            "key": "bad_view_dark",
+            "label": "bad view / dark",
+            "tag": "CF"
+          },
+          {
+            "key": "far_from_the_lift",
+            "label": "far from the lift",
+            "tag": "MW"
+          },
+          {
+            "key": "near_early_morning_noise",
+            "label": "near early-morning noise (kitchen, service)",
+            "tag": "BS+"
+          },
+          {
+            "key": "near_the_event_party_floor",
+            "label": "near the event / party floor",
+            "tag": "BS"
+          },
+          {
+            "key": "no_any_room_is_fine",
+            "label": "no — any room is fine",
+            "tag": "CF"
+          },
+          {
+            "key": "other",
+            "label": "other",
+            "tag": null,
+            "verbatim": true
+          }
+        ]
+      },
+      {
+        "id": "P4",
+        "type": "single",
+        "depth": "core",
+        "prompt": "Does this guest eat at your hotel restaurant?",
+        "options": [
+          {
+            "key": "yes_dinner",
+            "label": "Yes — dinner",
+            "tag": "CF"
+          },
+          {
+            "key": "yes_breakfast_only",
+            "label": "Yes — breakfast only",
+            "tag": "CF"
+          },
+          {
+            "key": "only_coffee_or_a_quick_item",
+            "label": "Only coffee or a quick item",
+            "tag": "BS"
+          },
+          {
+            "key": "no_eats_out",
+            "label": "No — eats out",
+            "tag": "BS"
+          },
+          {
+            "key": "no_eats_in_the_room_or_off_s",
+            "label": "No — eats in the room or off-site",
+            "tag": "BS"
+          },
+          {
+            "key": "no_eats_somewhere_else",
+            "label": "No — eats somewhere else (the ship, the venue, near the hospital)",
+            "tag": "BS"
+          }
+        ]
+      },
+      {
+        "id": "P4b",
+        "type": "observer",
+        "depth": "core",
+        "prompt": "If they do NOT use the restaurant, where do they eat?",
+        "note": "GoldMap §6 ★★",
+        "exampleOptional": true,
+        "options": [
+          {
+            "key": "nearby_restaurants_caf_s",
+            "label": "nearby restaurants / cafés",
+            "tag": "CF"
+          },
+          {
+            "key": "fast_food_takeaway",
+            "label": "fast food / takeaway",
+            "tag": "BS"
+          },
+          {
+            "key": "grab_and_go_convenience_food",
+            "label": "grab-and-go / convenience food",
+            "tag": "BS"
+          },
+          {
+            "key": "in_the_room",
+            "label": "in the room (delivery)",
+            "tag": "BS"
+          },
+          {
+            "key": "the_ship_venue_hospital",
+            "label": "the ship / venue / hospital",
+            "tag": "BS"
+          },
+          {
+            "key": "out_with_clients_or_hosts",
+            "label": "out with clients or hosts",
+            "tag": "MW"
+          },
+          {
+            "key": "skips_meals_too_early",
+            "label": "skips meals — too early",
+            "tag": "BS"
+          },
+          {
+            "key": "only_grabs_coffee",
+            "label": "only grabs coffee",
+            "tag": "BS"
+          },
+          {
+            "key": "brings_or_cooks_their_own",
+            "label": "brings or cooks their own",
+            "tag": "BS"
+          },
+          {
+            "key": "other",
+            "label": "other",
+            "tag": null,
+            "verbatim": true
+          }
+        ]
+      },
+      {
+        "id": "P5",
+        "type": "single",
+        "depth": "core",
+        "prompt": "What makes this guest feel staff really care about them?",
+        "followUps": [
+          "SD"
+        ],
+        "options": [
+          {
+            "key": "their_room_was_ready_and_qui",
+            "label": "Their room was ready and quiet when they arrived",
+            "tag": "BS"
+          },
+          {
+            "key": "a_staff_member_fixed_a_probl",
+            "label": "A staff member fixed a problem for them",
+            "tag": "CF"
+          },
+          {
+            "key": "staff_remembered_something_a",
+            "label": "Staff remembered something about them",
+            "tag": "BS"
+          },
+          {
+            "key": "staff_did_something_extra_wi",
+            "label": "Staff did something extra without being asked",
+            "tag": "BS"
+          },
+          {
+            "key": "nothing_they_feel_like_just_",
+            "label": "Nothing — they feel like just another guest",
+            "tag": "CON"
+          }
+        ]
+      },
+      {
+        "id": "P6",
+        "type": "single",
+        "depth": "core",
+        "prompt": "When something goes wrong during the stay, what does this guest usually do?",
+        "followUps": [
+          "OBS"
+        ],
+        "options": [
+          {
+            "key": "says_nothing_and_never_comes",
+            "label": "Says nothing, and never comes back",
+            "tag": "CON"
+          },
+          {
+            "key": "says_nothing_but_tells_frien",
+            "label": "Says nothing, but tells friends or co-workers",
+            "tag": "BS"
+          },
+          {
+            "key": "writes_an_online_review",
+            "label": "Writes an online review",
+            "tag": "CF"
+          },
+          {
+            "key": "tells_staff_and_gives_anothe",
+            "label": "Tells staff, and gives another chance if it is fixed well",
+            "tag": "CF"
+          },
+          {
+            "key": "complains_and_never_comes_ba",
+            "label": "Complains, and never comes back anyway",
+            "tag": "BS"
+          }
+        ]
+      },
+      {
+        "id": "P7",
+        "type": "observer",
+        "depth": "core",
+        "prompt": "A small free thing you've seen make this guest very happy.",
+        "note": "GoldMap §9",
+        "exampleOptional": true,
+        "options": [
+          {
+            "key": "a_warm_welcome_by_name",
+            "label": "a warm welcome by name",
+            "tag": "MW"
+          },
+          {
+            "key": "noticing_what_they_needed_ea",
+            "label": "noticing what they needed early",
+            "tag": "BS+"
+          },
+          {
+            "key": "a_small_free_item",
+            "label": "a small free item (coffee, water, snack)",
+            "tag": "BS"
+          },
+          {
+            "key": "bending_a_rule_for_them",
+            "label": "bending a rule for them",
+            "tag": "BS"
+          },
+          {
+            "key": "a_local_tip",
+            "label": "a local tip",
+            "tag": "MW"
+          },
+          {
+            "key": "remembering_what_they_like",
+            "label": "remembering what they like",
+            "tag": "BS"
+          },
+          {
+            "key": "early_coffee_before_the_caf_",
+            "label": "early coffee before the café opens",
+            "tag": "BS+"
+          },
+          {
+            "key": "a_quiet_ready_room_without_a",
+            "label": "a quiet, ready room without asking",
+            "tag": "BS+"
+          },
+          {
+            "key": "handling_their_luggage",
+            "label": "handling their luggage",
+            "tag": "BS"
+          },
+          {
+            "key": "other",
+            "label": "other",
+            "tag": null,
+            "verbatim": true
+          }
+        ]
+      },
+      {
+        "id": "P8",
+        "type": "observer",
+        "depth": "core",
+        "prompt": "What they ask for too late, when you can no longer do it well.",
+        "note": "GoldMap §13",
+        "exampleOptional": true,
+        "options": [
+          {
+            "key": "early_room_early_check_in",
+            "label": "early room / early check-in",
+            "tag": "BS"
+          },
+          {
+            "key": "a_certain_room_or_floor",
+            "label": "a certain room or floor",
+            "tag": "MW"
+          },
+          {
+            "key": "food_late_at_night",
+            "label": "food late at night",
+            "tag": "BS"
+          },
+          {
+            "key": "a_ride_late_night_help",
+            "label": "a ride / late-night help",
+            "tag": "BS"
+          },
+          {
+            "key": "setting_up_a_special_day",
+            "label": "setting up a special day",
+            "tag": "MW"
+          },
+          {
+            "key": "a_quiet_room",
+            "label": "a quiet room",
+            "tag": "BS"
+          },
+          {
+            "key": "an_extra_connecting_room",
+            "label": "an extra / connecting room",
+            "tag": "CF"
+          },
+          {
+            "key": "luggage_hold",
+            "label": "luggage hold",
+            "tag": "BS"
+          },
+          {
+            "key": "a_wake_up_early_departure_he",
+            "label": "a wake-up / early-departure help",
+            "tag": "BS"
+          },
+          {
+            "key": "other",
+            "label": "other",
+            "tag": null,
+            "verbatim": true
+          }
+        ]
+      },
+      {
+        "id": "P9",
+        "type": "observer",
+        "depth": "core",
+        "prompt": "What they ask the front desk for that the hotel does NOT have.",
+        "note": "GoldMap §6 ★★",
+        "exampleOptional": true,
+        "options": [
+          {
+            "key": "something_forgot",
+            "label": "something forgot (charger, toiletries)",
+            "tag": "BS+"
+          },
+          {
+            "key": "food_drink_you_don_t_sell",
+            "label": "food / drink you don't sell",
+            "tag": "BS"
+          },
+          {
+            "key": "help_finding_something_nearb",
+            "label": "help finding something nearby (pharmacy, cash, late food)",
+            "tag": "BS"
+          },
+          {
+            "key": "something_to_do_at_night_whe",
+            "label": "something to do at night when nothing's open",
+            "tag": "BS"
+          },
+          {
+            "key": "early_coffee_before_the_caf_",
+            "label": "early coffee before the café opens",
+            "tag": "BS+"
+          },
+          {
+            "key": "printing_a_document",
+            "label": "printing / a document",
+            "tag": "BS"
+          },
+          {
+            "key": "a_ride_at_an_odd_hour",
+            "label": "a ride at an odd hour",
+            "tag": "BS"
+          },
+          {
+            "key": "luggage_hold",
+            "label": "luggage hold",
+            "tag": "BS"
+          },
+          {
+            "key": "a_quiet_place_to_work_or_wai",
+            "label": "a quiet place to work or wait",
+            "tag": "MW"
+          },
+          {
+            "key": "other",
+            "label": "other",
+            "tag": null,
+            "verbatim": true
+          }
+        ]
+      },
+      {
+        "id": "P9b",
+        "type": "observer",
+        "depth": "core",
+        "prompt": "What do they do instead?",
+        "note": "GoldMap §3",
+        "exampleOptional": true,
+        "options": [
+          {
+            "key": "go_out_and_get_it_themselves",
+            "label": "go out and get it themselves",
+            "tag": "BS"
+          },
+          {
+            "key": "ask_you_where_to_find_it",
+            "label": "ask you where to find it",
+            "tag": "BS"
+          },
+          {
+            "key": "do_without_disappointed",
+            "label": "do without — disappointed",
+            "tag": "CON"
+          },
+          {
+            "key": "order_delivery",
+            "label": "order delivery",
+            "tag": "BS"
+          },
+          {
+            "key": "improvise",
+            "label": "improvise",
+            "tag": "BS"
+          },
+          {
+            "key": "complain",
+            "label": "complain",
+            "tag": "CF"
+          },
+          {
+            "key": "quietly_won_t_come_back",
+            "label": "quietly won't come back",
+            "tag": "CON"
+          },
+          {
+            "key": "borrow_from_the_desk",
+            "label": "borrow from the desk",
+            "tag": "BS"
+          },
+          {
+            "key": "wait_until_they_leave",
+            "label": "wait until they leave",
+            "tag": "BS"
+          },
+          {
+            "key": "other",
+            "label": "other",
+            "tag": null,
+            "verbatim": true
+          }
+        ]
+      },
+      {
+        "id": "P10",
+        "type": "observer",
+        "depth": "core",
+        "prompt": "What this guest needs that most other guests do NOT.",
+        "note": "GoldMap §12",
+        "exampleOptional": true,
+        "options": [
+          {
+            "key": "a_certain_item_others_ignore",
+            "label": "a certain item others ignore",
+            "tag": "BS"
+          },
+          {
+            "key": "a_time_need",
+            "label": "a time need (very early / late / 24h)",
+            "tag": "BS+"
+          },
+          {
+            "key": "privacy_or_safety",
+            "label": "privacy or safety",
+            "tag": "BS"
+          },
+          {
+            "key": "more_space_room_layout",
+            "label": "more space / room layout",
+            "tag": "MW"
+          },
+          {
+            "key": "a_food_or_culture_need",
+            "label": "a food or culture need",
+            "tag": "BS"
+          },
+          {
+            "key": "extra_help_clear_info",
+            "label": "extra help / clear info",
+            "tag": "MW"
+          },
+          {
+            "key": "quiet_for_rest_or_recovery",
+            "label": "quiet for rest or recovery",
+            "tag": "BS"
+          },
+          {
+            "key": "discretion_not_being_noticed",
+            "label": "discretion — not being noticed",
+            "tag": "BS"
+          },
+          {
+            "key": "daytime_sleep",
+            "label": "daytime sleep",
+            "tag": "BS"
+          },
+          {
+            "key": "other",
+            "label": "other",
+            "tag": null,
+            "verbatim": true
+          }
+        ]
+      }
+    ],
+    "pro": [
+      {
+        "id": "P11",
+        "type": "single",
+        "depth": "pro",
+        "prompt": "What is the MAIN reason this guest books your hotel?",
+        "followUps": [
+          "SD"
+        ],
+        "options": [
+          {
+            "key": "close_to_where_they_need_to_",
+            "label": "Close to where they need to be (walking distance)",
+            "tag": "CF"
+          },
+          {
+            "key": "easy_parking_luggage_or_shut",
+            "label": "Easy parking, luggage, or shuttle",
+            "tag": "BS"
+          },
+          {
+            "key": "price_or_a_deal",
+            "label": "Price or a deal",
+            "tag": "CF"
+          },
+          {
+            "key": "the_hotel_brand_or_loyalty_p",
+            "label": "The hotel brand or loyalty points",
+            "tag": "CF"
+          },
+          {
+            "key": "they_stayed_before_it_is_a_h",
+            "label": "They stayed before — it is a habit",
+            "tag": "CF"
+          },
+          {
+            "key": "someone_recommended_you",
+            "label": "Someone recommended you",
+            "tag": "CF"
+          }
+        ]
+      },
+      {
+        "id": "P12",
+        "type": "kano",
+        "depth": "pro",
+        "prompt": "For this guest, mark each: must-have / nice extra / does not matter.",
+        "options": [
+          {
+            "key": "fast_wi_fi",
+            "label": "fast Wi-Fi",
+            "tag": null
+          },
+          {
+            "key": "a_quiet_room",
+            "label": "a quiet room",
+            "tag": null
+          },
+          {
+            "key": "the_restaurant_for_dinner",
+            "label": "the restaurant for dinner",
+            "tag": null
+          },
+          {
+            "key": "quick_coffee_and_grab_and_go",
+            "label": "quick coffee and grab-and-go food",
+            "tag": null
+          },
+          {
+            "key": "fast_check_in_and_check_out",
+            "label": "fast check-in and check-out",
+            "tag": null
+          },
+          {
+            "key": "the_gym",
+            "label": "the gym",
+            "tag": null
+          },
+          {
+            "key": "parking_or_valet",
+            "label": "parking or valet",
+            "tag": null
+          },
+          {
+            "key": "early_or_late_flexibility",
+            "label": "early or late flexibility",
+            "tag": null
+          }
+        ]
+      },
+      {
+        "id": "P13",
+        "type": "verbatim",
+        "depth": "pro",
+        "prompt": "What do you do for this guest that is NOT an official rule, but always works?"
+      },
+      {
+        "id": "P14",
+        "type": "observer",
+        "depth": "pro",
+        "prompt": "Which hotel rule do you most often say sorry to this guest for?",
+        "exampleOptional": true,
+        "options": [
+          {
+            "key": "check_in_check_out_times",
+            "label": "check-in / check-out times",
+            "tag": "BS"
+          },
+          {
+            "key": "deposit_pre_authorisation",
+            "label": "deposit / pre-authorisation",
+            "tag": "CF"
+          },
+          {
+            "key": "cancellation_policy",
+            "label": "cancellation policy",
+            "tag": "MW"
+          },
+          {
+            "key": "parking_fees_or_availability",
+            "label": "parking fees or availability",
+            "tag": "BS"
+          },
+          {
+            "key": "no_early_late_flexibility",
+            "label": "no early / late flexibility",
+            "tag": "BS"
+          },
+          {
+            "key": "extra_guest_room_limits",
+            "label": "extra-guest / room limits",
+            "tag": "CF"
+          },
+          {
+            "key": "pet_smoking_rules",
+            "label": "pet / smoking rules",
+            "tag": "CF"
+          },
+          {
+            "key": "the_destination_fee",
+            "label": "the destination fee",
+            "tag": "MW"
+          },
+          {
+            "key": "a_booking_rule",
+            "label": "a booking rule",
+            "tag": "CF"
+          },
+          {
+            "key": "other",
+            "label": "other",
+            "tag": null,
+            "verbatim": true
+          }
+        ]
+      },
+      {
+        "id": "P15",
+        "type": "verbatim",
+        "depth": "pro",
+        "prompt": "What do these guests say another hotel does, that yours does not?"
+      },
+      {
+        "id": "P16",
+        "type": "verbatim",
+        "depth": "pro",
+        "prompt": "What do you do again and again for this guest that a small change could stop?"
+      },
+      {
+        "id": "P17",
+        "type": "observer",
+        "depth": "pro",
+        "prompt": "Before they arrive, what do these guests call or email to ask about?",
+        "note": "GoldMap §13/§9",
+        "exampleOptional": true,
+        "options": [
+          {
+            "key": "parking",
+            "label": "parking",
+            "tag": "BS"
+          },
+          {
+            "key": "early_check_in_luggage_hold",
+            "label": "early check-in / luggage hold",
+            "tag": "BS+"
+          },
+          {
+            "key": "directions_transport",
+            "label": "directions / transport",
+            "tag": "BS"
+          },
+          {
+            "key": "room_type_a_request",
+            "label": "room type / a request",
+            "tag": "MW"
+          },
+          {
+            "key": "restaurant_food",
+            "label": "restaurant / food",
+            "tag": "CF"
+          },
+          {
+            "key": "the_bill_a_deal",
+            "label": "the bill / a deal",
+            "tag": "CF"
+          },
+          {
+            "key": "local_tips",
+            "label": "local tips",
+            "tag": "MW"
+          },
+          {
+            "key": "early_departure_wake_up",
+            "label": "early departure / wake-up",
+            "tag": "BS"
+          },
+          {
+            "key": "accessibility_special_need",
+            "label": "accessibility / special need",
+            "tag": "BS"
+          },
+          {
+            "key": "other",
+            "label": "other",
+            "tag": null,
+            "verbatim": true
+          }
+        ]
+      },
+      {
+        "id": "P18",
+        "type": "observer",
+        "depth": "pro",
+        "prompt": "How does this guest usually arrive?",
+        "note": "carry v4.1 categories",
+        "exampleOptional": true,
+        "options": [
+          {
+            "key": "drives_and_needs_parking",
+            "label": "drives, and needs parking",
+            "tag": null
+          },
+          {
+            "key": "drives_and_leaves_the_car_he",
+            "label": "drives, and leaves the car here during a cruise",
+            "tag": null
+          },
+          {
+            "key": "flies_in_then_takes_a_taxi_o",
+            "label": "flies in, then takes a taxi or rideshare",
+            "tag": null
+          },
+          {
+            "key": "comes_by_transit_or_on_foot",
+            "label": "comes by transit or on foot",
+            "tag": null
+          },
+          {
+            "key": "drives_on_a_busy_event_night",
+            "label": "drives on a busy event night and struggles to park",
+            "tag": null
+          },
+          {
+            "key": "other",
+            "label": "other",
+            "tag": null,
+            "verbatim": true
+          }
+        ]
+      },
+      {
+        "id": "P19",
+        "type": "single",
+        "depth": "pro",
+        "prompt": "What would this guest happily pay extra for?",
+        "options": [
+          {
+            "key": "a_better_room_or_upgrade",
+            "label": "A better room or upgrade",
+            "tag": "CF"
+          },
+          {
+            "key": "early_check_in_or_late_check",
+            "label": "Early check-in or late check-out",
+            "tag": "BS"
+          },
+          {
+            "key": "a_parking_deal",
+            "label": "A parking deal",
+            "tag": "BS"
+          },
+          {
+            "key": "a_food_or_drink_deal",
+            "label": "A food or drink deal",
+            "tag": "BS"
+          },
+          {
+            "key": "a_tour_or_a_ride",
+            "label": "A tour or a ride",
+            "tag": "BS"
+          },
+          {
+            "key": "almost_nothing",
+            "label": "Almost nothing",
+            "tag": "CON"
+          }
+        ]
+      },
+      {
+        "id": "P20",
+        "type": "single",
+        "depth": "pro",
+        "prompt": "Do you serve this guest type more often than the hotel is set up for?",
+        "options": [
+          {
+            "key": "yes",
+            "label": "Yes",
+            "tag": "BS"
+          },
+          {
+            "key": "no",
+            "label": "No",
+            "tag": "CF"
+          },
+          {
+            "key": "not_sure",
+            "label": "Not sure",
+            "tag": null
+          }
+        ]
+      },
+      {
+        "id": "P20b",
+        "type": "verbatim",
+        "depth": "pro",
+        "prompt": "If yes, what is missing for them?"
+      },
+      {
+        "id": "P21",
+        "type": "verbatim",
+        "depth": "pro",
+        "prompt": "If you could change ONE thing for this guest for free, what would it be?"
+      }
+    ],
+    "expert": [
+      {
+        "id": "P22",
+        "type": "single",
+        "depth": "expert",
+        "prompt": "What moment makes this guest decide if they will come back?",
+        "options": [
+          {
+            "key": "how_they_were_welcomed_at_ar",
+            "label": "How they were welcomed at arrival",
+            "tag": "BS"
+          },
+          {
+            "key": "how_a_problem_was_handled",
+            "label": "How a problem was handled",
+            "tag": "CF"
+          },
+          {
+            "key": "a_great_service_moment",
+            "label": "A great service moment",
+            "tag": "BS"
+          },
+          {
+            "key": "how_they_were_treated_at_che",
+            "label": "How they were treated at check-out",
+            "tag": "BS"
+          },
+          {
+            "key": "a_certain_thing_that_happens",
+            "label": "A certain thing that happens every stay",
+            "tag": "BS"
+          }
+        ]
+      },
+      {
+        "id": "P23",
+        "type": "verbatim",
+        "depth": "expert",
+        "prompt": "A guest complains about one thing, but the real problem is something else. Give one example."
+      },
+      {
+        "id": "P24",
+        "type": "verbatim",
+        "depth": "expert",
+        "prompt": "What does this guest often do that surprises new staff?"
+      },
+      {
+        "id": "P25",
+        "type": "single",
+        "depth": "expert",
+        "prompt": "Some guests seem ordinary but are actually important. Have you seen this with these guests?",
+        "options": [
+          {
+            "key": "yes_often",
+            "label": "Yes, often",
+            "tag": "BS"
+          },
+          {
+            "key": "sometimes",
+            "label": "Sometimes",
+            "tag": "BS"
+          },
+          {
+            "key": "rarely",
+            "label": "Rarely",
+            "tag": "CF"
+          }
+        ]
+      },
+      {
+        "id": "P25b",
+        "type": "verbatim",
+        "depth": "expert",
+        "prompt": "How can staff spot this guest early?"
+      }
+    ]
+  },
+  "batteries": {
+    "business": {
+      "label": "Business",
+      "goldMap": "§6/§9/§10",
+      "items": [
+        {
+          "id": "BUS-1",
+          "type": "kano",
+          "depth": "core",
+          "prompt": "For a business guest, mark each: must-have / nice extra / does not matter.",
+          "source": "v4.1",
+          "options": [
+            {
+              "key": "a_quiet_room",
+              "label": "a quiet room",
+              "tag": null
+            },
+            {
+              "key": "grab_and_go_breakfast",
+              "label": "grab-and-go breakfast",
+              "tag": null
+            },
+            {
+              "key": "coffee_before_dawn",
+              "label": "coffee before dawn",
+              "tag": null
+            },
+            {
+              "key": "a_good_place_to_work_in_the_",
+              "label": "a good place to work in the room",
+              "tag": null
+            },
+            {
+              "key": "fast_check_out",
+              "label": "fast check-out",
+              "tag": null
+            },
+            {
+              "key": "the_restaurant_for_dinner",
+              "label": "the restaurant for dinner",
+              "tag": null
+            }
+          ]
+        },
+        {
+          "id": "BUS-2",
+          "type": "single",
+          "depth": "core",
+          "prompt": "Does this business guest eat dinner at your restaurant?",
+          "source": "v4.1",
+          "options": [
+            {
+              "key": "yes",
+              "label": "Yes",
+              "tag": "CF"
+            },
+            {
+              "key": "no_eats_out_with_clients",
+              "label": "No — eats out with clients",
+              "tag": "BS"
+            },
+            {
+              "key": "no_skips_dinner",
+              "label": "No — skips dinner",
+              "tag": "BS"
+            }
+          ]
+        },
+        {
+          "id": "BUS-3",
+          "type": "observer",
+          "depth": "expert",
+          "prompt": "One thing that would save them time.",
+          "exampleOptional": true,
+          "options": [
+            {
+              "key": "fast_express_check_in_out",
+              "label": "fast / express check-in & out",
+              "tag": "BS"
+            },
+            {
+              "key": "grab_and_go_breakfast",
+              "label": "grab-and-go breakfast",
+              "tag": "BS+"
+            },
+            {
+              "key": "coffee_before_dawn",
+              "label": "coffee before dawn",
+              "tag": "BS+"
+            },
+            {
+              "key": "a_ready_quiet_room_without_a",
+              "label": "a ready, quiet room without asking",
+              "tag": "BS+"
+            },
+            {
+              "key": "the_bill_ready_sorted",
+              "label": "the bill ready / sorted",
+              "tag": "BS"
+            },
+            {
+              "key": "a_quick_ride",
+              "label": "a quick ride",
+              "tag": "BS"
+            },
+            {
+              "key": "printing_scanning",
+              "label": "printing / scanning",
+              "tag": "BS"
+            },
+            {
+              "key": "luggage_hold_for_a_late_flig",
+              "label": "luggage hold for a late flight",
+              "tag": "BS"
+            },
+            {
+              "key": "late_check_out_to_finish_wor",
+              "label": "late check-out to finish work",
+              "tag": "BS"
+            },
+            {
+              "key": "the_usual",
+              "label": "the usual (good Wi-Fi)",
+              "tag": "CF-sink",
+              "cfSink": true
+            },
+            {
+              "key": "other",
+              "label": "other",
+              "tag": null,
+              "verbatim": true
+            }
+          ]
+        },
+        {
+          "id": "BUS-4",
+          "type": "multi",
+          "depth": "expert",
+          "prompt": "Most-forgotten items (the sundries market).",
+          "select": 2,
+          "options": [
+            {
+              "key": "phone_charger",
+              "label": "phone charger",
+              "tag": "BS"
+            },
+            {
+              "key": "laptop_charger",
+              "label": "laptop charger",
+              "tag": "BS"
+            },
+            {
+              "key": "plug_adapter",
+              "label": "plug adapter",
+              "tag": "BS"
+            },
+            {
+              "key": "toothbrush_toiletries",
+              "label": "toothbrush / toiletries",
+              "tag": "BS"
+            },
+            {
+              "key": "razor_shaving_kit",
+              "label": "razor / shaving kit",
+              "tag": "BS"
+            },
+            {
+              "key": "a_tie_belt_formal_item",
+              "label": "a tie / belt / formal item",
+              "tag": "BS"
+            },
+            {
+              "key": "iron_or_steamer",
+              "label": "iron or steamer",
+              "tag": "BS"
+            },
+            {
+              "key": "medication",
+              "label": "medication",
+              "tag": "BS"
+            },
+            {
+              "key": "something_to_print",
+              "label": "something to print",
+              "tag": "BS"
+            },
+            {
+              "key": "umbrella",
+              "label": "umbrella",
+              "tag": "BS"
+            },
+            {
+              "key": "other",
+              "label": "other",
+              "tag": null,
+              "verbatim": true
+            }
+          ]
+        }
+      ]
+    },
+    "early_flight": {
+      "label": "Early flight",
+      "goldMap": "§4/§9/§13",
+      "items": [
+        {
+          "id": "TRN-1",
+          "type": "kano",
+          "depth": "core",
+          "prompt": "Mark each: must-have / nice extra / does not matter.",
+          "source": "v4.1",
+          "options": [
+            {
+              "key": "a_dark_quiet_room_for_a_shor",
+              "label": "a dark, quiet room for a short sleep",
+              "tag": null
+            },
+            {
+              "key": "coffee_or_food_before_dawn",
+              "label": "coffee or food before dawn",
+              "tag": null
+            },
+            {
+              "key": "a_wake_up_call_and_ride_to_t",
+              "label": "a wake-up call and ride to the airport",
+              "tag": null
+            },
+            {
+              "key": "fast_check_out",
+              "label": "fast check-out",
+              "tag": null
+            },
+            {
+              "key": "the_restaurant",
+              "label": "the restaurant",
+              "tag": null
+            },
+            {
+              "key": "the_gym",
+              "label": "the gym",
+              "tag": null
+            }
+          ]
+        },
+        {
+          "id": "TRN-2",
+          "type": "single",
+          "depth": "core",
+          "prompt": "How early does this guest leave?",
+          "source": "v4.1",
+          "options": [
+            {
+              "key": "before_the_caf_opens",
+              "label": "Before the café opens",
+              "tag": "BS"
+            },
+            {
+              "key": "after_it_opens",
+              "label": "After it opens",
+              "tag": "CF"
+            },
+            {
+              "key": "it_varies",
+              "label": "It varies",
+              "tag": null
+            }
+          ]
+        },
+        {
+          "id": "TRN-3",
+          "type": "observer",
+          "depth": "expert",
+          "prompt": "Late/early need when nothing's open.",
+          "exampleOptional": true,
+          "options": [
+            {
+              "key": "coffee_hot_food_before_dawn",
+              "label": "coffee / hot food before dawn",
+              "tag": "BS+"
+            },
+            {
+              "key": "a_sure_early_wake_up",
+              "label": "a sure early wake-up",
+              "tag": "BS+"
+            },
+            {
+              "key": "a_packed_breakfast_to_go",
+              "label": "a packed breakfast to go",
+              "tag": "BS"
+            },
+            {
+              "key": "an_early_airport_ride",
+              "label": "an early airport ride",
+              "tag": "BS"
+            },
+            {
+              "key": "hot_food_on_a_late_arrival",
+              "label": "hot food on a late arrival",
+              "tag": "BS"
+            },
+            {
+              "key": "luggage_hold",
+              "label": "luggage hold",
+              "tag": "BS"
+            },
+            {
+              "key": "a_quiet_short_sleep_room",
+              "label": "a quiet short-sleep room",
+              "tag": "BS"
+            },
+            {
+              "key": "express_pre_dawn_check_out",
+              "label": "express pre-dawn check-out",
+              "tag": "BS"
+            },
+            {
+              "key": "a_quiet_room_away_from_5am_n",
+              "label": "a quiet room away from 5am noise",
+              "tag": "BS+"
+            },
+            {
+              "key": "the_usual",
+              "label": "the usual (clean room)",
+              "tag": "CF-sink",
+              "cfSink": true
+            },
+            {
+              "key": "other",
+              "label": "other",
+              "tag": null,
+              "verbatim": true
+            }
+          ]
+        }
+      ]
+    },
+    "holiday": {
+      "label": "Holiday",
+      "goldMap": "mostly CONFIRM — gold-thin",
+      "items": [
+        {
+          "id": "LEI-1",
+          "type": "kano",
+          "depth": "core",
+          "prompt": "Mark each: must-have / nice extra / does not matter.",
+          "source": "v4.1",
+          "options": [
+            {
+              "key": "the_restaurant",
+              "label": "the restaurant",
+              "tag": null
+            },
+            {
+              "key": "a_good_location",
+              "label": "a good location",
+              "tag": null
+            },
+            {
+              "key": "a_comfortable_bed",
+              "label": "a comfortable bed",
+              "tag": null
+            },
+            {
+              "key": "late_check_out",
+              "label": "late check-out",
+              "tag": null
+            },
+            {
+              "key": "local_tips",
+              "label": "local tips",
+              "tag": null
+            },
+            {
+              "key": "a_nice_view_or_special_touch",
+              "label": "a nice view or special touch",
+              "tag": null
+            }
+          ]
+        },
+        {
+          "id": "LEI-2",
+          "type": "single",
+          "depth": "core",
+          "prompt": "Does this holiday guest use and enjoy your restaurant?",
+          "source": "v4.1",
+          "options": [
+            {
+              "key": "yes_often",
+              "label": "Yes, often",
+              "tag": "CF"
+            },
+            {
+              "key": "sometimes",
+              "label": "Sometimes",
+              "tag": "CF"
+            },
+            {
+              "key": "rarely",
+              "label": "Rarely",
+              "tag": "BS"
+            }
+          ]
+        },
+        {
+          "id": "LEI-3",
+          "type": "observer",
+          "depth": "expert",
+          "prompt": "Wish they'd known / packed for Seattle.",
+          "exampleOptional": true,
+          "options": [
+            {
+              "key": "rain_gear_umbrella",
+              "label": "rain gear / umbrella",
+              "tag": "BS"
+            },
+            {
+              "key": "warm_layers",
+              "label": "warm layers",
+              "tag": "BS"
+            },
+            {
+              "key": "comfortable_walking_shoes",
+              "label": "comfortable walking shoes",
+              "tag": "BS"
+            },
+            {
+              "key": "local_transport_info",
+              "label": "local transport info",
+              "tag": "MW"
+            },
+            {
+              "key": "what_s_worth_seeing",
+              "label": "what's worth seeing",
+              "tag": "MW"
+            },
+            {
+              "key": "weather_expectations",
+              "label": "weather expectations",
+              "tag": "BS"
+            },
+            {
+              "key": "tickets_booked_ahead",
+              "label": "tickets booked ahead",
+              "tag": "MW"
+            },
+            {
+              "key": "a_late_check_out",
+              "label": "a late check-out",
+              "tag": "BS"
+            },
+            {
+              "key": "dining_booked_ahead",
+              "label": "dining booked ahead",
+              "tag": "CF"
+            },
+            {
+              "key": "the_usual",
+              "label": "the usual (good location)",
+              "tag": "CF-sink",
+              "cfSink": true
+            },
+            {
+              "key": "other",
+              "label": "other",
+              "tag": null,
+              "verbatim": true
+            }
+          ]
+        }
+      ]
+    },
+    "cruise": {
+      "label": "Cruise",
+      "goldMap": "§2/§3/§6 — richest vein",
+      "items": [
+        {
+          "id": "CRU-1",
+          "type": "multi",
+          "depth": "core",
+          "prompt": "What does a cruise guest need most? Pick up to 3.",
+          "select": 3,
+          "source": "v4.1",
+          "options": [
+            {
+              "key": "leave_the_car_here_during_th",
+              "label": "leave the car here during the cruise",
+              "tag": "BS"
+            },
+            {
+              "key": "store_luggage_before_the_shi",
+              "label": "store luggage before the ship",
+              "tag": "BS"
+            },
+            {
+              "key": "leave_very_early_for_the_por",
+              "label": "leave very early for the port",
+              "tag": "BS"
+            },
+            {
+              "key": "a_shuttle",
+              "label": "a shuttle",
+              "tag": "BS"
+            },
+            {
+              "key": "a_quick_shop_or_grocery_run",
+              "label": "a quick shop or grocery run",
+              "tag": "BS"
+            }
+          ]
+        },
+        {
+          "id": "CRU-2",
+          "type": "single",
+          "depth": "core",
+          "prompt": "Does this cruise guest use your restaurant?",
+          "source": "v4.1",
+          "options": [
+            {
+              "key": "yes",
+              "label": "Yes",
+              "tag": "CF"
+            },
+            {
+              "key": "no_eats_on_the_ship",
+              "label": "No — eats on the ship",
+              "tag": "BS"
+            },
+            {
+              "key": "no_boards_early",
+              "label": "No — boards early",
+              "tag": "BS"
+            }
+          ]
+        },
+        {
+          "id": "CRU-3",
+          "type": "multi",
+          "depth": "expert",
+          "prompt": "Items they ask the desk for.",
+          "select": 3,
+          "options": [
+            {
+              "key": "sea_sickness_pills",
+              "label": "sea-sickness pills",
+              "tag": "BS"
+            },
+            {
+              "key": "sunscreen",
+              "label": "sunscreen",
+              "tag": "BS"
+            },
+            {
+              "key": "rain_poncho_umbrella",
+              "label": "rain poncho / umbrella",
+              "tag": "BS"
+            },
+            {
+              "key": "a_warm_layer",
+              "label": "a warm layer",
+              "tag": "BS"
+            },
+            {
+              "key": "luggage_hold_during_the_crui",
+              "label": "luggage hold during the cruise",
+              "tag": "BS+"
+            },
+            {
+              "key": "a_port_shuttle_ride",
+              "label": "a port shuttle / ride",
+              "tag": "BS"
+            },
+            {
+              "key": "snacks_water_for_the_port",
+              "label": "snacks / water for the port",
+              "tag": "BS"
+            },
+            {
+              "key": "early_or_packed_breakfast",
+              "label": "early or packed breakfast",
+              "tag": "BS+"
+            },
+            {
+              "key": "a_quick_shop_before_boarding",
+              "label": "a quick shop before boarding",
+              "tag": "BS"
+            },
+            {
+              "key": "the_usual",
+              "label": "the usual (clean room)",
+              "tag": "CF-sink",
+              "cfSink": true
+            },
+            {
+              "key": "other",
+              "label": "other",
+              "tag": null,
+              "verbatim": true
+            }
+          ]
+        },
+        {
+          "id": "CRU-4",
+          "type": "observer",
+          "depth": "expert",
+          "prompt": "Why a cruise guest picks a cruise-friendlier hotel.",
+          "note": "GoldMap §3 high",
+          "exampleOptional": true,
+          "options": [
+            {
+              "key": "free_cheap_park_and_cruise",
+              "label": "free / cheap park-and-cruise",
+              "tag": "BS+"
+            },
+            {
+              "key": "a_port_shuttle",
+              "label": "a port shuttle",
+              "tag": "BS+"
+            },
+            {
+              "key": "early_breakfast_before_they_",
+              "label": "early breakfast before they leave",
+              "tag": "BS"
+            },
+            {
+              "key": "luggage_hold_during_the_crui",
+              "label": "luggage hold during the cruise",
+              "tag": "BS+"
+            },
+            {
+              "key": "a_cruise_package_deal",
+              "label": "a cruise package deal",
+              "tag": "BS"
+            },
+            {
+              "key": "closer_to_the_port",
+              "label": "closer to the port",
+              "tag": "BS"
+            },
+            {
+              "key": "early_check_in_on_arrival",
+              "label": "early check-in on arrival",
+              "tag": "BS"
+            },
+            {
+              "key": "a_late_check_out_on_return",
+              "label": "a late check-out on return",
+              "tag": "BS"
+            },
+            {
+              "key": "cruise_line_coordination",
+              "label": "cruise-line coordination",
+              "tag": "BS"
+            },
+            {
+              "key": "the_usual",
+              "label": "the usual (price)",
+              "tag": "CF-sink",
+              "cfSink": true
+            },
+            {
+              "key": "other",
+              "label": "other",
+              "tag": null,
+              "verbatim": true
+            }
+          ]
+        }
+      ]
+    },
+    "event": {
+      "label": "Event",
+      "goldMap": "§3/§4/§9",
+      "items": [
+        {
+          "id": "EVT-1",
+          "type": "multi",
+          "depth": "core",
+          "prompt": "What does an event guest need most? Pick up to 3.",
+          "select": 3,
+          "source": "v4.1",
+          "options": [
+            {
+              "key": "parking_on_event_night",
+              "label": "parking on event night",
+              "tag": "BS"
+            },
+            {
+              "key": "walking_distance_to_the_venu",
+              "label": "walking distance to the venue",
+              "tag": "CF"
+            },
+            {
+              "key": "late_check_out_after_a_late_",
+              "label": "late check-out after a late night",
+              "tag": "BS"
+            },
+            {
+              "key": "food_late_at_night",
+              "label": "food late at night",
+              "tag": "BS"
+            },
+            {
+              "key": "help_organising_a_group",
+              "label": "help organising a group",
+              "tag": "MW"
+            }
+          ]
+        },
+        {
+          "id": "EVT-2",
+          "type": "single",
+          "depth": "core",
+          "prompt": "Does this event guest use your restaurant?",
+          "source": "v4.1",
+          "options": [
+            {
+              "key": "yes_if_it_is_fast",
+              "label": "Yes, if it is fast",
+              "tag": "CF"
+            },
+            {
+              "key": "no",
+              "label": "No",
+              "tag": "BS"
+            },
+            {
+              "key": "depends",
+              "label": "Depends",
+              "tag": null
+            }
+          ]
+        },
+        {
+          "id": "EVT-3",
+          "type": "multi",
+          "depth": "expert",
+          "prompt": "What you do differently on a busy event night.",
+          "select": 3,
+          "options": [
+            {
+              "key": "hold_luggage",
+              "label": "hold luggage",
+              "tag": "BS"
+            },
+            {
+              "key": "faster_pre_done_check_in",
+              "label": "faster / pre-done check-in",
+              "tag": "BS"
+            },
+            {
+              "key": "extra_late_night_food_help",
+              "label": "extra late-night food / help",
+              "tag": "BS"
+            },
+            {
+              "key": "manage_a_group_block",
+              "label": "manage a group block",
+              "tag": "MW"
+            },
+            {
+              "key": "keep_noise_quiet_managed",
+              "label": "keep noise / quiet managed",
+              "tag": "BS"
+            },
+            {
+              "key": "later_check_out",
+              "label": "later check-out",
+              "tag": "BS"
+            },
+            {
+              "key": "extra_desk_staff",
+              "label": "extra desk staff",
+              "tag": "MW"
+            },
+            {
+              "key": "coordinate_venue_transport",
+              "label": "coordinate venue transport",
+              "tag": "BS"
+            },
+            {
+              "key": "a_quiet_room_from_the_crowd",
+              "label": "a quiet room from the crowd",
+              "tag": "BS"
+            },
+            {
+              "key": "the_usual",
+              "label": "the usual (location)",
+              "tag": "CF-sink",
+              "cfSink": true
+            },
+            {
+              "key": "other",
+              "label": "other",
+              "tag": null,
+              "verbatim": true
+            }
+          ]
+        }
+      ]
+    },
+    "medical": {
+      "label": "Medical",
+      "goldMap": "§4 — fridge/late-food/quiet",
+      "items": [
+        {
+          "id": "MED-1",
+          "type": "multi",
+          "depth": "core",
+          "prompt": "What does a medical guest need most? Pick up to 3.",
+          "select": 3,
+          "source": "v4.1",
+          "options": [
+            {
+              "key": "a_working_fridge_for_medicin",
+              "label": "a working fridge for medicine",
+              "tag": "BS+"
+            },
+            {
+              "key": "food_available_late_or_24_ho",
+              "label": "food available late or 24 hours",
+              "tag": "BS+"
+            },
+            {
+              "key": "a_quiet_room_to_rest",
+              "label": "a quiet room to rest",
+              "tag": "BS+"
+            },
+            {
+              "key": "close_to_the_hospital_or_a_s",
+              "label": "close to the hospital, or a shuttle",
+              "tag": "BS"
+            },
+            {
+              "key": "an_easy_low_stress_check_in",
+              "label": "an easy, low-stress check-in",
+              "tag": "BS"
+            }
+          ]
+        },
+        {
+          "id": "MED-2",
+          "type": "single",
+          "depth": "core",
+          "prompt": "What food does this guest need?",
+          "source": "v4.1",
+          "options": [
+            {
+              "key": "simple_food_available_late",
+              "label": "Simple food, available late",
+              "tag": "BS+"
+            },
+            {
+              "key": "full_restaurant_meals",
+              "label": "Full restaurant meals",
+              "tag": "CF"
+            },
+            {
+              "key": "very_little",
+              "label": "Very little",
+              "tag": null
+            }
+          ]
+        },
+        {
+          "id": "MED-3",
+          "type": "observer",
+          "depth": "expert",
+          "prompt": "Medical item or errand they need.",
+          "exampleOptional": true,
+          "options": [
+            {
+              "key": "a_thermometer",
+              "label": "a thermometer",
+              "tag": "BS"
+            },
+            {
+              "key": "a_heating_pad_ice_pack",
+              "label": "a heating pad / ice pack",
+              "tag": "BS"
+            },
+            {
+              "key": "a_fridge_for_medicine",
+              "label": "a fridge for medicine",
+              "tag": "BS+"
+            },
+            {
+              "key": "a_pharmacy_run_info",
+              "label": "a pharmacy run / info",
+              "tag": "BS"
+            },
+            {
+              "key": "simple_food_late_or_24h",
+              "label": "simple food late or 24h",
+              "tag": "BS+"
+            },
+            {
+              "key": "a_ride_to_the_hospital",
+              "label": "a ride to the hospital",
+              "tag": "BS"
+            },
+            {
+              "key": "a_quiet_recovery_room",
+              "label": "a quiet recovery room",
+              "tag": "BS+"
+            },
+            {
+              "key": "accessible_mobility_help",
+              "label": "accessible / mobility help",
+              "tag": "MW"
+            },
+            {
+              "key": "soft_special_diet_food",
+              "label": "soft / special-diet food",
+              "tag": "BS"
+            },
+            {
+              "key": "the_usual",
+              "label": "the usual (clean room)",
+              "tag": "CF-sink",
+              "cfSink": true
+            },
+            {
+              "key": "other",
+              "label": "other",
+              "tag": null,
+              "verbatim": true
+            }
+          ]
+        }
+      ]
+    },
+    "crew": {
+      "label": "Airline crew",
+      "goldMap": "§14 · conditional gold",
+      "gate": "CREW-4",
+      "items": [
+        {
+          "id": "CREW-1",
+          "type": "kano",
+          "depth": "core",
+          "prompt": "Mark each: must-have / nice extra / does not matter.",
+          "options": [
+            {
+              "key": "a_dark_quiet_room_for_daytim",
+              "label": "a dark quiet room for daytime sleep",
+              "tag": null
+            },
+            {
+              "key": "food_at_odd_hours",
+              "label": "food at odd hours",
+              "tag": null
+            },
+            {
+              "key": "a_reliable_odd_hour_wake_up",
+              "label": "a reliable odd-hour wake-up",
+              "tag": null
+            },
+            {
+              "key": "uniform_pressing",
+              "label": "uniform pressing",
+              "tag": null
+            },
+            {
+              "key": "fast_in_and_out_check_in",
+              "label": "fast in-and-out check-in",
+              "tag": null
+            },
+            {
+              "key": "the_gym",
+              "label": "the gym",
+              "tag": null
+            }
+          ]
+        },
+        {
+          "id": "CREW-2",
+          "type": "single",
+          "depth": "core",
+          "prompt": "When do they mostly sleep?",
+          "options": [
+            {
+              "key": "daytime",
+              "label": "Daytime",
+              "tag": "BS"
+            },
+            {
+              "key": "night",
+              "label": "Night",
+              "tag": "CF"
+            },
+            {
+              "key": "varies",
+              "label": "Varies",
+              "tag": null
+            }
+          ]
+        },
+        {
+          "id": "CREW-3",
+          "type": "observer",
+          "depth": "expert",
+          "prompt": "What crew need that you're not set up for. Pick all you've seen.",
+          "exampleOptional": true,
+          "options": [
+            {
+              "key": "a_truly_dark_daytime_room",
+              "label": "a truly dark daytime room",
+              "tag": "BS"
+            },
+            {
+              "key": "enforced_do_not_disturb",
+              "label": "enforced do-not-disturb (no housekeeping knock)",
+              "tag": "BS+"
+            },
+            {
+              "key": "a_guaranteed_odd_hour_wake_u",
+              "label": "a guaranteed odd-hour wake-up",
+              "tag": "BS+"
+            },
+            {
+              "key": "hot_food_at_2am_2pm",
+              "label": "hot food at 2am / 2pm",
+              "tag": "BS"
+            },
+            {
+              "key": "uniform_pressing_laundry",
+              "label": "uniform pressing / laundry",
+              "tag": "BS"
+            },
+            {
+              "key": "a_quiet_floor_from_day_noise",
+              "label": "a quiet floor from day noise",
+              "tag": "BS"
+            },
+            {
+              "key": "a_packed_meal_to_go",
+              "label": "a packed meal to go",
+              "tag": "BS"
+            },
+            {
+              "key": "a_fast_odd_hour_ride",
+              "label": "a fast odd-hour ride",
+              "tag": "BS"
+            },
+            {
+              "key": "gym_at_odd_hours",
+              "label": "gym at odd hours",
+              "tag": "MW"
+            },
+            {
+              "key": "the_usual",
+              "label": "the usual (clean room)",
+              "tag": "CF-sink",
+              "cfSink": true
+            },
+            {
+              "key": "other",
+              "label": "other",
+              "tag": null,
+              "verbatim": true
+            }
+          ]
+        },
+        {
+          "id": "CREW-4",
+          "type": "single",
+          "depth": "expert",
+          "prompt": "Is crew a real, recurring guest type for you?",
+          "note": "segment-existence check — gates ALL crew findings (GoldMap §14)",
+          "options": [
+            {
+              "key": "yes_regularly",
+              "label": "Yes, regularly",
+              "tag": "BS"
+            },
+            {
+              "key": "occasionally",
+              "label": "Occasionally",
+              "tag": "MW"
+            },
+            {
+              "key": "almost_never",
+              "label": "Almost never",
+              "tag": "CON"
+            }
+          ]
+        }
+      ]
+    },
+    "vip": {
+      "label": "Executive / VIP",
+      "goldMap": "§15 · the discretion contradiction",
+      "items": [
+        {
+          "id": "VIP-1",
+          "type": "kano",
+          "depth": "core",
+          "prompt": "Mark each: must-have / nice extra / does not matter.",
+          "options": [
+            {
+              "key": "discretion_privacy",
+              "label": "discretion / privacy",
+              "tag": null
+            },
+            {
+              "key": "a_single_personal_contact",
+              "label": "a single personal contact",
+              "tag": null
+            },
+            {
+              "key": "a_private_side_entrance",
+              "label": "a private / side entrance",
+              "tag": null
+            },
+            {
+              "key": "the_best_room_or_upgrade",
+              "label": "the best room or upgrade",
+              "tag": null
+            },
+            {
+              "key": "a_welcome_amenity",
+              "label": "a welcome amenity",
+              "tag": null
+            },
+            {
+              "key": "being_recognised_and_greeted",
+              "label": "being recognised and greeted",
+              "tag": null
+            }
+          ]
+        },
+        {
+          "id": "VIP-2",
+          "type": "single",
+          "depth": "core",
+          "prompt": "What do they value MORE?",
+          "note": "the contradiction, head-on",
+          "options": [
+            {
+              "key": "discretion_and_privacy",
+              "label": "Discretion and privacy",
+              "tag": "BS"
+            },
+            {
+              "key": "recognition_and_being_celebr",
+              "label": "Recognition and being celebrated",
+              "tag": "CF"
+            },
+            {
+              "key": "depends_on_the_guest",
+              "label": "Depends on the guest",
+              "tag": null
+            }
+          ]
+        },
+        {
+          "id": "VIP-3",
+          "type": "observer",
+          "depth": "expert",
+          "prompt": "What they need that you're not set up for. Pick all you've seen.",
+          "exampleOptional": true,
+          "options": [
+            {
+              "key": "a_private_side_entrance",
+              "label": "a private / side entrance",
+              "tag": "BS"
+            },
+            {
+              "key": "discreet_fast_check_in",
+              "label": "discreet, fast check-in",
+              "tag": "BS"
+            },
+            {
+              "key": "a_single_trusted_contact",
+              "label": "a single trusted contact",
+              "tag": "BS"
+            },
+            {
+              "key": "staff_briefed_not_to_make_a_",
+              "label": "staff briefed NOT to make a fuss",
+              "tag": "BS+"
+            },
+            {
+              "key": "extra_privacy_security",
+              "label": "extra privacy / security",
+              "tag": "BS"
+            },
+            {
+              "key": "off_menu_in_room_food",
+              "label": "off-menu / in-room food",
+              "tag": "BS"
+            },
+            {
+              "key": "a_last_minute_request_handle",
+              "label": "a last-minute request handled",
+              "tag": "BS"
+            },
+            {
+              "key": "something_booked_off_site_di",
+              "label": "something booked off-site discreetly",
+              "tag": "BS"
+            },
+            {
+              "key": "to_not_be_upgraded_loudly_an",
+              "label": "to NOT be upgraded loudly / announced",
+              "tag": "CON"
+            },
+            {
+              "key": "the_usual",
+              "label": "the usual (a nice room)",
+              "tag": "CF-sink",
+              "cfSink": true
+            },
+            {
+              "key": "other",
+              "label": "other",
+              "tag": null,
+              "verbatim": true
+            }
+          ]
+        },
+        {
+          "id": "VIP-4",
+          "type": "single",
+          "depth": "expert",
+          "prompt": "When you give the full VIP treatment (amenity, greeting, announced upgrade), how do they react?",
+          "note": "tests recognition-vs-discretion (GoldMap §15)",
+          "options": [
+            {
+              "key": "they_love_it",
+              "label": "They love it",
+              "tag": "CF"
+            },
+            {
+              "key": "some_want_less_fuss",
+              "label": "Some want less fuss",
+              "tag": "CON"
+            },
+            {
+              "key": "they_prefer_to_be_left_alone",
+              "label": "They prefer to be left alone",
+              "tag": "CON"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "addons": {
+    "family": {
+      "label": "Family",
+      "when": "L2 = family",
+      "items": [
+        {
+          "id": "F1",
+          "type": "single",
+          "depth": "pro",
+          "prompt": "How do families eat at your hotel?",
+          "source": "v4.1",
+          "options": [
+            {
+              "key": "early_dinner_or_kids_menu",
+              "label": "Early dinner or kids' menu",
+              "tag": "CF"
+            },
+            {
+              "key": "breakfast_only",
+              "label": "Breakfast only",
+              "tag": "CF"
+            },
+            {
+              "key": "room_service_in_the_room",
+              "label": "Room service in the room",
+              "tag": "BS"
+            },
+            {
+              "key": "they_eat_out",
+              "label": "They eat out",
+              "tag": "BS"
+            },
+            {
+              "key": "they_grab_quick_food",
+              "label": "They grab quick food",
+              "tag": "BS"
+            }
+          ]
+        },
+        {
+          "id": "F2",
+          "type": "multi",
+          "depth": "pro",
+          "prompt": "What does a family need most in their room? Pick up to 2.",
+          "select": 2,
+          "source": "v4.1",
+          "options": [
+            {
+              "key": "connecting_rooms",
+              "label": "Connecting rooms",
+              "tag": "BS"
+            },
+            {
+              "key": "a_bigger_family_room",
+              "label": "A bigger family room",
+              "tag": "MW"
+            },
+            {
+              "key": "space_for_a_cot_or_crib",
+              "label": "Space for a cot or crib",
+              "tag": "BS"
+            },
+            {
+              "key": "a_fridge_for_kids_food_and_m",
+              "label": "A fridge for kids' food and milk",
+              "tag": "BS"
+            },
+            {
+              "key": "a_quiet_floor",
+              "label": "A quiet floor",
+              "tag": "BS"
+            },
+            {
+              "key": "a_room_near_the_pool",
+              "label": "A room near the pool (or far from it)",
+              "tag": "MW"
+            }
+          ]
+        },
+        {
+          "id": "F3",
+          "type": "observer",
+          "depth": "pro",
+          "prompt": "Harder for a family than a couple.",
+          "exampleOptional": true,
+          "options": [
+            {
+              "key": "checking_in_with_tired_kids",
+              "label": "checking in with tired kids",
+              "tag": "BS"
+            },
+            {
+              "key": "meal_times_kids_food",
+              "label": "meal times / kids' food",
+              "tag": "BS"
+            },
+            {
+              "key": "noise",
+              "label": "noise (theirs or others')",
+              "tag": "MW"
+            },
+            {
+              "key": "safety",
+              "label": "safety (pool, windows)",
+              "tag": "BS"
+            },
+            {
+              "key": "enough_space_beds",
+              "label": "enough space / beds",
+              "tag": "MW"
+            },
+            {
+              "key": "early_bedtimes_vs_hotel_nois",
+              "label": "early bedtimes vs hotel noise",
+              "tag": "BS"
+            },
+            {
+              "key": "bath_bedtime_logistics",
+              "label": "bath / bedtime logistics",
+              "tag": "BS"
+            },
+            {
+              "key": "keeping_kids_occupied",
+              "label": "keeping kids occupied",
+              "tag": "MW"
+            },
+            {
+              "key": "cost_of_extras",
+              "label": "cost of extras",
+              "tag": "CF"
+            },
+            {
+              "key": "the_usual",
+              "label": "the usual (a clean room)",
+              "tag": "CF-sink",
+              "cfSink": true
+            },
+            {
+              "key": "other",
+              "label": "other",
+              "tag": null,
+              "verbatim": true
+            }
+          ]
+        },
+        {
+          "id": "F4",
+          "type": "observer",
+          "depth": "pro",
+          "prompt": "Kids' item you don't have.",
+          "exampleOptional": true,
+          "options": [
+            {
+              "key": "nappies_wipes",
+              "label": "nappies / wipes",
+              "tag": "BS"
+            },
+            {
+              "key": "a_night_light",
+              "label": "a night light",
+              "tag": "BS"
+            },
+            {
+              "key": "a_bottle_warmer",
+              "label": "a bottle warmer",
+              "tag": "BS"
+            },
+            {
+              "key": "a_cot_crib",
+              "label": "a cot / crib",
+              "tag": "MW"
+            },
+            {
+              "key": "kids_food_milk",
+              "label": "kids' food / milk",
+              "tag": "BS"
+            },
+            {
+              "key": "toys_entertainment",
+              "label": "toys / entertainment",
+              "tag": "BS"
+            },
+            {
+              "key": "a_stroller",
+              "label": "a stroller",
+              "tag": "BS"
+            },
+            {
+              "key": "child_safety_items",
+              "label": "child-safety items (gate, socket cover)",
+              "tag": "BS"
+            },
+            {
+              "key": "a_high_chair",
+              "label": "a high chair",
+              "tag": "MW"
+            },
+            {
+              "key": "other",
+              "label": "other",
+              "tag": null,
+              "verbatim": true
+            }
+          ]
+        },
+        {
+          "id": "F5",
+          "type": "verbatim",
+          "depth": "pro",
+          "prompt": "A small thing you've seen make a parent's stay much easier.",
+          "source": "v4.1"
+        }
+      ]
+    },
+    "group": {
+      "label": "Group",
+      "when": "L2 = company/social/cruise/sports/tour group",
+      "items": [
+        {
+          "id": "G1",
+          "type": "observer",
+          "depth": "pro",
+          "prompt": "Who you must keep happy.",
+          "exampleOptional": true,
+          "options": [
+            {
+              "key": "the_organiser_booker",
+              "label": "the organiser / booker",
+              "tag": "BS"
+            },
+            {
+              "key": "the_company_client",
+              "label": "the company / client",
+              "tag": "BS"
+            },
+            {
+              "key": "the_travel_agent",
+              "label": "the travel agent",
+              "tag": "BS"
+            },
+            {
+              "key": "the_on_site_group_leader",
+              "label": "the on-site group leader",
+              "tag": "BS"
+            },
+            {
+              "key": "the_person_paying_the_bill",
+              "label": "the person paying the bill",
+              "tag": "BS"
+            },
+            {
+              "key": "the_guests_themselves",
+              "label": "the guests themselves",
+              "tag": "CF"
+            },
+            {
+              "key": "other",
+              "label": "other",
+              "tag": null,
+              "verbatim": true
+            }
+          ]
+        },
+        {
+          "id": "G2",
+          "type": "observer",
+          "depth": "pro",
+          "prompt": "What goes wrong with groups.",
+          "exampleOptional": true,
+          "options": [
+            {
+              "key": "noise_disturbance",
+              "label": "noise / disturbance",
+              "tag": "MW"
+            },
+            {
+              "key": "check_in_bottlenecks",
+              "label": "check-in bottlenecks",
+              "tag": "BS"
+            },
+            {
+              "key": "billing_confusion",
+              "label": "billing confusion",
+              "tag": "BS"
+            },
+            {
+              "key": "room_block_mix_ups",
+              "label": "room-block mix-ups",
+              "tag": "BS"
+            },
+            {
+              "key": "late_night_issues",
+              "label": "late-night issues",
+              "tag": "BS"
+            },
+            {
+              "key": "damage_extra_cleaning",
+              "label": "damage / extra cleaning",
+              "tag": "BS"
+            },
+            {
+              "key": "coordinating_arrivals",
+              "label": "coordinating arrivals",
+              "tag": "BS"
+            },
+            {
+              "key": "one_contact_many_guests",
+              "label": "one contact, many guests",
+              "tag": "BS"
+            },
+            {
+              "key": "the_usual",
+              "label": "the usual (a busier desk)",
+              "tag": "CF-sink",
+              "cfSink": true
+            },
+            {
+              "key": "other",
+              "label": "other",
+              "tag": null,
+              "verbatim": true
+            }
+          ]
+        },
+        {
+          "id": "G3",
+          "type": "observer",
+          "depth": "expert",
+          "prompt": "Problem a group causes other guests.",
+          "exampleOptional": true,
+          "options": [
+            {
+              "key": "noise",
+              "label": "noise",
+              "tag": "MW"
+            },
+            {
+              "key": "taking_over_the_lobby_common",
+              "label": "taking over the lobby / common areas",
+              "tag": "BS"
+            },
+            {
+              "key": "crowding_at_check_in_lifts",
+              "label": "crowding at check-in / lifts",
+              "tag": "BS"
+            },
+            {
+              "key": "pool_breakfast_crowding",
+              "label": "pool / breakfast crowding",
+              "tag": "BS"
+            },
+            {
+              "key": "late_night_disturbance",
+              "label": "late-night disturbance",
+              "tag": "BS"
+            },
+            {
+              "key": "monopolising_staff",
+              "label": "monopolising staff",
+              "tag": "BS"
+            },
+            {
+              "key": "other",
+              "label": "other",
+              "tag": null,
+              "verbatim": true
+            }
+          ]
+        },
+        {
+          "id": "G4",
+          "type": "single",
+          "depth": "expert",
+          "prompt": "What makes a group organiser book with you again?",
+          "source": "v4.1",
+          "options": [
+            {
+              "key": "easy_billing",
+              "label": "Easy billing",
+              "tag": "BS"
+            },
+            {
+              "key": "one_contact_person",
+              "label": "One contact person",
+              "tag": "BS"
+            },
+            {
+              "key": "smooth_check_in",
+              "label": "Smooth check-in",
+              "tag": "BS"
+            },
+            {
+              "key": "the_guests_were_happy",
+              "label": "The guests were happy",
+              "tag": "CF"
+            },
+            {
+              "key": "a_good_price",
+              "label": "A good price",
+              "tag": "CF"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
