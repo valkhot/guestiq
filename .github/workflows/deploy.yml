@@ -34,5 +34,11 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # Retry the Pages publish up to 3 times — rides out GitHub's transient
+      # "Deployment failed, try again later" hiccups (carry-forward: AI-DEPLOY-RETRY).
       - id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          timeout: 600000
+          error_count: 10
+          reporting_interval: 5000
