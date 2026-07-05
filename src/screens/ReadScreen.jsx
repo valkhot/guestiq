@@ -1,12 +1,36 @@
 import React, { useState, useMemo } from 'react'
 import { supabase } from '../lib/supabase.js'
 import Coin from '../components/Coin.jsx'
+import QuestionBody from './QuestionBody.jsx'
 import { buildCoreQuestions, personaLabel, grounding } from '../lib/readFlow.js'
+
+function isAnswered(q, answer, text) {
+  switch (q.type) {
+    case 'single':
+    case 'observer': return (answer.keys?.length || 0) > 0
+    case 'multi':    return (answer.keys?.length || 0) > 0
+    case 'kano':     return Object.keys(answer.marks || {}).length > 0
+    case 'scale5':   return answer.scale != null
+    case 'verbatim': return text.trim().length > 0
+    default:         return true
+  }
+}
+function buildValue(q, answer) {
+  switch (q.type) {
+    case 'single':
+    case 'observer': return { type: q.type, keys: answer.keys || [] }
+    case 'multi':    return { type: 'multi', keys: answer.keys || [] }
+    case 'kano':     return { type: 'kano', marks: answer.marks || {} }
+    case 'scale5':   return { type: 'scale5', scale: answer.scale ?? null }
+    case 'verbatim': return { type: 'verbatim' }
+    default:         return { type: q.type }
+  }
+}
 
 export default function ReadScreen({ badge, persona, readId, onExit }) {
   const questions = useMemo(() => buildCoreQuestions(persona), [persona])
   const [i, setI] = useState(0)
-  const [selected, setSelected] = useState(null)
+  const [answer, setAnswer] = useState({})
   const [freeText, setFreeText] = useState('')
   const [busy, setBusy] = useState(false)
   const [done, setDone] = useState(false)
@@ -15,9 +39,8 @@ export default function ReadScreen({ badge, persona, readId, onExit }) {
   const q = questions[i]
   const label = personaLabel(persona)
 
-  function reset() { setSelected(null); setFreeText('') }
   function advance() {
-    if (i + 1 < total) { setI(i + 1); reset() }
+    if (i + 1 < total) { setI(i + 1); setAnswer({}); setFreeText('') }
     else setDone(true)
   }
 
@@ -25,20 +48,11 @@ export default function ReadScreen({ badge, persona, readId, onExit }) {
     if (busy) return
     setBusy(true)
     const text = freeText.trim()
-    if (q.type === 'single' && selected) {
-      await supabase.from('responses').insert({
-        read_id: readId, item_id: q.id,
-        value: { type: 'single', keys: [selected] },
-        free_text_example: text || null,
-      })
-    } else if (q.type !== 'single' && text) {
-      // renderer not built yet — still capture their words if they wrote any
-      await supabase.from('responses').insert({
-        read_id: readId, item_id: q.id,
-        value: { type: q.type, keys: [] },
-        free_text_example: text,
-      })
-    }
+    await supabase.from('responses').insert({
+      read_id: readId, item_id: q.id,
+      value: buildValue(q, answer),
+      free_text_example: q.type === 'verbatim' ? text : (text || null),
+    })
     setBusy(false)
     advance()
   }
@@ -55,7 +69,8 @@ export default function ReadScreen({ badge, persona, readId, onExit }) {
     )
   }
 
-  const canContinue = q.type === 'single' ? !!selected : true
+  const answered = isAnswered(q, answer, freeText)
+  const isVerbatim = q.type === 'verbatim'
 
   return (
     <div className="read">
@@ -77,28 +92,18 @@ export default function ReadScreen({ badge, persona, readId, onExit }) {
         {i === 0 && grounding && <p className="grounding">{grounding}</p>}
         <h2 className="q-prompt">{q.prompt}</h2>
 
-        {q.type === 'single' ? (
-          <div className="opts">
-            {q.options.map(o => (
-              <button key={o.key}
-                      className={'opt' + (selected === o.key ? ' chosen' : '')}
-                      onClick={() => setSelected(o.key)}>
-                <span className="radio" />
-                <span className="opt-label">{o.label}</span>
-              </button>
-            ))}
-          </div>
-        ) : (
-          <p className="placeholder-note">This kind of question arrives soon &mdash; for now, you can put it in their own words below.</p>
-        )}
+        {!isVerbatim && <QuestionBody q={q} answer={answer} setAnswer={setAnswer} />}
 
         <div className="freetext">
-          <label>&#9998;&nbsp; Or write it in their own words <span className="ft-opt">optional</span></label>
+          <label>
+            &#9998;&nbsp; {isVerbatim ? 'In their own words' : 'Or write it in their own words'}
+            {!isVerbatim && <span className="ft-opt"> optional</span>}
+          </label>
           <textarea rows={2} value={freeText} onChange={e => setFreeText(e.target.value)}
-                    placeholder="A quick example, in their words&hellip;" />
+                    placeholder={isVerbatim ? 'What they said, or what you saw\u2026' : 'A quick example, in their words\u2026'} />
         </div>
 
-        <button className="cta continue" disabled={!canContinue || busy} onClick={saveAndContinue}>
+        <button className="cta continue" disabled={!answered || busy} onClick={saveAndContinue}>
           {busy ? 'Saving\u2026' : 'Continue \u2192'}
         </button>
       </div>
