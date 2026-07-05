@@ -6,6 +6,15 @@ export function buildCoreQuestions(personaKey) {
   return [...core, ...battery]
 }
 
+export function buildDeepQuestions(personaKey) {
+  const pro = instrument.spine?.pro || []
+  const expert = instrument.spine?.expert || []
+  const battery = (instrument.batteries?.[personaKey]?.items || []).filter(it => it.depth === 'pro' || it.depth === 'expert')
+  const batteryPro = battery.filter(it => it.depth === 'pro')
+  const batteryExpert = battery.filter(it => it.depth === 'expert')
+  return [...pro, ...batteryPro, ...expert, ...batteryExpert]
+}
+
 export function personaLabel(personaKey) {
   const opt = instrument.routing?.L1?.options?.find(o => o.key === personaKey)
   return opt ? opt.label : personaKey

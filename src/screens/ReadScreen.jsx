@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react'
 import { supabase } from '../lib/supabase.js'
 import Coin from '../components/Coin.jsx'
 import QuestionBody from './QuestionBody.jsx'
-import { buildCoreQuestions, personaLabel, grounding } from '../lib/readFlow.js'
+import { buildCoreQuestions, buildDeepQuestions, personaLabel, grounding } from '../lib/readFlow.js'
 
 function isAnswered(q, answer, text) {
   switch (q.type) {
@@ -28,20 +28,29 @@ function buildValue(q, answer) {
 }
 
 export default function ReadScreen({ badge, persona, readId, onExit }) {
-  const questions = useMemo(() => buildCoreQuestions(persona), [persona])
+  const coreQs = useMemo(() => buildCoreQuestions(persona), [persona])
+  const deepQs = useMemo(() => buildDeepQuestions(persona), [persona])
+
+  const [list, setList] = useState(coreQs)
   const [i, setI] = useState(0)
+  const [phase, setPhase] = useState('reading') // reading | fork | done
+  const [deepAdded, setDeepAdded] = useState(false)
   const [answer, setAnswer] = useState({})
   const [freeText, setFreeText] = useState('')
   const [busy, setBusy] = useState(false)
-  const [done, setDone] = useState(false)
 
-  const total = questions.length
-  const q = questions[i]
+  const q = list[i]
   const label = personaLabel(persona)
 
-  function advance() {
-    if (i + 1 < total) { setI(i + 1); setAnswer({}); setFreeText('') }
-    else setDone(true)
+  function resetInputs() { setAnswer({}); setFreeText('') }
+
+  async function complete(depthVal) {
+    setBusy(true)
+    await supabase.from('reads').update({
+      completed_at: new Date().toISOString(), depth: depthVal,
+    }).eq('id', readId)
+    setBusy(false)
+    setPhase('done')
   }
 
   async function saveAndContinue() {
@@ -54,10 +63,34 @@ export default function ReadScreen({ badge, persona, readId, onExit }) {
       free_text_example: q.type === 'verbatim' ? text : (text || null),
     })
     setBusy(false)
-    advance()
+    // advance / branch
+    if (i + 1 < list.length) { setI(i + 1); resetInputs() }
+    else if (!deepAdded) { setPhase('fork') }   // finished CORE → offer the fork
+    else { complete('expert') }                 // finished the deeper set
   }
 
-  if (done) {
+  function goDeeper() {
+    setList([...coreQs, ...deepQs]); setDeepAdded(true)
+    setI(coreQs.length); resetInputs(); setPhase('reading')
+  }
+
+  // ── the depth fork ──────────────────────────────────────────────
+  if (phase === 'fork') {
+    return (
+      <div className="screen center enter">
+        <div className="thread" />
+        <h1 className="serif-h hero">That&rsquo;s a full read.</h1>
+        <p className="lede">You&rsquo;ve got down what most people never notice. If you know this guest well, a few more questions go deeper &mdash; or see your read now.</p>
+        <div className="fork-choices">
+          <button className="cta" onClick={goDeeper}>A few more &rarr;</button>
+          <button className="cta ghost" onClick={() => complete('core')} disabled={busy}>See your read &rarr;</button>
+        </div>
+      </div>
+    )
+  }
+
+  // ── recorded ────────────────────────────────────────────────────
+  if (phase === 'done') {
     return (
       <div className="screen center enter">
         <div className="thread" />
@@ -83,7 +116,7 @@ export default function ReadScreen({ badge, persona, readId, onExit }) {
       </div>
 
       <div className="dot-rail">
-        {questions.map((_, idx) => (
+        {list.map((_, idx) => (
           <i key={idx} className={'railorb' + (idx === i ? ' on' : idx < i ? ' done' : '')} />
         ))}
       </div>
