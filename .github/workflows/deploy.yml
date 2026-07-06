@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -27,6 +27,7 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -34,11 +35,16 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      # Retry the Pages publish up to 3 times — rides out GitHub's transient
-      # "Deployment failed, try again later" hiccups (carry-forward: AI-DEPLOY-RETRY).
+      # Attempt 1
       - id: deployment
+        continue-on-error: true
         uses: actions/deploy-pages@v4
         with:
           timeout: 600000
-          error_count: 10
-          reporting_interval: 5000
+      # Attempt 2 — only if the first attempt failed (rides out the transient
+      # "Getting Pages deployment status... try again later" hiccup)
+      - id: deployment_retry
+        if: steps.deployment.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        with:
+          timeout: 600000
