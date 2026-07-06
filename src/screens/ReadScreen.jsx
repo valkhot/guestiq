@@ -2,9 +2,12 @@ import React, { useState, useMemo } from 'react'
 import { supabase } from '../lib/supabase.js'
 import Coin from '../components/Coin.jsx'
 import QuestionBody from './QuestionBody.jsx'
+import EndOfRead from './EndOfRead.jsx'
 import { buildCoreQuestions, buildDeepQuestions, personaLabel, grounding, responseIdFor } from '../lib/readFlow.js'
 
 function isAnswered(q, answer, text) {
+  // Their own words are always a valid answer — so free text alone can continue.
+  if ((text || '').trim().length > 0) return true
   switch (q.type) {
     case 'single':
     case 'observer': return (answer.keys?.length || 0) > 0
@@ -36,6 +39,7 @@ export default function ReadScreen({ badge, persona, readId, onExit }) {
   const [phase, setPhase] = useState('reading') // reading | fork | done
   const [deepAdded, setDeepAdded] = useState(false)
   const [answer, setAnswer] = useState({})
+  const [recorded, setRecorded] = useState([])
   const [freeText, setFreeText] = useState('')
   const [busy, setBusy] = useState(false)
 
@@ -68,6 +72,7 @@ export default function ReadScreen({ badge, persona, readId, onExit }) {
     const duplicate = error && (error.code === '23505' || /duplicate|already exists/i.test(error.message))
     if (error && !duplicate) { setBusy(false); alert('Could not save that answer: ' + error.message); return }
     setBusy(false)
+    setRecorded(r => [...r, { q, value: buildValue(q, answer), freeText: text }])
     // advance / branch
     if (i + 1 < list.length) { setI(i + 1); resetInputs() }
     else if (!deepAdded) { setPhase('fork') }   // finished CORE → offer the fork
@@ -96,16 +101,9 @@ export default function ReadScreen({ badge, persona, readId, onExit }) {
 
   // ── recorded ────────────────────────────────────────────────────
   if (phase === 'done') {
-    return (
-      <div className="screen center enter">
-        <div className="thread" />
-        <h1 className="serif-h hero">Recorded with thanks.</h1>
-        <p className="lede">Your read is saved. The full payoff &mdash; your dossier and the story it tells &mdash; arrives in a later build.</p>
-        <button className="cta" onClick={() => onExit('another')}>Read another guest &rarr;</button>
-        <button className="linkbtn" onClick={() => onExit('home')}>Back to start</button>
-      </div>
-    )
+    return <EndOfRead badge={badge} persona={persona} recorded={recorded} onExit={onExit} />
   }
+
 
   const answered = isAnswered(q, answer, freeText)
   const isVerbatim = q.type === 'verbatim'
