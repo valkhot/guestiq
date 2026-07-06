@@ -50,8 +50,7 @@ export default function ReadScreen({ badge, persona, readId, onExit }) {
       completed_at: new Date().toISOString(), depth: depthVal,
     }).eq('id', readId)
     setBusy(false)
-    alert('Completing read\n\nid the app used:\n' + readId + '\n\n' +
-          (error ? 'ERROR: ' + error.message : 'No error returned by Supabase.'))
+    if (error) { alert('Could not mark the read complete: ' + error.message); return }
     setPhase('done')
   }
 
