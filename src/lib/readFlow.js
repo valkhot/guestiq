@@ -23,8 +23,7 @@ export function personaLabel(personaKey) {
 export const grounding = instrument.routing?.L1?.grounding || ''
 export const personas = instrument.routing?.L1?.options || []
 
-// Deterministic 128-bit hash (cyrb128) → a stable UUID.
-// Same input always yields the same id, so a given badge+persona maps to ONE read.
+// ── deterministic ids (same input → same id; no read-back needed) ──
 function cyrb128(str) {
   let h1 = 1779033703, h2 = 3144134277, h3 = 1013904242, h4 = 2773480762
   for (let i = 0, k; i < str.length; i++) {
@@ -40,10 +39,14 @@ function cyrb128(str) {
   h4 = Math.imul(h2 ^ (h4 >>> 19), 2716044179)
   return [h1 >>> 0, h2 >>> 0, h3 >>> 0, h4 >>> 0]
 }
-
-export function readIdFor(badgeId, personaKey) {
-  const [a, b, c, d] = cyrb128(`${badgeId}:${personaKey}`)
+function detUuid(str) {
+  const [a, b, c, d] = cyrb128(str)
   const hex = n => ('00000000' + n.toString(16)).slice(-8)
-  const h = hex(a) + hex(b) + hex(c) + hex(d) // 32 hex chars
+  const h = hex(a) + hex(b) + hex(c) + hex(d)
   return `${h.slice(0, 8)}-${h.slice(8, 12)}-4${h.slice(13, 16)}-8${h.slice(17, 20)}-${h.slice(20, 32)}`
 }
+
+// one read per badge+persona
+export function readIdFor(badgeId, personaKey) { return detUuid(`${badgeId}:${personaKey}`) }
+// one response per read+item (re-answering the same item is ignored, not duplicated)
+export function responseIdFor(readId, itemId) { return detUuid(`${readId}:${itemId}`) }
