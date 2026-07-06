@@ -1,12 +1,11 @@
 import React from 'react'
 import { personaLabel } from '../lib/readFlow.js'
-import { dossierRows, quotes, storyFrom, volume } from '../lib/payoff.js'
+import { dossierRows, quotes, volume } from '../lib/payoff.js'
 
 export default function EndOfRead({ badge, persona, recorded, onExit }) {
   const label = personaLabel(persona)
   const rows = dossierRows(recorded)
   const qs = quotes(recorded)
-  const story = storyFrom(persona, recorded)
   const n = volume(recorded)
 
   return (
@@ -15,7 +14,7 @@ export default function EndOfRead({ badge, persona, recorded, onExit }) {
       <div className="thread" />
       <div className="brand">GUEST<b>IQ</b></div>
 
-      {/* beat 2 — dossier */}
+      {/* beat 2 — dossier (the payoff; a real story returns with the RosaeNLG upgrade) */}
       <h1 className="serif-h hero eor-title">The {label} guest,<br/>in your read.</h1>
       <p className="eor-volume">You got down {n} thing{n === 1 ? '' : 's'} most people never notice.</p>
 
@@ -32,14 +31,11 @@ export default function EndOfRead({ badge, persona, recorded, onExit }) {
 
       {qs.length > 0 && (
         <div className="eor-quotes">
-          {qs.slice(0, 2).map((quote, idx) => (
+          {qs.slice(0, 3).map((quote, idx) => (
             <blockquote key={idx} className="eor-quote">&ldquo;{quote}&rdquo;</blockquote>
           ))}
         </div>
       )}
-
-      {/* beat 3 — story */}
-      <div className="eor-story"><p>{story}</p></div>
 
       {/* beats 4–5 (constellation, gallery) arrive in Increment B */}
 
