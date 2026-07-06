@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase.js'
 import Coin from '../components/Coin.jsx'
 import QuestionBody from './QuestionBody.jsx'
 import EndOfRead from './EndOfRead.jsx'
+import { addCoverage } from '../lib/coverage.js'
 import { buildCoreQuestions, buildDeepQuestions, personaLabel, grounding, responseIdFor } from '../lib/readFlow.js'
 
 function isAnswered(q, answer, text) {
@@ -55,6 +56,7 @@ export default function ReadScreen({ badge, persona, readId, onExit }) {
     }).eq('id', readId)
     setBusy(false)
     if (error) { alert('Could not mark the read complete: ' + error.message); return }
+    addCoverage(badge.badge_id, persona)
     setPhase('done')
   }
 
