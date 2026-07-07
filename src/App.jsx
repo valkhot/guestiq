@@ -15,6 +15,7 @@ export default function App() {
   const [returning, setReturning] = useState(false) // true only when re-entering with a saved badge
   const [readId, setReadId] = useState(null)
   const [persona, setPersona] = useState(null)
+  const [deepOnly, setDeepOnly] = useState(false)
 
   useEffect(() => {
     try {
@@ -35,14 +36,14 @@ export default function App() {
     setBadge(null); setScreen('claim')
   }
 
-  async function startRead(personaKey) {
+  async function startRead(personaKey, mode = 'core') {
     const id = readIdFor(badge.badge_id, personaKey)
     const { error } = await supabase.from('reads').insert({
       id, respondent_id: badge.badge_id, persona: personaKey, depth: 'core',
     })
     const duplicate = error && (error.code === '23505' || /duplicate|already exists/i.test(error.message))
     if (error && !duplicate) { alert('Could not start the read: ' + error.message); return }
-    setReadId(id); setPersona(personaKey); setScreen('read')
+    setDeepOnly(mode === 'deep'); setReadId(id); setPersona(personaKey); setScreen('read')
   }
   function exitRead(how) {
     setReadId(null); setPersona(null)
@@ -52,8 +53,8 @@ export default function App() {
   if (screen === 'loading') return null
   if (screen === 'welcome') return <Welcome onStart={() => setScreen('claim')} />
   if (screen === 'claim')   return <BadgeClaim onClaimed={handleClaimed} />
-  if (screen === 'guestselect') return <GuestSelect onSelect={startRead} onBack={() => setScreen('home')} />
-  if (screen === 'read')    return <ReadScreen badge={badge} persona={persona} readId={readId} onExit={exitRead} />
+  if (screen === 'guestselect') return <GuestSelect badge={badge} onSelect={startRead} onBack={() => setScreen('home')} />
+  if (screen === 'read')    return <ReadScreen badge={badge} persona={persona} readId={readId} deepOnly={deepOnly} onExit={exitRead} />
 
   return (
     <div className="screen center enter">

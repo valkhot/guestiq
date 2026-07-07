@@ -26,17 +26,20 @@ export default function EndOfRead({ badge, persona, recorded, onExit }) {
   const rows = dossierRows(recorded)
   const qs = quotes(recorded)
   const n = volume(recorded)
-  const coverage = getCoverage(badge.badge_id)
+  const coverage = Object.keys(getCoverage(badge.badge_id))
 
   const [reps, setReps] = useState(null)
   useEffect(() => {
     let alive = true
     supabase.rpc('guestiq_persona_counts').then(({ data, error }) => {
       if (!alive) return
-      if (!error && data) {
-        const row = data.find(r => r.persona === persona)
-        setReps(row ? Number(row.reps) : 1)
-      } else { setReps(1) } // degrade gracefully to "first on record"
+      if (error) {
+        console.warn('[GuestIQ] constellation counts unavailable — falling back:', error.message)
+        setReps(1); return
+      }
+      console.log('[GuestIQ] persona counts:', data)
+      const row = (data || []).find(r => r.persona === persona)
+      setReps(row ? Number(row.reps) : 1)
     })
     return () => { alive = false }
   }, [persona])

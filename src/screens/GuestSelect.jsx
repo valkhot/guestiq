@@ -1,5 +1,8 @@
-import React from 'react'
-import { personas } from '../lib/readFlow.js'
+import React, { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase.js'
+import { personas, personaLabel } from '../lib/readFlow.js'
+import { getCoverage } from '../lib/coverage.js'
+import Coin from '../components/Coin.jsx'
 
 const DESC = {
   business:     'short stays, early starts',
@@ -13,22 +16,96 @@ const DESC = {
   other:        'a guest who doesn\u2019t fit the list',
 }
 
-export default function GuestSelect({ onSelect, onBack }) {
+function band(reps) {
+  if (reps >= 3) return { key: 'known',   label: 'Known well' }
+  if (reps >= 1) return { key: 'started', label: 'Started' }
+  return { key: 'gap', label: 'Do you know them?' }
+}
+
+export default function GuestSelect({ badge, onSelect, onBack }) {
+  const [counts, setCounts] = useState(null)
+  const [confirming, setConfirming] = useState(null) // persona pending "add deeper?"
+  const coverage = badge ? getCoverage(badge.badge_id) : {}
+
+  useEffect(() => {
+    let alive = true
+    supabase.rpc('guestiq_persona_counts').then(({ data, error }) => {
+      if (!alive) return
+      const map = {}
+      if (!error && data) data.forEach(r => { map[r.persona] = Number(r.reps) })
+      setCounts(map)
+    })
+    return () => { alive = false }
+  }, [])
+
+  if (counts == null) return <div className="screen center"><p className="sub">Loading the desk&hellip;</p></div>
+
+  const order = { gap: 0, started: 1, known: 2 }
+  const items = personas
+    .map(p => {
+      const reps = counts[p.key] || 0
+      const mineDepth = coverage[p.key] // undefined | 'core' | 'expert'
+      return { key: p.key, reps, b: band(reps), mineDepth }
+    })
+    .sort((a, b) => order[a.b.key] - order[b.b.key] || a.reps - b.reps)
+
+  function pick(p) {
+    if (p.mineDepth === 'expert') return              // done — disabled
+    if (p.mineDepth === 'core') { setConfirming(p.key); return } // offer to go deeper
+    onSelect(p.key, 'core')                           // fresh core read
+  }
+
+  const covCount = Object.keys(coverage).length
+
   return (
     <div className="screen claim enter">
       <div className="thread" />
       <div className="brand">GUEST<b>IQ</b></div>
       <h2 className="serif-h sm">Who are you reading?</h2>
-      <p className="sub">Pick one guest you know who fits &mdash; you&rsquo;ll answer as them.</p>
-      <div className="persona-grid">
-        {personas.map(p => (
-          <button key={p.key} className="persona-card" onClick={() => onSelect(p.key)}>
-            <span className="persona-name">{p.label}</span>
-            <span className="persona-desc">{DESC[p.key] || ''}</span>
-          </button>
-        ))}
+      <p className="sub">Pick a guest you know who fits &mdash; the desk needs the ones it doesn&rsquo;t know yet.</p>
+
+      <div className="wall">
+        {items.map(p => {
+          const done = p.mineDepth === 'expert'
+          const read = !!p.mineDepth
+          return (
+            <button key={p.key}
+                    className={'wall-card ' + p.b.key + (read ? ' mine' : '') + (done ? ' done' : '')}
+                    onClick={() => pick(p)}>
+              <div className="wall-top">
+                <span className="wall-name">{personaLabel(p.key)}</span>
+                {read && (
+                  <span className="wall-pin" title={done ? 'Complete' : 'You\u2019ve read this guest'}>
+                    <Coin badgeId={badge.badge_id} animal={badge.animal} colour={badge.colour} size={26} />
+                  </span>
+                )}
+              </div>
+              <span className="wall-desc">{DESC[p.key]}</span>
+              {done
+                ? <span className="wall-band done">Complete &#10003;</span>
+                : <span className={'wall-band ' + p.b.key}>{p.b.label}</span>}
+            </button>
+          )
+        })}
       </div>
+
+      {covCount > 0 && (
+        <p className="wall-recognition">You&rsquo;ve brought {covCount} guest{covCount === 1 ? '' : 's'} to life.</p>
+      )}
       <button className="linkbtn" onClick={onBack}>Back</button>
+
+      {confirming && (
+        <div className="modal-backdrop" onClick={() => setConfirming(null)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h3>You&rsquo;ve read the {personaLabel(confirming)} guest.</h3>
+            <p>You got their core read down. If you know them well, a few deeper questions add real detail &mdash; and finish them off.</p>
+            <div className="modal-actions">
+              <button className="cta" onClick={() => onSelect(confirming, 'deep')}>Add the deeper questions &rarr;</button>
+              <button className="cta ghost" onClick={() => setConfirming(null)}>Not now</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

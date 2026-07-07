@@ -31,14 +31,14 @@ function buildValue(q, answer) {
   }
 }
 
-export default function ReadScreen({ badge, persona, readId, onExit }) {
+export default function ReadScreen({ badge, persona, readId, onExit, deepOnly = false }) {
   const coreQs = useMemo(() => buildCoreQuestions(persona), [persona])
   const deepQs = useMemo(() => buildDeepQuestions(persona), [persona])
 
-  const [list, setList] = useState(coreQs)
+  const [list, setList] = useState(deepOnly ? deepQs : coreQs)
   const [i, setI] = useState(0)
   const [phase, setPhase] = useState('reading') // reading | fork | done
-  const [deepAdded, setDeepAdded] = useState(false)
+  const [deepAdded, setDeepAdded] = useState(deepOnly)
   const [answer, setAnswer] = useState({})
   const [recorded, setRecorded] = useState([])
   const [freeText, setFreeText] = useState('')
@@ -56,7 +56,7 @@ export default function ReadScreen({ badge, persona, readId, onExit }) {
     }).eq('id', readId)
     setBusy(false)
     if (error) { alert('Could not mark the read complete: ' + error.message); return }
-    addCoverage(badge.badge_id, persona)
+    addCoverage(badge.badge_id, persona, depthVal)
     setPhase('done')
   }
 
@@ -127,7 +127,7 @@ export default function ReadScreen({ badge, persona, readId, onExit }) {
       </div>
 
       <div className="read-body" key={q.id}>
-        {i === 0 && grounding && <p className="grounding">{grounding}</p>}
+        {i === 0 && !deepOnly && grounding && <p className="grounding">{grounding}</p>}
         <h2 className="q-prompt">{q.prompt}</h2>
 
         {!isVerbatim && <QuestionBody q={q} answer={answer} setAnswer={setAnswer} />}
