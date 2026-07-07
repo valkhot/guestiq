@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase.js'
 import { personas, personaLabel } from '../lib/readFlow.js'
 import { getCoverage } from '../lib/coverage.js'
 import Coin from '../components/Coin.jsx'
+import { track } from '../lib/analytics.js'
 
 const DESC = {
   business:     'short stays, early starts',
@@ -29,6 +30,7 @@ export default function GuestSelect({ badge, onSelect, onBack }) {
 
   useEffect(() => {
     let alive = true
+    track('picker_viewed')
     supabase.rpc('guestiq_persona_counts').then(({ data, error }) => {
       if (!alive) return
       const map = {}

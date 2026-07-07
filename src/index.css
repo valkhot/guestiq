@@ -85,6 +85,8 @@ button{ font-family:inherit; cursor:pointer; }
 .wall-band.started{ color:var(--warn); border:1px solid rgba(217,164,65,.4); }
 .wall-band.known{ color:#16141D; background:var(--brass); }
 .wall-recognition{ font-family:var(--story); font-size:clamp(1rem,1.1vw,1.25rem); color:var(--brass); margin-bottom:clamp(14px,1.6vw,22px); }
+.wall-plenty{ font-family:var(--story); font-style:italic; font-weight:300; font-size:clamp(.95rem,1.05vw,1.2rem); color:var(--mute); max-width:46ch; margin:-6px auto clamp(16px,1.8vw,24px); line-height:1.5; }
+.home-recognition{ font-family:var(--mono); font-size:clamp(.66rem,.78vw,.9rem); letter-spacing:.1em; text-transform:uppercase; color:var(--brass); margin:0 0 clamp(16px,1.8vw,24px); }
 .wall-card.done{ cursor:default; border-color:rgba(200,162,78,.42); background:linear-gradient(180deg, rgba(200,162,78,.07) 0%, rgba(200,162,78,.02) 100%); box-shadow:inset 0 1px 0 rgba(231,200,121,.16); }
 .wall-card.done:hover{ transform:none; border-color:rgba(200,162,78,.42); background:linear-gradient(180deg, rgba(200,162,78,.07) 0%, rgba(200,162,78,.02) 100%); }
 .wall-card.done .wall-name{ color:var(--heading); }

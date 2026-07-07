@@ -4,6 +4,7 @@ import Coin from '../components/Coin.jsx'
 import QuestionBody from './QuestionBody.jsx'
 import EndOfRead from './EndOfRead.jsx'
 import { addCoverage } from '../lib/coverage.js'
+import { track } from '../lib/analytics.js'
 import { buildCoreQuestions, buildDeepQuestions, personaLabel, grounding, responseIdFor } from '../lib/readFlow.js'
 
 function isAnswered(q, answer, text) {
@@ -57,6 +58,7 @@ export default function ReadScreen({ badge, persona, readId, onExit, deepOnly = 
     setBusy(false)
     if (error) { alert('Could not mark the read complete: ' + error.message); return }
     addCoverage(badge.badge_id, persona, depthVal)
+    track('read_completed', { persona, depth: depthVal, questions: recorded.length })
     setPhase('done')
   }
 
@@ -74,14 +76,16 @@ export default function ReadScreen({ badge, persona, readId, onExit, deepOnly = 
     const duplicate = error && (error.code === '23505' || /duplicate|already exists/i.test(error.message))
     if (error && !duplicate) { setBusy(false); alert('Could not save that answer: ' + error.message); return }
     setBusy(false)
+    track('question_answered', { persona, item_id: q.id, item_type: q.type })
     setRecorded(r => [...r, { q, value: buildValue(q, answer), freeText: text }])
     // advance / branch
     if (i + 1 < list.length) { setI(i + 1); resetInputs() }
-    else if (!deepAdded) { setPhase('fork') }   // finished CORE → offer the fork
+    else if (!deepAdded) { track('depth_fork_shown', { persona }); setPhase('fork') }   // finished CORE → offer the fork
     else { complete('expert') }                 // finished the deeper set
   }
 
   function goDeeper() {
+    track('depth_chosen', { persona, choice: 'deeper' })
     setList([...coreQs, ...deepQs]); setDeepAdded(true)
     setI(coreQs.length); resetInputs(); setPhase('reading')
   }
@@ -95,7 +99,7 @@ export default function ReadScreen({ badge, persona, readId, onExit, deepOnly = 
         <p className="lede">You&rsquo;ve got down what most people never notice. If you know this guest well, a few more questions go deeper &mdash; or see your read now.</p>
         <div className="fork-choices">
           <button className="cta" onClick={goDeeper}>A few more &rarr;</button>
-          <button className="cta ghost" onClick={() => complete('core')} disabled={busy}>See your read &rarr;</button>
+          <button className="cta ghost" onClick={() => { track('depth_chosen', { persona, choice: 'see_read' }); complete('core') }} disabled={busy}>See your read &rarr;</button>
         </div>
       </div>
     )
