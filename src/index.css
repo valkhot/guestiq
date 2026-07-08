@@ -222,3 +222,8 @@ button{ font-family:inherit; cursor:pointer; }
 .pf-count{ font-family:var(--mono); font-size:.82rem; color:var(--brass); white-space:nowrap; }
 .pf-q{ grid-column:2/4; font-family:var(--story); font-style:italic; font-size:.82rem; color:var(--mute); }
 .pf-quotes{ grid-column:2/4; font-family:var(--story); font-size:.88rem; color:var(--text); opacity:.85; }
+
+.pf-gated{ font-family:var(--story); font-style:italic; color:var(--mute); padding:8px 0; }
+.pf-forming{ margin-top:14px; }
+.pf-forming-label{ font-family:var(--mono); font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; color:var(--mute-2); margin-bottom:8px; }
+.preview-findings.dim{ opacity:.5; }
