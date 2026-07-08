@@ -108,5 +108,12 @@ export function computeFindings(data) {
     personas[persona] = { reps: rep, gated, gateReason, strong, emerging, forming }
   }
 
-  return { personas }
+  const totalReads = Object.values(reps).reduce((sum, v) => sum + v, 0)
+  const meta = {
+    computedAt: new Date().toISOString(),
+    floor: FLOOR,
+    personaCount: Object.keys(personas).length,
+    reads: totalReads,
+  }
+  return { meta, personas }
 }

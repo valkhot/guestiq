@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { loadFindingsData } from '../lib/findingsData.js'
 import { computeFindings } from '../lib/engine.js'
 import { personaLabel } from '../lib/readFlow.js'
@@ -29,28 +29,39 @@ function Tier({ label, cls, items }) {
 
 export default function FindingsPreview() {
   const [s, setS] = useState({ loading: true })
-  useEffect(() => {
+
+  const compute = useCallback(() => {
+    setS({ loading: true })
     loadFindingsData().then(data => {
       if (data.error) { setS({ loading: false, error: data.error.message }); return }
       setS({ loading: false, result: computeFindings(data) })
     })
   }, [])
 
+  useEffect(() => { compute() }, [compute])
+
   if (s.loading) return <div className="screen center"><p className="sub">Computing findings&hellip;</p></div>
   if (s.error)   return <div className="screen center"><p className="sub">Error: {s.error}</p></div>
 
-  const personas = s.result.personas
+  const { meta, personas } = s.result
   const keys = Object.keys(personas).sort()
+  const when = new Date(meta.computedAt).toLocaleString()
 
   return (
     <div className="preview">
-      <h1 className="serif-h sm">Findings preview <span className="preview-tag">engine · tiered &amp; gated · not the final report</span></h1>
+      <div className="preview-head">
+        <h1 className="serif-h sm">Findings preview <span className="preview-tag">engine · tiered &amp; gated · not the final report</span></h1>
+        <button className="linkbtn" onClick={compute}>Recompute</button>
+      </div>
+      <p className="preview-meta">Computed {when} &middot; {meta.reads} reads across {meta.personaCount} guest types &middot; floor {'\u2265'}{meta.floor} reps</p>
+
       {keys.map(p => {
         const d = personas[p]
         const nothing = !d.gated && d.strong.length === 0 && d.emerging.length === 0
+        const counts = d.gated ? '' : ` · ${d.strong.length} strong · ${d.emerging.length} emerging`
         return (
           <div key={p} className="preview-persona">
-            <h2>{personaLabel(p)} <span className="preview-reps">{d.reps} reps</span></h2>
+            <h2>{personaLabel(p)} <span className="preview-reps">{d.reps} reps{counts}</span></h2>
             {d.gated
               ? <p className="pf-gated">{d.gateReason}</p>
               : <>
