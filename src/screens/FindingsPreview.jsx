@@ -7,13 +7,23 @@ function Finding({ f }) {
   return (
     <li className={'pf ' + f.type}>
       <span className="pf-tag">{f.tag}</span>
-      <span className="pf-label">{f.label}{f.highValue ? ' \u2605' : ''}{f.strength === 'majority' ? ' \u2014 most of the desk' : ''}</span>
+      <span className="pf-label">{f.label}{f.highValue ? ' \u2605' : ''}</span>
       <span className="pf-count">{f.count} of {f.reps}</span>
-      <span className="pf-q">{f.synthesized ? f.prompt : f.prompt}</span>
+      <span className="pf-q">{f.prompt}</span>
       {f.quotes && f.quotes.length > 0 && (
         <span className="pf-quotes">{f.quotes.slice(0, 3).map(q => '\u201C' + q + '\u201D').join('  ·  ')}</span>
       )}
     </li>
+  )
+}
+
+function Tier({ label, cls, items }) {
+  if (!items || items.length === 0) return null
+  return (
+    <div className={'pf-tier ' + cls}>
+      <p className="pf-tier-label">{label}</p>
+      <ul className="preview-findings">{items.map((f, i) => <Finding key={i} f={f} />)}</ul>
+    </div>
   )
 }
 
@@ -34,24 +44,20 @@ export default function FindingsPreview() {
 
   return (
     <div className="preview">
-      <h1 className="serif-h sm">Findings preview <span className="preview-tag">engine · gated · not the final report</span></h1>
+      <h1 className="serif-h sm">Findings preview <span className="preview-tag">engine · tiered &amp; gated · not the final report</span></h1>
       {keys.map(p => {
         const d = personas[p]
+        const nothing = !d.gated && d.strong.length === 0 && d.emerging.length === 0
         return (
           <div key={p} className="preview-persona">
             <h2>{personaLabel(p)} <span className="preview-reps">{d.reps} reps</span></h2>
             {d.gated
               ? <p className="pf-gated">{d.gateReason}</p>
               : <>
-                  {d.established.length === 0
-                    ? <p className="sub">No findings above the floor yet.</p>
-                    : <ul className="preview-findings">{d.established.map((f, i) => <Finding key={i} f={f} />)}</ul>}
-                  {d.forming.length > 0 && (
-                    <div className="pf-forming">
-                      <p className="pf-forming-label">Still forming — under the {'\u2265'}3-rep floor</p>
-                      <ul className="preview-findings dim">{d.forming.map((f, i) => <Finding key={i} f={f} />)}</ul>
-                    </div>
-                  )}
+                  {nothing && <p className="sub">No findings above the floor yet.</p>}
+                  <Tier label="Strong \u2014 a majority of the desk agrees" cls="strong" items={d.strong} />
+                  <Tier label="Emerging \u2014 several reps, not yet a majority" cls="emerging" items={d.emerging} />
+                  <Tier label={'Still forming \u2014 under the \u22653-rep floor'} cls="forming" items={d.forming} />
                 </>}
           </div>
         )

@@ -227,3 +227,10 @@ button{ font-family:inherit; cursor:pointer; }
 .pf-forming{ margin-top:14px; }
 .pf-forming-label{ font-family:var(--mono); font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; color:var(--mute-2); margin-bottom:8px; }
 .preview-findings.dim{ opacity:.5; }
+
+.pf-tier{ margin-top:16px; }
+.pf-tier-label{ font-family:var(--mono); font-size:.64rem; letter-spacing:.1em; text-transform:uppercase; margin-bottom:8px; }
+.pf-tier.strong .pf-tier-label{ color:var(--brass-bright); }
+.pf-tier.emerging .pf-tier-label{ color:var(--mute); }
+.pf-tier.forming{ opacity:.5; }
+.pf-tier.forming .pf-tier-label{ color:var(--mute-2); }

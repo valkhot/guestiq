@@ -94,16 +94,18 @@ export function computeFindings(data) {
 
     // sort by strength then count
     const bySort = (a, b) => (b.highValue - a.highValue) || (b.count - a.count)
-    let established = raw.filter(f => f.established).sort(bySort)
-    const forming = raw.filter(f => !f.established).sort(bySort)
+    const above = raw.filter(f => f.established)
+    let strong = above.filter(f => f.strength === 'majority').sort(bySort)   // >=3 reps AND majority
+    const emerging = above.filter(f => f.strength !== 'majority').sort(bySort) // >=3 reps, minority
+    const forming = raw.filter(f => !f.established).sort(bySort)               // below the floor
 
-    // VIP synthesized contradiction
+    // VIP synthesized contradiction → treated as a strong finding when present
     if (persona === 'vip' && !gated) {
       const vc = vipContradiction(options, reps)
-      if (vc) established = [vc, ...established]
+      if (vc) strong = [vc, ...strong]
     }
 
-    personas[persona] = { reps: rep, gated, gateReason, established, forming }
+    personas[persona] = { reps: rep, gated, gateReason, strong, emerging, forming }
   }
 
   return { personas }
