@@ -4,11 +4,11 @@ import { supabase } from './supabase.js'
 //   reps:    { persona: repCount }
 //   options: { persona: { item_id: { option_key: reps } } }
 //   quotes:  { persona: { item_id: [ "quote", ... ] } }
-export async function loadFindingsData() {
+export async function loadFindingsData(pin) {
   const [countsRes, optionsRes, quotesRes] = await Promise.all([
     supabase.rpc('guestiq_persona_counts'),
-    supabase.rpc('guestiq_option_counts'),
-    supabase.rpc('guestiq_quotes'),
+    supabase.rpc('guestiq_option_counts', { pin }),
+    supabase.rpc('guestiq_quotes', { pin }),
   ])
 
   const error = countsRes.error || optionsRes.error || quotesRes.error || null

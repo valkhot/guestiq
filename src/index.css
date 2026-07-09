@@ -234,3 +234,11 @@ button{ font-family:inherit; cursor:pointer; }
 .pf-tier.emerging .pf-tier-label{ color:var(--mute); }
 .pf-tier.forming{ opacity:.5; }
 .pf-tier.forming .pf-tier-label{ color:var(--mute-2); }
+
+.preview-head{ display:flex; align-items:baseline; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.preview-head .linkbtn{ margin-top:0; }
+.preview-meta{ font-family:var(--mono); font-size:.66rem; letter-spacing:.06em; color:var(--mute); margin:6px 0 4px; }
+
+.pin-input{ font-family:var(--mono); font-size:1.4rem; letter-spacing:.3em; text-align:center; color:var(--heading); background:var(--ink-3); border:1px solid var(--line-2); border-radius:10px; padding:14px 18px; width:min(80vw,220px); outline:none; margin-bottom:16px; transition:border-color .2s; }
+.pin-input:focus{ border-color:rgba(200,162,78,.6); box-shadow:0 0 0 3px rgba(200,162,78,.1); }
+.pin-error{ font-family:var(--story); color:#CC9090; font-size:.95rem; margin-bottom:14px; }

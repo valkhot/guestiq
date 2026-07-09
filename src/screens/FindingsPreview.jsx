@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { loadFindingsData } from '../lib/findingsData.js'
 import { computeFindings } from '../lib/engine.js'
 import { personaLabel } from '../lib/readFlow.js'
+import { getPin } from '../lib/adminPin.js'
 
 function Finding({ f }) {
   return (
@@ -32,7 +33,7 @@ export default function FindingsPreview() {
 
   const compute = useCallback(() => {
     setS({ loading: true })
-    loadFindingsData().then(data => {
+    loadFindingsData(getPin()).then(data => {
       if (data.error) { setS({ loading: false, error: data.error.message }); return }
       setS({ loading: false, result: computeFindings(data) })
     })

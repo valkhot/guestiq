@@ -4,6 +4,7 @@ import BadgeClaim from './screens/BadgeClaim.jsx'
 import GuestSelect from './screens/GuestSelect.jsx'
 import ReadScreen from './screens/ReadScreen.jsx'
 import FindingsPreview from './screens/FindingsPreview.jsx'
+import AdminGate from './screens/AdminGate.jsx'
 import Coin from './components/Coin.jsx'
 import { supabase } from './lib/supabase.js'
 import { readIdFor } from './lib/readFlow.js'
@@ -58,8 +59,8 @@ export default function App() {
     setScreen(how === 'another' ? 'guestselect' : 'home')
   }
 
-  const isPreview = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('view') === 'findings'
-  if (isPreview) return <FindingsPreview />
+  const view = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('view') : null
+  if (view === 'admin' || view === 'findings') return <AdminGate><FindingsPreview /></AdminGate>
 
   if (screen === 'loading') return null
   if (screen === 'welcome') return <Welcome onStart={() => setScreen('claim')} />
