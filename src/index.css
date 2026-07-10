@@ -304,3 +304,34 @@ button{ font-family:inherit; cursor:pointer; }
 .ss-toggle{ font-family:var(--mono); font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; color:#241F2B; background:none; border:1px solid #B08A3E; border-radius:999px; padding:8px 16px; transition:.16s; }
 .ss-toggle:hover{ background:#B08A3E; color:#FBF8F1; }
 .ss-note{ font-family:var(--story); font-style:italic; font-size:.9rem; color:#8A8296; }
+
+.ss-toggle.export{ border-color:#7A7284; }
+.ss-toggle.export:hover{ background:#7A7284; color:#FBF8F1; }
+.report-print{ background:none; border:none; cursor:pointer; }
+
+/* Print → force simple top-flowing block layout (no empty first page) */
+@media print{
+  html, body, #root{ background:#fff !important; height:auto !important; min-height:0 !important; overflow:visible !important; display:block !important; }
+  body::after{ display:none !important; content:none !important; }
+
+  /* neutralise ALL flex/height layout inside the report */
+  .report, .report *{ min-height:0 !important; }
+  .report{ background:#fff !important; display:block !important; }
+  .report-inner{ display:block !important; max-width:100% !important; width:auto !important; margin:0 !important; padding:0 !important; }
+  .report-head{ display:block !important; text-align:center; padding:0 0 14px !important; margin:0 0 18px !important; }
+  .report-persona, .report-section, .report-findings{ display:block !important; }
+
+  /* remove hidden chrome entirely — zero reserved space */
+  .report-nav, .report-adminnav, .report-signout, .report-navlink, .report-print, .report-thread{
+    display:none !important; height:0 !important; width:0 !important; margin:0 !important; padding:0 !important; border:0 !important;
+  }
+
+  /* type sized for paper */
+  .report-title{ font-size:26pt !important; margin-bottom:8px !important; }
+  .report-sub{ font-size:11pt !important; }
+  .report-section-title{ font-size:15pt !important; }
+  .rf-label{ font-size:12pt !important; }
+
+  .rf, .report-section, .report-persona{ break-inside:avoid; page-break-inside:avoid; }
+  .rf.strong{ box-shadow:none !important; }
+}

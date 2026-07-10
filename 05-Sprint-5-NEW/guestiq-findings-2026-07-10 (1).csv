@@ -1,0 +1,21 @@
+guest,type,finding,tag,tier,count,reps
+Business,blind-spot,Location not right,BS,strong,6,8
+Business,mis-weight,extra help / clear info,MW,emerging,4,8
+Business,contradiction,they didn't book elsewhere — just didn't come,CON,emerging,4,8
+Business,blind-spot,near the event / party floor,BS,emerging,4,8
+Business,blind-spot,No — eats in the room or off-site,BS,emerging,4,8
+Business,mis-weight,a local tip,MW,emerging,4,8
+Business,mis-weight,setting up a special day,MW,emerging,4,8
+Business,blind-spot,a place with parking or a shuttle,BS,emerging,3,8
+Business,blind-spot,promised but not given,BS,emerging,3,8
+Business,blind-spot,the ship / venue / hospital,BS,emerging,3,8
+Business,blind-spot,Staff did something extra without being asked,BS,emerging,3,8
+Business,blind-spot,Staff remembered something about them,BS,emerging,3,8
+Business,blind-spot,"Says nothing, but tells friends or co-workers",BS,emerging,3,8
+Business,blind-spot,a quiet room,BS,emerging,3,8
+Business,blind-spot,something to do at night when nothing's open,BS,emerging,3,8
+Early flight / late arrival,blind-spot,Before the café opens,BS,strong,4,5
+Early flight / late arrival,blind-spot,Staff did something extra without being asked,BS,strong,3,5
+Early flight / late arrival,blind-spot,remembering what they like,BS,strong,3,5
+Early flight / late arrival,blind-spot,improvise,BS,strong,3,5
+Medical,contradiction,they didn't book elsewhere — just didn't come,CON,strong,3,3

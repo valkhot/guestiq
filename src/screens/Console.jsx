@@ -4,6 +4,7 @@ import { loadFindingsData } from '../lib/findingsData.js'
 import { computeFindings } from '../lib/engine.js'
 import { personas, personaLabel } from '../lib/readFlow.js'
 import { getPin, clearPin } from '../lib/adminPin.js'
+import { findingsToCsv, downloadCsv } from '../lib/exportFindings.js'
 
 export default function Console() {
   const [state, setState] = useState({ loading: true })
@@ -13,16 +14,28 @@ export default function Console() {
     Promise.all([
       loadFindingsData(pin),
       supabase.rpc('guestiq_study_stats', { pin }),
-    ]).then(([fd, statsRes]) => {
+      supabase.rpc('guestiq_study_status'),
+    ]).then(([fd, statsRes, statusRes]) => {
       if (fd.error) { setState({ loading: false, error: fd.error.message }); return }
       const result = computeFindings(fd)
       const stats = (statsRes.data && statsRes.data[0]) || { completed_reads: 0, distinct_agents: 0, guest_types: 0 }
-      setState({ loading: false, result, stats })
+      setState({ loading: false, result, stats, status: statusRes.data || 'open' })
     })
   }, [])
 
   if (state.loading) return <div className="report report-center"><p>Loading the study&hellip;</p></div>
   if (state.error)   return <div className="report report-center"><p>Error: {state.error}</p></div>
+
+  const exportCsv = () => {
+    const today = new Date().toISOString().slice(0, 10)
+    downloadCsv(findingsToCsv(state.result), `guestiq-findings-${today}.csv`)
+  }
+
+  const toggleStatus = async () => {
+    const next = state.status === 'open' ? 'closed' : 'open'
+    const { data, error } = await supabase.rpc('guestiq_set_study_status', { pin: getPin(), new_status: next })
+    if (!error) setState(s => ({ ...s, status: data || next }))
+  }
 
   const P = state.result.personas
   const rows = personas.map(p => {
@@ -47,6 +60,15 @@ export default function Console() {
             <button className="report-signout" onClick={() => { clearPin(); window.location.reload() }}>Lock</button>
           </div>
         </header>
+
+        <div className="study-status">
+          <span className={'ss-pill ' + state.status}>{state.status === 'open' ? 'Study open' : 'Study closed'}</span>
+          <button className="ss-toggle" onClick={toggleStatus}>
+            {state.status === 'open' ? 'Close the study' : 'Reopen the study'}
+          </button>
+          <span className="ss-note">{state.status === 'open' ? 'Agents can record reads.' : 'The agent app shows a paused screen.'}</span>
+          <button className="ss-toggle export" onClick={exportCsv}>Export findings (CSV)</button>
+        </div>
 
         <div className="console-glance">
           <div className="cg"><span className="cg-num">{st.completed_reads}</span><span className="cg-lab">reads recorded</span></div>
