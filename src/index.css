@@ -296,3 +296,11 @@ button{ font-family:inherit; cursor:pointer; }
 .cstat.forming{ color:#7A7284; border:1px solid #DCD3C2; }
 .cstat.gap{ color:#A59A8C; border:1px dashed #DCD3C2; }
 @media (max-width:640px){ .console-glance{ grid-template-columns:repeat(2, 1fr); } }
+
+.study-status{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; background:#FBF8F1; border:1px solid #E7DFCE; border-radius:12px; padding:14px 18px; margin-bottom:clamp(24px,3vw,40px); }
+.ss-pill{ font-family:var(--mono); font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; padding:6px 12px; border-radius:999px; }
+.ss-pill.open{ color:#3C5A2E; background:#D6E4C8; }
+.ss-pill.closed{ color:#7A3030; background:#E8CFCF; }
+.ss-toggle{ font-family:var(--mono); font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; color:#241F2B; background:none; border:1px solid #B08A3E; border-radius:999px; padding:8px 16px; transition:.16s; }
+.ss-toggle:hover{ background:#B08A3E; color:#FBF8F1; }
+.ss-note{ font-family:var(--story); font-style:italic; font-size:.9rem; color:#8A8296; }

@@ -26,11 +26,16 @@ export default function App() {
   useEffect(() => {
     initAnalytics()
     track('app_opened')
-    try {
-      const saved = localStorage.getItem(BADGE_KEY)
-      if (saved) { setBadge(JSON.parse(saved)); setReturning(true); setScreen('home'); return }
-    } catch (e) { /* ignore */ }
-    setScreen('welcome')
+    const route = () => {
+      try {
+        const saved = localStorage.getItem(BADGE_KEY)
+        if (saved) { setBadge(JSON.parse(saved)); setReturning(true); setScreen('home'); return }
+      } catch (e) { /* ignore */ }
+      setScreen('welcome')
+    }
+    supabase.rpc('guestiq_study_status')
+      .then(({ data }) => { if (data === 'closed') setScreen('closed'); else route() })
+      .catch(() => route())
   }, [])
 
   function handleClaimed(b) {
@@ -67,6 +72,14 @@ export default function App() {
   if (view === 'findings') return <AdminGate><FindingsPreview /></AdminGate>
 
   if (screen === 'loading') return null
+  if (screen === 'closed') return (
+    <div className="screen center enter">
+      <div className="thread" />
+      <div className="brand">GUEST<b>IQ</b></div>
+      <h1 className="serif-h hero">Thank you.</h1>
+      <p className="lede">Reads are paused for now. Everything you&rsquo;ve recorded is safe &mdash; check back soon.</p>
+    </div>
+  )
   if (screen === 'welcome') return <Welcome onStart={() => setScreen('claim')} />
   if (screen === 'claim')   return <BadgeClaim onClaimed={handleClaimed} />
   if (screen === 'guestselect') return <GuestSelect badge={badge} onSelect={startRead} onBack={() => setScreen('home')} />
