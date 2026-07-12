@@ -11,6 +11,7 @@ import Coin from './components/Coin.jsx'
 import { supabase } from './lib/supabase.js'
 import { readIdFor } from './lib/readFlow.js'
 import { initAnalytics, identify, track } from './lib/analytics.js'
+import { clearPin } from './lib/adminPin.js'
 import { getCoverage } from './lib/coverage.js'
 
 const BADGE_KEY = 'guestiq_badge'
@@ -22,6 +23,10 @@ export default function App() {
   const [readId, setReadId] = useState(null)
   const [persona, setPersona] = useState(null)
   const [deepOnly, setDeepOnly] = useState(false)
+  const [adminView, setAdminView] = useState(() => {
+    const v = new URLSearchParams(window.location.search).get('view')
+    return (v === 'admin' || v === 'console' || v === 'findings') ? v : null
+  })
 
   useEffect(() => {
     initAnalytics()
@@ -37,6 +42,29 @@ export default function App() {
       .then(({ data }) => { if (data === 'closed') setScreen('closed'); else route() })
       .catch(() => route())
   }, [])
+
+  // Discreet admin entry (overlay — keeps the agent screen alive underneath).
+  useEffect(() => {
+    const onKey = e => {
+      if (e.ctrlKey && e.altKey && !e.shiftKey && !e.metaKey) {
+        if (e.code === 'KeyA') { e.preventDefault(); setAdminView('admin') }
+        else if (e.code === 'KeyR') { e.preventDefault(); setAdminView('console') }
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  // Lock: clear the PIN, tidy the URL, and drop back to exactly where you were.
+  const lockAdmin = () => {
+    clearPin()
+    try {
+      const u = new URL(window.location.href)
+      if (u.searchParams.has('view')) { u.searchParams.delete('view'); window.history.replaceState({}, '', u.toString()) }
+    } catch (e) { /* ignore */ }
+    setAdminView(null)
+  }
+  const navAdmin = v => setAdminView(v)
 
   function handleClaimed(b) {
     setBadge(b)
@@ -66,10 +94,9 @@ export default function App() {
     setScreen(how === 'another' ? 'guestselect' : 'home')
   }
 
-  const view = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('view') : null
-  if (view === 'admin') return <AdminGate><GMReport /></AdminGate>
-  if (view === 'console') return <AdminGate><Console /></AdminGate>
-  if (view === 'findings') return <AdminGate><FindingsPreview /></AdminGate>
+  if (adminView === 'admin') return <AdminGate onLock={lockAdmin}><GMReport onLock={lockAdmin} onNav={navAdmin} /></AdminGate>
+  if (adminView === 'console') return <AdminGate onLock={lockAdmin}><Console onLock={lockAdmin} onNav={navAdmin} /></AdminGate>
+  if (adminView === 'findings') return <AdminGate onLock={lockAdmin}><FindingsPreview /></AdminGate>
 
   if (screen === 'loading') return null
   if (screen === 'closed') return (

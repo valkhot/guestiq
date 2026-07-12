@@ -9,3 +9,13 @@ export async function checkPin(pin) {
   const { data, error } = await supabase.rpc('guestiq_admin_ok', { pin })
   return !error && data === true
 }
+
+// Lock: clear the PIN and return to the (discreet) agent app.
+export function lockAdmin() {
+  clearPin()
+  try {
+    const u = new URL(window.location.href)
+    u.searchParams.delete('view')
+    window.location.replace(u.toString())
+  } catch (e) { window.location.replace(window.location.pathname) }
+}

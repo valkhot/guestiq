@@ -3,10 +3,18 @@ import { supabase } from '../lib/supabase.js'
 import { loadFindingsData } from '../lib/findingsData.js'
 import { computeFindings } from '../lib/engine.js'
 import { personas, personaLabel } from '../lib/readFlow.js'
-import { getPin, clearPin } from '../lib/adminPin.js'
+import { getPin } from '../lib/adminPin.js'
 import { findingsToCsv, downloadCsv } from '../lib/exportFindings.js'
 
-export default function Console() {
+const GUARDRAILS = [
+  'Counts, never percentages (in findings)',
+  'No third-party AI',
+  'No guest names stored',
+  'CF-sink (table-stakes) suppressed',
+  '\u22653-rep convergence floor enforced',
+]
+
+export default function Console({ onLock, onNav }) {
   const [state, setState] = useState({ loading: true })
 
   useEffect(() => {
@@ -15,28 +23,19 @@ export default function Console() {
       loadFindingsData(pin),
       supabase.rpc('guestiq_study_stats', { pin }),
       supabase.rpc('guestiq_study_status'),
-    ]).then(([fd, statsRes, statusRes]) => {
+      supabase.rpc('guestiq_agent_activity', { pin }),
+    ]).then(([fd, statsRes, statusRes, agentsRes]) => {
       if (fd.error) { setState({ loading: false, error: fd.error.message }); return }
       const result = computeFindings(fd)
-      const stats = (statsRes.data && statsRes.data[0]) || { completed_reads: 0, distinct_agents: 0, guest_types: 0 }
-      setState({ loading: false, result, stats, status: statusRes.data || 'open' })
+      const stats = (statsRes.data && statsRes.data[0]) || { started_reads: 0, completed_reads: 0, deep_reads: 0, distinct_agents: 0, guest_types: 0 }
+      setState({ loading: false, result, stats, status: statusRes.data || 'open', agents: agentsRes.data || [] })
     })
   }, [])
 
   if (state.loading) return <div className="report report-center"><p>Loading the study&hellip;</p></div>
   if (state.error)   return <div className="report report-center"><p>Error: {state.error}</p></div>
 
-  const exportCsv = () => {
-    const today = new Date().toISOString().slice(0, 10)
-    downloadCsv(findingsToCsv(state.result), `guestiq-findings-${today}.csv`)
-  }
-
-  const toggleStatus = async () => {
-    const next = state.status === 'open' ? 'closed' : 'open'
-    const { data, error } = await supabase.rpc('guestiq_set_study_status', { pin: getPin(), new_status: next })
-    if (!error) setState(s => ({ ...s, status: data || next }))
-  }
-
+  const st = state.stats
   const P = state.result.personas
   const rows = personas.map(p => {
     const d = P[p.key] || { reps: 0, strong: [], emerging: [] }
@@ -44,8 +43,27 @@ export default function Console() {
     const status = reps >= 3 ? 'converged' : reps >= 1 ? 'forming' : 'gap'
     return { key: p.key, reps, status, strong: (d.strong || []).length, emerging: (d.emerging || []).length }
   }).sort((a, b) => b.reps - a.reps)
+
   const converged = rows.filter(r => r.status === 'converged').length
-  const st = state.stats
+  const compRate = st.started_reads ? Math.round(100 * st.completed_reads / st.started_reads) : 0
+  const depthRate = st.completed_reads ? Math.round(100 * st.deep_reads / st.completed_reads) : 0
+
+  const nudges = []
+  rows.forEach(r => {
+    if (r.reps === 0) nudges.push(`The ${personaLabel(r.key)} guest is a gap \u2014 no reads yet.`)
+    else if (r.reps < 3) nudges.push(`The ${personaLabel(r.key)} guest needs ${3 - r.reps} more read${3 - r.reps === 1 ? '' : 's'} to converge.`)
+  })
+  if (nudges.length === 0) nudges.push('Every guest type has converged \u2014 the study is well covered.')
+
+  const toggleStatus = async () => {
+    const next = state.status === 'open' ? 'closed' : 'open'
+    const { data, error } = await supabase.rpc('guestiq_set_study_status', { pin: getPin(), new_status: next })
+    if (!error) setState(s => ({ ...s, status: data || next }))
+  }
+  const exportCsv = () => {
+    const today = new Date().toISOString().slice(0, 10)
+    downloadCsv(findingsToCsv(state.result), `guestiq-findings-${today}.csv`)
+  }
 
   return (
     <div className="report">
@@ -54,44 +72,83 @@ export default function Console() {
           <div className="report-thread" />
           <div className="report-eyebrow">GUEST<b>IQ</b> &middot; Study console</div>
           <h1 className="report-title">The study</h1>
-          <p className="report-sub">How the reads are stacking up &mdash; coverage, convergence, and what&rsquo;s ready to trust.</p>
+          <p className="report-sub">Integrity first &mdash; is the instrument sound, and is it working?</p>
           <div className="report-adminnav">
-            <a className="report-navlink" href="?view=admin">Findings report &rarr;</a>
-            <button className="report-signout" onClick={() => { clearPin(); window.location.reload() }}>Lock</button>
+            <button className="report-navlink" onClick={() => onNav && onNav('admin')}>Findings report &rarr;</button>
+            <button className="report-signout" onClick={() => onLock && onLock()}>Lock</button>
           </div>
         </header>
 
         <div className="study-status">
           <span className={'ss-pill ' + state.status}>{state.status === 'open' ? 'Study open' : 'Study closed'}</span>
-          <button className="ss-toggle" onClick={toggleStatus}>
-            {state.status === 'open' ? 'Close the study' : 'Reopen the study'}
-          </button>
-          <span className="ss-note">{state.status === 'open' ? 'Agents can record reads.' : 'The agent app shows a paused screen.'}</span>
+          <button className="ss-toggle" onClick={toggleStatus}>{state.status === 'open' ? 'Close the study' : 'Reopen the study'}</button>
           <button className="ss-toggle export" onClick={exportCsv}>Export findings (CSV)</button>
         </div>
 
-        <div className="console-glance">
-          <div className="cg"><span className="cg-num">{st.completed_reads}</span><span className="cg-lab">reads recorded</span></div>
-          <div className="cg"><span className="cg-num">{st.distinct_agents}</span><span className="cg-lab">agents contributing</span></div>
-          <div className="cg"><span className="cg-num">{st.guest_types}</span><span className="cg-lab">guest types read</span></div>
-          <div className="cg"><span className="cg-num">{converged}</span><span className="cg-lab">converged ({'\u2265'}3 reps)</span></div>
-        </div>
+        {/* LENS 01 · INTEGRITY */}
+        <section className="lens">
+          <div className="lens-eyebrow">Lens 01 &middot; Integrity</div>
+          <h3 className="lens-title">Is the instrument sound?</h3>
+          <ul className="guardrails">
+            {GUARDRAILS.map((g, i) => <li key={i}>&#10003; {g}</li>)}
+          </ul>
+          <h4 className="lens-sub">Coverage &amp; convergence <span className="lens-note">a guest needs {'\u2265'}3 reads to be trusted</span></h4>
+          <table className="console-table">
+            <thead><tr><th>Guest</th><th>Reads</th><th>Status</th><th>Findings</th></tr></thead>
+            <tbody>
+              {rows.map(r => (
+                <tr key={r.key}>
+                  <td className="ct-name">{personaLabel(r.key)}</td>
+                  <td>{r.reps}</td>
+                  <td><span className={'cstat ' + r.status}>{r.status === 'converged' ? 'Converged' : r.status === 'forming' ? 'Forming' : 'Gap'}</span></td>
+                  <td className="ct-find">{r.status === 'converged' ? `${r.strong} strong \u00B7 ${r.emerging} emerging` : '\u2014'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
 
-        <h3 className="report-section-title">Coverage by guest</h3>
-        <p className="report-section-lede">A guest needs {'\u2265'}3 independent reads before its findings can be trusted.</p>
-        <table className="console-table">
-          <thead><tr><th>Guest</th><th>Reads</th><th>Status</th><th>Findings</th></tr></thead>
-          <tbody>
-            {rows.map(r => (
-              <tr key={r.key}>
-                <td className="ct-name">{personaLabel(r.key)}</td>
-                <td>{r.reps}</td>
-                <td><span className={'cstat ' + r.status}>{r.status === 'converged' ? 'Converged' : r.status === 'forming' ? 'Forming' : 'Gap'}</span></td>
-                <td className="ct-find">{r.status === 'converged' ? `${r.strong} strong \u00B7 ${r.emerging} emerging` : '\u2014'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {/* LENS 02 · VALIDATION */}
+        <section className="lens">
+          <div className="lens-eyebrow">Lens 02 &middot; Validation</div>
+          <h3 className="lens-title">The North Star</h3>
+          <div className="kpis">
+            <div className="kpi"><span className="kpi-num">{st.completed_reads}</span><span className="kpi-lab">reads recorded</span></div>
+            <div className="kpi"><span className="kpi-num">{compRate}%</span><span className="kpi-lab">completion rate</span><span className="kpi-sub">{st.completed_reads} of {st.started_reads} started</span></div>
+            <div className="kpi"><span className="kpi-num">{depthRate}%</span><span className="kpi-lab">went deeper</span><span className="kpi-sub">{st.deep_reads} of {st.completed_reads} completed</span></div>
+            <div className="kpi"><span className="kpi-num">{converged}</span><span className="kpi-lab">guests converged</span></div>
+          </div>
+          <p className="lens-foot">Operational rates use % (study health) &mdash; the &ldquo;counts never %&rdquo; rule governs the GM&rsquo;s findings, not these.</p>
+        </section>
+
+        {/* LENS 03 · AGENT ACTIVITY */}
+        <section className="lens">
+          <div className="lens-eyebrow">Lens 03 &middot; Agent activity</div>
+          <h3 className="lens-title">Who&rsquo;s contributing <span className="lens-note">per badge, anonymous</span></h3>
+          {state.agents.length === 0 ? <p className="lens-empty">No reads yet.</p> : (
+            <div className="agent-grid">
+              {state.agents.map(a => (
+                <div key={a.agent} className="agent-chip"><span className="agent-name">{a.agent}</span><span className="agent-reads">{a.reads}</span></div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* LENS 04 + 05 · pending (Sprint 6) */}
+        <section className="lens pending">
+          <div className="lens-eyebrow">Lens 04 &middot; App health &nbsp;&nbsp;&middot;&nbsp;&nbsp; Lens 05 &middot; GM activity</div>
+          <h3 className="lens-title">Coming in Sprint 6</h3>
+          <p className="lens-empty">App health (error tracking) and GM activity (report open-log) arrive with the observability work in Sprint 6.</p>
+        </section>
+
+        {/* LENS 06 · WHAT TO CHANGE NEXT */}
+        <section className="lens">
+          <div className="lens-eyebrow">Lens 06 &middot; What to change next</div>
+          <h3 className="lens-title">Where to nudge</h3>
+          <ul className="nudges">
+            {nudges.map((n, i) => <li key={i}>{n}</li>)}
+          </ul>
+        </section>
       </div>
     </div>
   )

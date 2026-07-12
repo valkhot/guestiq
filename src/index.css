@@ -253,7 +253,7 @@ button{ font-family:inherit; cursor:pointer; }
 .report-eyebrow b{ font-weight:400; color:#8A6A28; }
 .report-title{ font-family:var(--serif); font-weight:500; font-optical-sizing:auto; font-variation-settings:'opsz' 144; font-size:clamp(2.2rem,4vw,3.6rem); line-height:1.1; letter-spacing:-.015em; color:#1E1926; margin-bottom:14px; }
 .report-sub{ font-family:var(--story); font-weight:300; font-size:clamp(1rem,1.1vw,1.25rem); color:#6A6272; max-width:52ch; margin:0 auto; }
-.report-signout{ position:absolute; top:0; right:0; font-family:var(--mono); font-size:.62rem; letter-spacing:.14em; text-transform:uppercase; color:#8A8296; background:none; border:1px solid #DCD3C2; border-radius:999px; padding:6px 12px; }
+.report-signout{ font-family:var(--mono); font-size:.62rem; letter-spacing:.14em; text-transform:uppercase; color:#8A8296; background:none; border:1px solid #DCD3C2; border-radius:999px; padding:6px 12px; }
 .report-signout:hover{ color:#241F2B; border-color:#B08A3E; }
 .report-nav{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:clamp(30px,3.5vw,52px); }
 .report-tab{ font-family:var(--mono); font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; color:#6A6272; background:#FBF8F1; border:1px solid #E2D9C6; border-radius:999px; padding:9px 15px; transition:.16s; }
@@ -335,3 +335,27 @@ button{ font-family:inherit; cursor:pointer; }
   .rf, .report-section, .report-persona{ break-inside:avoid; page-break-inside:avoid; }
   .rf.strong{ box-shadow:none !important; }
 }
+.pin-note{ font-family:var(--mono); font-size:.6rem; letter-spacing:.08em; text-transform:uppercase; color:var(--mute-2); margin-top:16px; }
+
+.lens{ margin-top:clamp(30px,3.5vw,52px); padding-top:clamp(20px,2.4vw,32px); border-top:1px solid #E2D9C6; }
+.lens-eyebrow{ font-family:var(--mono); font-size:.62rem; letter-spacing:.14em; text-transform:uppercase; color:#A9822F; margin-bottom:8px; }
+.lens-title{ font-family:var(--serif); font-weight:500; font-size:clamp(1.4rem,2vw,2rem); color:#1E1926; margin-bottom:14px; }
+.lens-note{ font-family:var(--mono); font-size:.6rem; letter-spacing:.06em; text-transform:uppercase; color:#9A8F84; margin-left:8px; }
+.lens-sub{ font-family:var(--serif); font-weight:500; font-size:clamp(1.1rem,1.4vw,1.35rem); color:#8A6A28; margin:22px 0 6px; }
+.lens-foot{ font-family:var(--story); font-style:italic; font-size:.9rem; color:#8A8296; margin-top:14px; }
+.lens-empty{ font-family:var(--story); font-style:italic; color:#7A7284; }
+.guardrails{ list-style:none; display:flex; flex-wrap:wrap; gap:8px 18px; margin-bottom:8px; }
+.guardrails li{ font-family:var(--mono); font-size:.68rem; letter-spacing:.03em; color:#3C5A2E; background:#EAF0E2; border:1px solid #D6E4C8; border-radius:999px; padding:6px 12px; }
+.kpis{ display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; }
+.kpi{ background:#FBF8F1; border:1px solid #E7DFCE; border-radius:12px; padding:clamp(16px,1.6vw,22px); text-align:center; }
+.kpi-num{ display:block; font-family:var(--serif); font-weight:500; font-size:clamp(1.8rem,2.6vw,2.6rem); color:#1E1926; line-height:1; }
+.kpi-lab{ display:block; font-family:var(--mono); font-size:.6rem; letter-spacing:.08em; text-transform:uppercase; color:#9A8F84; margin-top:8px; }
+.kpi-sub{ display:block; font-family:var(--mono); font-size:.58rem; color:#B4A996; margin-top:4px; }
+.agent-grid{ display:flex; flex-wrap:wrap; gap:10px; }
+.agent-chip{ display:flex; align-items:center; gap:10px; background:#FBF8F1; border:1px solid #E7DFCE; border-radius:999px; padding:8px 8px 8px 16px; }
+.agent-name{ font-family:var(--serif); font-size:1.05rem; color:#241F2B; text-transform:capitalize; }
+.agent-reads{ font-family:var(--mono); font-size:.75rem; color:#5A430F; background:#EBD9A9; border-radius:999px; padding:4px 10px; }
+.nudges{ list-style:none; display:flex; flex-direction:column; gap:8px; }
+.nudges li{ font-family:var(--story); font-size:clamp(1rem,1.1vw,1.2rem); color:#2E2836; background:#FBF8F1; border:1px solid #E7DFCE; border-left:3px solid #C8A24E; border-radius:8px; padding:12px 16px; }
+.lens.pending{ opacity:.6; }
+@media (max-width:640px){ .kpis{ grid-template-columns:repeat(2,1fr); } }

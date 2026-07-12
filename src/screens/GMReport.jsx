@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { loadFindingsData } from '../lib/findingsData.js'
 import { computeFindings } from '../lib/engine.js'
 import { personaLabel } from '../lib/readFlow.js'
-import { getPin, clearPin } from '../lib/adminPin.js'
+import { getPin } from '../lib/adminPin.js'
 
 const SECTIONS = [
   { type: 'blind-spot',    title: 'Blind spots',    lede: 'What these guests need that the desk doesn\u2019t see.' },
@@ -28,7 +28,7 @@ function Finding({ item }) {
   )
 }
 
-export default function GMReport() {
+export default function GMReport({ onLock, onNav }) {
   const [s, setS] = useState({ loading: true })
   const [active, setActive] = useState(null)
 
@@ -127,8 +127,8 @@ export default function GMReport() {
           <p className="report-sub">Drawn from {meta.reads} anonymous reads across {read.length} guest types &middot; {when}. Counts, never names.</p>
           <div className="report-adminnav">
             <button className="report-navlink report-print" onClick={printReport}>Print / Save PDF</button>
-            <a className="report-navlink" href="?view=console">Study console &rarr;</a>
-            <button className="report-signout" onClick={() => { clearPin(); window.location.reload() }}>Lock</button>
+            <button className="report-navlink" onClick={() => onNav && onNav('console')}>Study console &rarr;</button>
+            <button className="report-signout" onClick={() => onLock && onLock()}>Lock</button>
           </div>
         </header>
 
