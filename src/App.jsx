@@ -12,6 +12,7 @@ import { supabase } from './lib/supabase.js'
 import { readIdFor } from './lib/readFlow.js'
 import { initAnalytics, identify, track } from './lib/analytics.js'
 import { clearPin } from './lib/adminPin.js'
+import { writeOrQueue, startQueueSync, queueLength } from './lib/offlineQueue.js'
 import { getCoverage } from './lib/coverage.js'
 
 const BADGE_KEY = 'guestiq_badge'
@@ -23,6 +24,7 @@ export default function App() {
   const [readId, setReadId] = useState(null)
   const [persona, setPersona] = useState(null)
   const [deepOnly, setDeepOnly] = useState(false)
+  const [offline, setOffline] = useState(typeof navigator !== 'undefined' && navigator.onLine === false)
   const [adminView, setAdminView] = useState(() => {
     const v = new URLSearchParams(window.location.search).get('view')
     return (v === 'admin' || v === 'console' || v === 'findings') ? v : null
@@ -31,6 +33,7 @@ export default function App() {
   useEffect(() => {
     initAnalytics()
     track('app_opened')
+    startQueueSync()
     const route = () => {
       try {
         const saved = localStorage.getItem(BADGE_KEY)
@@ -54,6 +57,38 @@ export default function App() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [])
+
+  useEffect(() => {
+    const on = () => setOffline(false)
+    const off = () => setOffline(true)
+    window.addEventListener('online', on)
+    window.addEventListener('offline', off)
+    return () => { window.removeEventListener('online', on); window.removeEventListener('offline', off) }
+  }, [])
+
+  // Fixed offline banner (shown on any screen, without threading through every return).
+  useEffect(() => {
+    const ID = 'guestiq-offline-banner'
+    let el = document.getElementById(ID)
+    const pending = queueLength()
+    const show = offline || pending > 0
+    if (show) {
+      if (!el) {
+        el = document.createElement('div')
+        el.id = ID
+        el.setAttribute('style',
+          'position:fixed;left:0;right:0;bottom:0;z-index:9998;text-align:center;' +
+          'font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.04em;' +
+          'padding:8px 12px;background:#3a2f17;color:#E7C877;border-top:1px solid #6b551f;')
+        document.body.appendChild(el)
+      }
+      el.textContent = offline
+        ? 'Offline — your work is being saved on this device and will sync when you\u2019re back online.'
+        : 'Reconnecting — syncing ' + pending + ' saved item' + (pending === 1 ? '' : 's') + '\u2026'
+    } else if (el) {
+      el.remove()
+    }
+  }, [offline])
 
   // Lock: clear the PIN, tidy the URL, and drop back to exactly where you were.
   const lockAdmin = () => {
@@ -81,11 +116,12 @@ export default function App() {
 
   async function startRead(personaKey, mode = 'core') {
     const id = readIdFor(badge.badge_id, personaKey)
-    const { error } = await supabase.from('reads').insert({
-      id, respondent_id: badge.badge_id, persona: personaKey, depth: 'core',
-    })
-    const duplicate = error && (error.code === '23505' || /duplicate|already exists/i.test(error.message))
-    if (error && !duplicate) { alert('Could not start the read: ' + error.message); return }
+    try {
+      await writeOrQueue({
+        key: 'read:' + id, table: 'reads', action: 'insert',
+        data: { id, respondent_id: badge.badge_id, persona: personaKey, depth: 'core' },
+      })
+    } catch (error) { alert('Could not start the read: ' + error.message); return }
     track('read_started', { persona: personaKey, depth: mode })
     setDeepOnly(mode === 'deep'); setReadId(id); setPersona(personaKey); setScreen('read')
   }

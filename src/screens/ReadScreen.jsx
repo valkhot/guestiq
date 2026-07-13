@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react'
 import { supabase } from '../lib/supabase.js'
+import { writeOrQueue } from '../lib/offlineQueue.js'
 import Coin from '../components/Coin.jsx'
 import QuestionBody from './QuestionBody.jsx'
 import EndOfRead from './EndOfRead.jsx'
@@ -52,11 +53,14 @@ export default function ReadScreen({ badge, persona, readId, onExit, deepOnly = 
 
   async function complete(depthVal) {
     setBusy(true)
-    const { error } = await supabase.from('reads').update({
-      completed_at: new Date().toISOString(), depth: depthVal,
-    }).eq('id', readId)
+    try {
+      await writeOrQueue({
+        key: 'complete:' + readId, table: 'reads', action: 'update',
+        matchCol: 'id', matchVal: readId,
+        data: { completed_at: new Date().toISOString(), depth: depthVal },
+      })
+    } catch (error) { setBusy(false); alert('Could not mark the read complete: ' + error.message); return }
     setBusy(false)
-    if (error) { alert('Could not mark the read complete: ' + error.message); return }
     addCoverage(badge.badge_id, persona, depthVal)
     track('read_completed', { persona, depth: depthVal, questions: recorded.length })
     setPhase('done')
@@ -67,14 +71,17 @@ export default function ReadScreen({ badge, persona, readId, onExit, deepOnly = 
     setBusy(true)
     const text = freeText.trim()
     // deterministic id → re-answering the same item is ignored (no duplicate rows)
-    const { error } = await supabase.from('responses').insert({
-      id: responseIdFor(readId, q.id),
-      read_id: readId, item_id: q.id,
-      value: buildValue(q, answer),
-      free_text_example: q.type === 'verbatim' ? text : (text || null),
-    })
-    const duplicate = error && (error.code === '23505' || /duplicate|already exists/i.test(error.message))
-    if (error && !duplicate) { setBusy(false); alert('Could not save that answer: ' + error.message); return }
+    try {
+      await writeOrQueue({
+        key: 'resp:' + responseIdFor(readId, q.id), table: 'responses', action: 'insert',
+        data: {
+          id: responseIdFor(readId, q.id),
+          read_id: readId, item_id: q.id,
+          value: buildValue(q, answer),
+          free_text_example: q.type === 'verbatim' ? text : (text || null),
+        },
+      })
+    } catch (error) { setBusy(false); alert('Could not save that answer: ' + error.message); return }
     setBusy(false)
     track('question_answered', { persona, item_id: q.id, item_type: q.type })
     setRecorded(r => [...r, { q, value: buildValue(q, answer), freeText: text }])
