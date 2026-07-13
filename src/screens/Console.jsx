@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase.js'
 import { loadFindingsData } from '../lib/findingsData.js'
 import { computeFindings } from '../lib/engine.js'
@@ -11,26 +11,29 @@ const GUARDRAILS = [
   'No third-party AI',
   'No guest names stored',
   'CF-sink (table-stakes) suppressed',
-  '\u22653-rep convergence floor enforced',
+  '≥3-rep convergence floor enforced',
 ]
 
 export default function Console({ onLock, onNav }) {
   const [state, setState] = useState({ loading: true })
 
-  useEffect(() => {
+  const loadAll = useCallback(() => {
     const pin = getPin()
+    setState(s => ({ ...s, refreshing: true }))
     Promise.all([
       loadFindingsData(pin),
       supabase.rpc('guestiq_study_stats', { pin }),
       supabase.rpc('guestiq_study_status'),
       supabase.rpc('guestiq_agent_activity', { pin }),
-    ]).then(([fd, statsRes, statusRes, agentsRes]) => {
+      supabase.rpc('guestiq_report_activity', { pin }),
+    ]).then(([fd, statsRes, statusRes, agentsRes, reportRes]) => {
       if (fd.error) { setState({ loading: false, error: fd.error.message }); return }
       const result = computeFindings(fd)
       const stats = (statsRes.data && statsRes.data[0]) || { started_reads: 0, completed_reads: 0, deep_reads: 0, distinct_agents: 0, guest_types: 0 }
-      setState({ loading: false, result, stats, status: statusRes.data || 'open', agents: agentsRes.data || [] })
+      setState({ loading: false, refreshing: false, result, stats, status: statusRes.data || 'open', agents: agentsRes.data || [], report: (reportRes.data && reportRes.data[0]) || { opens: 0, last_opened: null } })
     })
   }, [])
+  useEffect(() => { loadAll() }, [loadAll])
 
   if (state.loading) return <div className="report report-center"><p>Loading the study&hellip;</p></div>
   if (state.error)   return <div className="report report-center"><p>Error: {state.error}</p></div>
@@ -50,10 +53,10 @@ export default function Console({ onLock, onNav }) {
 
   const nudges = []
   rows.forEach(r => {
-    if (r.reps === 0) nudges.push(`The ${personaLabel(r.key)} guest is a gap \u2014 no reads yet.`)
+    if (r.reps === 0) nudges.push(`The ${personaLabel(r.key)} guest is a gap — no reads yet.`)
     else if (r.reps < 3) nudges.push(`The ${personaLabel(r.key)} guest needs ${3 - r.reps} more read${3 - r.reps === 1 ? '' : 's'} to converge.`)
   })
-  if (nudges.length === 0) nudges.push('Every guest type has converged \u2014 the study is well covered.')
+  if (nudges.length === 0) nudges.push('Every guest type has converged — the study is well covered.')
 
   const toggleStatus = async () => {
     const next = state.status === 'open' ? 'closed' : 'open'
@@ -74,6 +77,7 @@ export default function Console({ onLock, onNav }) {
           <h1 className="report-title">The study</h1>
           <p className="report-sub">Integrity first &mdash; is the instrument sound, and is it working?</p>
           <div className="report-adminnav">
+            <button className="report-navlink" onClick={loadAll}>{state.refreshing ? 'Refreshing\u2026' : 'Refresh'}</button>
             <button className="report-navlink" onClick={() => onNav && onNav('admin')}>Findings report &rarr;</button>
             <button className="report-signout" onClick={() => onLock && onLock()}>Lock</button>
           </div>
@@ -92,7 +96,7 @@ export default function Console({ onLock, onNav }) {
           <ul className="guardrails">
             {GUARDRAILS.map((g, i) => <li key={i}>&#10003; {g}</li>)}
           </ul>
-          <h4 className="lens-sub">Coverage &amp; convergence <span className="lens-note">a guest needs {'\u2265'}3 reads to be trusted</span></h4>
+          <h4 className="lens-sub">Coverage &amp; convergence <span className="lens-note">a guest needs {'≥'}3 reads to be trusted</span></h4>
           <table className="console-table">
             <thead><tr><th>Guest</th><th>Reads</th><th>Status</th><th>Findings</th></tr></thead>
             <tbody>
@@ -101,7 +105,7 @@ export default function Console({ onLock, onNav }) {
                   <td className="ct-name">{personaLabel(r.key)}</td>
                   <td>{r.reps}</td>
                   <td><span className={'cstat ' + r.status}>{r.status === 'converged' ? 'Converged' : r.status === 'forming' ? 'Forming' : 'Gap'}</span></td>
-                  <td className="ct-find">{r.status === 'converged' ? `${r.strong} strong \u00B7 ${r.emerging} emerging` : '\u2014'}</td>
+                  <td className="ct-find">{r.status === 'converged' ? `${r.strong} strong · ${r.emerging} emerging` : '—'}</td>
                 </tr>
               ))}
             </tbody>
@@ -134,11 +138,26 @@ export default function Console({ onLock, onNav }) {
           )}
         </section>
 
-        {/* LENS 04 + 05 · pending (Sprint 6) */}
+        {/* LENS 04 · pending (Sprint 6) */}
         <section className="lens pending">
-          <div className="lens-eyebrow">Lens 04 &middot; App health &nbsp;&nbsp;&middot;&nbsp;&nbsp; Lens 05 &middot; GM activity</div>
+          <div className="lens-eyebrow">Lens 04 &middot; App health</div>
           <h3 className="lens-title">Coming in Sprint 6</h3>
-          <p className="lens-empty">App health (error tracking) and GM activity (report open-log) arrive with the observability work in Sprint 6.</p>
+          <p className="lens-empty">App health (error tracking via Sentry) arrives with the remaining observability work.</p>
+        </section>
+
+        {/* LENS 05 · GM ACTIVITY */}
+        <section className="lens">
+          <div className="lens-eyebrow">Lens 05 &middot; GM activity</div>
+          <h3 className="lens-title">Is the report being read?</h3>
+          <div className="kpis">
+            <div className="kpi"><span className="kpi-num">{state.report.opens}</span><span className="kpi-lab">report opens</span></div>
+            <div className="kpi">
+              <span className="kpi-num sm">{state.report.last_opened ? new Date(state.report.last_opened).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '—'}</span>
+              <span className="kpi-lab">last opened</span>
+              <span className="kpi-sub">{state.report.last_opened ? new Date(state.report.last_opened).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }) : 'not yet'}</span>
+            </div>
+          </div>
+          <p className="lens-foot">Counts GM Findings Report opens — a signal of whether findings are actually reaching the GM.</p>
         </section>
 
         {/* LENS 06 · WHAT TO CHANGE NEXT */}

@@ -349,6 +349,7 @@ button{ font-family:inherit; cursor:pointer; }
 .kpis{ display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; }
 .kpi{ background:#FBF8F1; border:1px solid #E7DFCE; border-radius:12px; padding:clamp(16px,1.6vw,22px); text-align:center; }
 .kpi-num{ display:block; font-family:var(--serif); font-weight:500; font-size:clamp(1.8rem,2.6vw,2.6rem); color:#1E1926; line-height:1; }
+.kpi-num.sm{ font-size:clamp(1.3rem,1.9vw,1.9rem); }
 .kpi-lab{ display:block; font-family:var(--mono); font-size:.6rem; letter-spacing:.08em; text-transform:uppercase; color:#9A8F84; margin-top:8px; }
 .kpi-sub{ display:block; font-family:var(--mono); font-size:.58rem; color:#B4A996; margin-top:4px; }
 .agent-grid{ display:flex; flex-wrap:wrap; gap:10px; }

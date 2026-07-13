@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { supabase } from '../lib/supabase.js'
 import { loadFindingsData } from '../lib/findingsData.js'
 import { computeFindings } from '../lib/engine.js'
 import { personaLabel } from '../lib/readFlow.js'
@@ -34,7 +35,12 @@ export default function GMReport({ onLock, onNav }) {
 
   const compute = useCallback(() => {
     setS({ loading: true })
-    loadFindingsData(getPin()).then(data => {
+    const pin = getPin()
+    // Lens 05: log this report open (never blocks the report, but surfaces failures)
+    supabase.rpc('guestiq_log_report_open', { pin })
+      .then(({ error }) => { if (error) console.warn('[GuestIQ] open-log failed:', error.message) })
+      .catch(e => console.warn('[GuestIQ] open-log threw:', e))
+    loadFindingsData(pin).then(data => {
       if (data.error) { setS({ loading: false, error: data.error.message }); return }
       setS({ loading: false, result: computeFindings(data) })
     })
