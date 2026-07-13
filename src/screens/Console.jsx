@@ -26,11 +26,13 @@ export default function Console({ onLock, onNav }) {
       supabase.rpc('guestiq_study_status'),
       supabase.rpc('guestiq_agent_activity', { pin }),
       supabase.rpc('guestiq_report_activity', { pin }),
-    ]).then(([fd, statsRes, statusRes, agentsRes, reportRes]) => {
+      supabase.rpc('guestiq_app_health', { pin }),
+      supabase.rpc('guestiq_recent_errors', { pin }),
+    ]).then(([fd, statsRes, statusRes, agentsRes, reportRes, healthRes, errsRes]) => {
       if (fd.error) { setState({ loading: false, error: fd.error.message }); return }
       const result = computeFindings(fd)
       const stats = (statsRes.data && statsRes.data[0]) || { started_reads: 0, completed_reads: 0, deep_reads: 0, distinct_agents: 0, guest_types: 0 }
-      setState({ loading: false, refreshing: false, result, stats, status: statusRes.data || 'open', agents: agentsRes.data || [], report: (reportRes.data && reportRes.data[0]) || { opens: 0, last_opened: null } })
+      setState({ loading: false, refreshing: false, result, stats, status: statusRes.data || 'open', agents: agentsRes.data || [], report: (reportRes.data && reportRes.data[0]) || { opens: 0, last_opened: null }, health: (healthRes.data && healthRes.data[0]) || { total: 0, last_24h: 0, last_error: null }, errors: errsRes.data || [] })
     })
   }, [])
   useEffect(() => { loadAll() }, [loadAll])
@@ -138,11 +140,31 @@ export default function Console({ onLock, onNav }) {
           )}
         </section>
 
-        {/* LENS 04 · pending (Sprint 6) */}
-        <section className="lens pending">
+        {/* LENS 04 · APP HEALTH */}
+        <section className="lens">
           <div className="lens-eyebrow">Lens 04 &middot; App health</div>
-          <h3 className="lens-title">Coming in Sprint 6</h3>
-          <p className="lens-empty">App health (error tracking via Sentry) arrives with the remaining observability work.</p>
+          <h3 className="lens-title">Is the app behaving?</h3>
+          <div className="kpis">
+            <div className="kpi"><span className={'kpi-num' + (state.health.last_24h > 0 ? ' warn' : ' ok')}>{state.health.last_24h}</span><span className="kpi-lab">errors, last 24h</span></div>
+            <div className="kpi"><span className="kpi-num">{state.health.total}</span><span className="kpi-lab">errors, all time</span></div>
+            <div className="kpi">
+              <span className="kpi-num sm">{state.health.last_error ? new Date(state.health.last_error).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'None'}</span>
+              <span className="kpi-lab">last error</span>
+              <span className="kpi-sub">{state.health.last_error ? new Date(state.health.last_error).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }) : 'all clear'}</span>
+            </div>
+          </div>
+          {state.errors.length > 0 && (
+            <div className="err-list">
+              <p className="lens-sub">Recent errors</p>
+              {state.errors.map((e, i) => (
+                <div key={i} className="err-row">
+                  <span className="err-when">{new Date(e.occurred_at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
+                  <span className="err-msg">{e.message}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          <p className="lens-foot">Caught errors logged in-app; Sentry holds the full stack traces for deeper diagnosis.</p>
         </section>
 
         {/* LENS 05 · GM ACTIVITY */}

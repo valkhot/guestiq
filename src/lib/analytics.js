@@ -1,13 +1,14 @@
 import posthog from 'posthog-js'
 import * as Sentry from '@sentry/react'
+import { supabase } from './supabase.js'
 
 // ── Your PostHog project key ─────────────────────────────────────────
 // From PostHog → Settings → Project API Key. Safe to be public (client key).
 // Use the EU host if your PostHog project is in the EU.
-const POSTHOG_KEY  = 'phc_DnrWQ6GvStuecSb2gFjunPXyQ6T4CRboTf676viSNK7b'
+const POSTHOG_KEY  = 'PASTE_YOUR_POSTHOG_PROJECT_KEY_HERE'
 const POSTHOG_HOST = 'https://us.i.posthog.com'
 // From Sentry → Project Settings → Client Keys (DSN). Safe to be public.
-const SENTRY_DSN  = 'https://b24bcd3409bf6a9aefb2b45f7ca40b3f@o4511322569768960.ingest.us.sentry.io/4511322595655680'
+const SENTRY_DSN  = 'PASTE_YOUR_SENTRY_DSN_HERE'
 // ─────────────────────────────────────────────────────────────────────
 
 const isSet = v => v && !String(v).startsWith('PASTE_')
@@ -41,14 +42,27 @@ export function initAnalytics() {
       })
     }
   } catch (e) { /* error tracking must never break the app */ }
+
+  try {
+    if (!window.__guestiq_error_hooked) {
+      window.__guestiq_error_hooked = true
+      window.addEventListener('error', ev => captureError(ev.error || ev.message, 'window.onerror'))
+      window.addEventListener('unhandledrejection', ev => captureError(ev.reason || 'unhandledrejection', 'promise'))
+    }
+  } catch (e) { /* ignore */ }
 }
 
 // Report a handled error to Sentry (and console). Never throws.
 export function captureError(err, context) {
+  const message = (err && err.message) ? err.message : String(err)
   try {
     console.error('[GuestIQ]', err)
-    Sentry.captureException(err instanceof Error ? err : new Error(String(err)),
+    Sentry.captureException(err instanceof Error ? err : new Error(message),
       context ? { extra: context } : undefined)
+  } catch (e) { /* ignore */ }
+  // Self-contained log for Console Lens 04 (App health). Message only, no PII.
+  try {
+    supabase.rpc('guestiq_log_error', { msg: message, ctx: context ? String(context).slice(0, 200) : null })
   } catch (e) { /* ignore */ }
 }
 
