@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase.js'
 import { personaLabel } from '../lib/readFlow.js'
-import { dossierRows, quotes, volume, storyParams, storyFrom } from '../lib/payoff.js'
+import { dossierRows, quotes, volume, storyFrom } from '../lib/payoff.js'
 import { getCoverage } from '../lib/coverage.js'
 
 function Constellation({ reps, colour }) {
@@ -29,22 +29,8 @@ export default function EndOfRead({ badge, persona, recorded, onExit }) {
   const coverage = Object.keys(getCoverage(badge.badge_id))
 
   const [reps, setReps] = useState(null)
-  const [story, setStory] = useState(null)
-
-  // Story beat: try RosaeNLG (lazy — loads only here); fall back to deterministic text.
-  useEffect(() => {
-    let alive = true
-    ;(async () => {
-      let text = null
-      try {
-        const mod = await import('../lib/story.js')
-        text = await mod.renderStory(storyParams(persona, recorded))
-      } catch (e) { text = null }
-      if (!text) text = storyFrom(persona, recorded)
-      if (alive) setStory(text)
-    })()
-    return () => { alive = false }
-  }, [persona, recorded])
+  // Story beat: deterministic synthesis woven from the agent's own answers.
+  const story = storyFrom(persona, recorded)
   useEffect(() => {
     let alive = true
     supabase.rpc('guestiq_persona_counts').then(({ data, error }) => {

@@ -47,31 +47,47 @@ export function quotes(recorded) {
   return recorded.map(e => (e.freeText || '').trim()).filter(Boolean)
 }
 
+// Deterministic-but-varied phrasing: a stable per-read pick (no randomness) so the
+// story reads with life without ever changing between renders of the same read.
+function aan(word) {
+  return /^[aeiou]/i.test((word || '').trim()) ? 'an' : 'a'
+}
+function seedFrom(str) {
+  let h = 2166136261
+  for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) }
+  return Math.abs(h)
+}
+const OPENERS = [
+  l => `This is ${aan(l)} ${l} guest you know well.`,
+  l => `You know this ${l} guest inside out.`,
+  l => `${aan(l) === 'an' ? 'An' : 'A'} ${l} guest \u2014 and you read them on sight.`,
+  l => `This ${l} guest? You had them the moment they walked in.`,
+]
+const DELIGHT_LEAD = ['The small thing that lands:', 'What would make their day:', 'What quietly delights them:']
+const CLOSERS = [
+  'The small things a system never sees \u2014 but you did.',
+  'None of this is in a database. It\u2019s in you.',
+  'The details a booking form never asks \u2014 and you already knew.',
+]
+
 export function storyFrom(persona, recorded) {
   const label = personaLabel(persona)
   const by = indexById(recorded)
   const v = id => by[id] ? chosenText(by[id]) : ''
-  const parts = [`You read a ${label} guest you know.`]
-  if (v('P2')) parts.push(`What quietly bothers them \u2014 ${v('P2')}.`)
-  if (v('P7')) parts.push(`What delights them \u2014 ${v('P7')}.`)
-  if (v('P9')) parts.push(`What they ask for that isn\u2019t there \u2014 ${v('P9')}.`)
-  if (v('P3')) parts.push(`What to keep them from \u2014 ${v('P3')}.`)
-  if (parts.length === 1) parts.push('You got their read down in your own words \u2014 the small things a system never sees.')
+  const seed = seedFrom(label + '|' + recorded.map(e => (e.q && e.q.id) || '').join(','))
+
+  const parts = [OPENERS[seed % OPENERS.length](label)]
+  if (v('P2')) parts.push(`What quietly bothers them: ${v('P2')}.`)
+  if (v('P7')) parts.push(`${DELIGHT_LEAD[seed % DELIGHT_LEAD.length]} ${v('P7')}.`)
+  if (v('P9')) parts.push(`They ask for something you don\u2019t stock \u2014 ${v('P9')}.`)
+  if (v('P3')) parts.push(`A room to keep them from: ${v('P3')}.`)
+
+  if (parts.length === 1) {
+    parts.push('You got their read down in your own words \u2014 the things a form never asks.')
+  } else {
+    parts.push(CLOSERS[seed % CLOSERS.length])
+  }
   return parts.join(' ')
 }
 
 export const volume = recorded => recorded.length
-
-// Params for the RosaeNLG guest story (extracted from the agent's own answers).
-export function storyParams(persona, recorded) {
-  const by = {}
-  recorded.forEach(e => { if (e.q && e.q.id) by[e.q.id] = e })
-  const v = id => by[id] ? chosenText(by[id]) : ''
-  return {
-    persona: personaLabel(persona),
-    quietComplaint: v('P2'),
-    delight: v('P7'),
-    asksFor: v('P9'),
-    keepFrom: v('P3'),
-  }
-}
