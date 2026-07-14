@@ -61,3 +61,17 @@ export function storyFrom(persona, recorded) {
 }
 
 export const volume = recorded => recorded.length
+
+// Params for the RosaeNLG guest story (extracted from the agent's own answers).
+export function storyParams(persona, recorded) {
+  const by = {}
+  recorded.forEach(e => { if (e.q && e.q.id) by[e.q.id] = e })
+  const v = id => by[id] ? chosenText(by[id]) : ''
+  return {
+    persona: personaLabel(persona),
+    quietComplaint: v('P2'),
+    delight: v('P7'),
+    asksFor: v('P9'),
+    keepFrom: v('P3'),
+  }
+}

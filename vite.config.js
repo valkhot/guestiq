@@ -5,6 +5,13 @@ import { VitePWA } from 'vite-plugin-pwa'
 // base must match the GitHub Pages path: https://valkhot.github.io/guestiq/
 export default defineConfig({
   base: '/guestiq/',
+  // RosaeNLG's browser runtime expects a few build-time globals that Vite
+  // doesn't provide by default. Define them so the compiled story renders.
+  define: {
+    __BUNDLED_DEV__: false,
+    __BROWSER__: true,
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+  },
   plugins: [
     react(),
     VitePWA({
