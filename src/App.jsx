@@ -3,7 +3,6 @@ import Welcome from './screens/Welcome.jsx'
 import BadgeClaim from './screens/BadgeClaim.jsx'
 import GuestSelect from './screens/GuestSelect.jsx'
 import ReadScreen from './screens/ReadScreen.jsx'
-import FindingsPreview from './screens/FindingsPreview.jsx'
 import AdminGate from './screens/AdminGate.jsx'
 import GMReport from './screens/GMReport.jsx'
 import Console from './screens/Console.jsx'
@@ -27,7 +26,7 @@ export default function App() {
   const [offline, setOffline] = useState(typeof navigator !== 'undefined' && navigator.onLine === false)
   const [adminView, setAdminView] = useState(() => {
     const v = new URLSearchParams(window.location.search).get('view')
-    return (v === 'admin' || v === 'console' || v === 'findings') ? v : null
+    return (v === 'admin' || v === 'console') ? v : null
   })
 
   useEffect(() => {
@@ -132,7 +131,6 @@ export default function App() {
 
   if (adminView === 'admin') return <AdminGate onLock={lockAdmin}><GMReport onLock={lockAdmin} onNav={navAdmin} /></AdminGate>
   if (adminView === 'console') return <AdminGate onLock={lockAdmin}><Console onLock={lockAdmin} onNav={navAdmin} /></AdminGate>
-  if (adminView === 'findings') return <AdminGate onLock={lockAdmin}><FindingsPreview /></AdminGate>
 
   if (screen === 'loading') return null
   if (screen === 'closed') return (
