@@ -8,6 +8,7 @@ export default function BadgeClaim({ onClaimed }) {
   const [error, setError] = useState(null)
   const [picked, setPicked] = useState(null)
   const [busy, setBusy] = useState(false)
+  const [taken, setTaken] = useState(null)
 
   useEffect(() => {
     let alive = true
@@ -21,16 +22,27 @@ export default function BadgeClaim({ onClaimed }) {
     return () => { alive = false }
   }, [])
 
+  async function refreshBadges() {
+    const { data } = await supabase.from('badges').select('*').order('animal')
+    if (data) setBadges(data)
+  }
+
   async function confirm() {
     const b = picked
+    if (b.claimed_at) { setTaken(b.animal); setPicked(null); refreshBadges(); return }
     setBusy(true)
-    if (!b.claimed_at) {
-      const { error } = await supabase
-        .from('badges')
-        .update({ claimed_at: new Date().toISOString() })
-        .eq('badge_id', b.badge_id)
-        .is('claimed_at', null)
-      if (error) { setError(error.message); setBusy(false); return }
+    // Claim only if still unclaimed; `select()` tells us whether WE won the race.
+    const { data, error } = await supabase
+      .from('badges')
+      .update({ claimed_at: new Date().toISOString() })
+      .eq('badge_id', b.badge_id)
+      .is('claimed_at', null)
+      .select()
+    setBusy(false)
+    if (error) { setError(error.message); return }
+    if (!data || data.length === 0) {
+      // Someone claimed it first — don't hand out a shared identity.
+      setTaken(b.animal); setPicked(null); refreshBadges(); return
     }
     onClaimed({ badge_id: b.badge_id, animal: b.animal, colour: b.colour })
   }
@@ -61,11 +73,15 @@ export default function BadgeClaim({ onClaimed }) {
       <div className="brand">GUEST<b>IQ</b></div>
       <h2 className="serif-h sm">Pick a badge.</h2>
       <p className="sub">Pick the one that feels like you.</p>
+      {taken && <p className="claim-taken-note">The {taken} was just claimed by someone else \u2014 pick another.</p>}
       <div className="coin-grid">
         {badges.map(b => (
           <button key={b.badge_id}
                   className={'coin-btn' + (b.claimed_at ? ' taken' : '')}
-                  onClick={() => setPicked(b)}>
+                  disabled={!!b.claimed_at}
+                  aria-disabled={!!b.claimed_at}
+                  title={b.claimed_at ? 'Already taken by someone at the desk' : undefined}
+                  onClick={() => { if (!b.claimed_at) { setTaken(null); setPicked(b) } }}>
             <Coin badgeId={b.badge_id} animal={b.animal} colour={b.colour} size={104} />
             <span className="coin-name">{b.animal}</span>
             {b.claimed_at && <span className="coin-taken">taken</span>}

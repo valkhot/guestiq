@@ -333,3 +333,7 @@ button{ font-family:inherit; cursor:pointer; }
 .err-row{ display:flex; gap:14px; align-items:baseline; padding:8px 0; border-bottom:1px solid #EFE8DA; }
 .err-when{ font-family:var(--mono); font-size:.66rem; color:#9A8F84; white-space:nowrap; }
 .err-msg{ font-family:var(--mono); font-size:.8rem; color:#7A3030; word-break:break-word; }
+
+.coin-btn.taken{ opacity:.38; filter:grayscale(.7); cursor:not-allowed; }
+.coin-btn.taken:hover{ transform:none; }
+.claim-taken-note{ font-family:var(--story); font-style:italic; color:#CC9090; margin-bottom:10px; }
