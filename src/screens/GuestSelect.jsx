@@ -94,6 +94,11 @@ export default function GuestSelect({ badge, onSelect, onBack }) {
       {covCount > 0 && (
         <p className="wall-recognition">You&rsquo;ve brought {covCount} guest{covCount === 1 ? '' : 's'} to life.</p>
       )}
+      {covCount >= 9
+        ? <p className="wall-plenty">You&rsquo;ve read every guest the desk sees &mdash; that&rsquo;s the whole wall.</p>
+        : covCount >= 3
+          ? <p className="wall-plenty">That&rsquo;s plenty &mdash; the rest are the desk&rsquo;s to fill, if you truly know them.</p>
+          : null}
       <button className="linkbtn" onClick={onBack}>Back</button>
 
       {confirming && (
