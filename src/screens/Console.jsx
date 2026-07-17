@@ -28,11 +28,12 @@ export default function Console({ onLock, onNav }) {
       supabase.rpc('guestiq_report_activity', { pin }),
       supabase.rpc('guestiq_app_health', { pin }),
       supabase.rpc('guestiq_recent_errors', { pin }),
-    ]).then(([fd, statsRes, statusRes, agentsRes, reportRes, healthRes, errsRes]) => {
+      supabase.from('badges').select('*').order('animal'),
+    ]).then(([fd, statsRes, statusRes, agentsRes, reportRes, healthRes, errsRes, badgesRes]) => {
       if (fd.error) { setState({ loading: false, error: fd.error.message }); return }
       const result = computeFindings(fd)
       const stats = (statsRes.data && statsRes.data[0]) || { started_reads: 0, completed_reads: 0, deep_reads: 0, distinct_agents: 0, guest_types: 0 }
-      setState({ loading: false, refreshing: false, result, stats, status: statusRes.data || 'open', agents: agentsRes.data || [], report: (reportRes.data && reportRes.data[0]) || { opens: 0, last_opened: null }, health: (healthRes.data && healthRes.data[0]) || { total: 0, last_24h: 0, last_error: null }, errors: errsRes.data || [] })
+      setState({ loading: false, refreshing: false, result, stats, status: statusRes.data || 'open', agents: agentsRes.data || [], report: (reportRes.data && reportRes.data[0]) || { opens: 0, last_opened: null }, health: (healthRes.data && healthRes.data[0]) || { total: 0, last_24h: 0, last_error: null }, errors: errsRes.data || [], badges: badgesRes.data || [] })
     })
   }, [])
   useEffect(() => { loadAll() }, [loadAll])
@@ -65,6 +66,13 @@ export default function Console({ onLock, onNav }) {
     const { data, error } = await supabase.rpc('guestiq_set_study_status', { pin: getPin(), new_status: next })
     if (!error) setState(s => ({ ...s, status: data || next }))
   }
+  const releaseBadge = async (b) => {
+    if (!window.confirm(`Release the ${b.animal}? Only do this if that agent lost access \u2014 they can then re-claim it.`)) return
+    const { error } = await supabase.rpc('guestiq_release_badge', { pin: getPin(), p_badge_id: b.badge_id })
+    if (error) { window.alert('Could not release: ' + error.message); return }
+    loadAll()
+  }
+
   const exportCsv = () => {
     const today = new Date().toISOString().slice(0, 10)
     downloadCsv(findingsToCsv(state.result), `guestiq-findings-${today}.csv`)
@@ -138,6 +146,20 @@ export default function Console({ onLock, onNav }) {
               ))}
             </div>
           )}
+
+          <h4 className="lens-sub">Badges <span className="lens-note">{(state.badges || []).filter(b => !b.claimed_at).length} free of {(state.badges || []).length}</span></h4>
+          <p className="lens-foot" style={{ marginTop: 0, marginBottom: 10 }}>Release a badge only if that agent lost access (cleared browser, new device) &mdash; otherwise they&rsquo;ll take a second badge and count twice.</p>
+          <div className="badge-admin">
+            {(state.badges || []).map(b => (
+              <div key={b.badge_id} className={'badge-row' + (b.claimed_at ? ' claimed' : '')}>
+                <span className="badge-animal">{b.animal}</span>
+                <span className="badge-state">{b.claimed_at ? 'claimed ' + new Date(b.claimed_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'free'}</span>
+                {b.claimed_at
+                  ? <button className="badge-release" onClick={() => releaseBadge(b)}>Release</button>
+                  : <span className="badge-free-dot">&#9679;</span>}
+              </div>
+            ))}
+          </div>
         </section>
 
         {/* LENS 04 · APP HEALTH */}

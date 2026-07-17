@@ -337,3 +337,15 @@ button{ font-family:inherit; cursor:pointer; }
 .coin-btn.taken{ opacity:.38; filter:grayscale(.7); cursor:not-allowed; }
 .coin-btn.taken:hover{ transform:none; }
 .claim-taken-note{ font-family:var(--story); font-style:italic; color:#CC9090; margin-bottom:10px; }
+
+.wall-band.inprogress{ color:#E7C877; border-color:rgba(200,162,78,.45); background:rgba(200,162,78,.10); }
+.read-resumed{ font-family:var(--mono); font-size:.66rem; letter-spacing:.06em; text-transform:uppercase; color:var(--brass); margin-bottom:10px; }
+
+.badge-admin{ display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:8px; }
+.badge-row{ display:flex; align-items:center; gap:10px; background:#FBF8F1; border:1px solid #E7DFCE; border-radius:10px; padding:9px 12px; }
+.badge-animal{ font-family:var(--serif); font-size:1.02rem; color:#241F2B; text-transform:capitalize; flex:1; }
+.badge-state{ font-family:var(--mono); font-size:.62rem; letter-spacing:.05em; text-transform:uppercase; color:#9A8F84; }
+.badge-row.claimed{ border-color:#E2D9C6; }
+.badge-release{ font-family:var(--mono); font-size:.58rem; letter-spacing:.08em; text-transform:uppercase; color:#7A3030; background:none; border:1px solid #E8CFCF; border-radius:999px; padding:5px 10px; cursor:pointer; }
+.badge-release:hover{ background:#7A3030; color:#FBF8F1; border-color:#7A3030; }
+.badge-free-dot{ color:#3C5A2E; font-size:.7rem; }

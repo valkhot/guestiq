@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase.js'
 import { personas, personaLabel } from '../lib/readFlow.js'
 import { getCoverage } from '../lib/coverage.js'
+import { inProgress } from '../lib/progress.js'
 import Coin from '../components/Coin.jsx'
 import { track } from '../lib/analytics.js'
 
@@ -27,6 +28,7 @@ export default function GuestSelect({ badge, onSelect, onBack }) {
   const [counts, setCounts] = useState(null)
   const [confirming, setConfirming] = useState(null) // persona pending "add deeper?"
   const coverage = badge ? getCoverage(badge.badge_id) : {}
+  const progress = badge ? inProgress(badge.badge_id) : {}
 
   useEffect(() => {
     let alive = true
@@ -47,7 +49,8 @@ export default function GuestSelect({ badge, onSelect, onBack }) {
     .map(p => {
       const reps = counts[p.key] || 0
       const mineDepth = coverage[p.key] // undefined | 'core' | 'expert'
-      return { key: p.key, reps, b: band(reps), mineDepth }
+      const mineProgress = progress[p.key] || 0 // answers given on an unfinished read
+      return { key: p.key, reps, b: band(reps), mineDepth, mineProgress }
     })
     .sort((a, b) => order[a.b.key] - order[b.b.key] || a.reps - b.reps)
 
@@ -85,7 +88,9 @@ export default function GuestSelect({ badge, onSelect, onBack }) {
               <span className="wall-desc">{DESC[p.key]}</span>
               {done
                 ? <span className="wall-band done">Complete &#10003;</span>
-                : <span className={'wall-band ' + p.b.key}>{p.b.label}</span>}
+                : p.mineProgress > 0
+                  ? <span className="wall-band inprogress">In progress &middot; {p.mineProgress} answered</span>
+                  : <span className={'wall-band ' + p.b.key}>{p.b.label}</span>}
             </button>
           )
         })}

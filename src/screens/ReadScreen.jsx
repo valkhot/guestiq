@@ -5,6 +5,7 @@ import Coin from '../components/Coin.jsx'
 import QuestionBody from './QuestionBody.jsx'
 import EndOfRead from './EndOfRead.jsx'
 import { addCoverage } from '../lib/coverage.js'
+import { getEntries, recordEntry, clearProgress } from '../lib/progress.js'
 import { track } from '../lib/analytics.js'
 import { buildCoreQuestions, buildDeepQuestions, personaLabel, grounding, responseIdFor } from '../lib/readFlow.js'
 
@@ -37,12 +38,25 @@ export default function ReadScreen({ badge, persona, readId, onExit, deepOnly = 
   const coreQs = useMemo(() => buildCoreQuestions(persona), [persona])
   const deepQs = useMemo(() => buildDeepQuestions(persona), [persona])
 
-  const [list, setList] = useState(deepOnly ? deepQs : coreQs)
-  const [i, setI] = useState(0)
-  const [phase, setPhase] = useState('reading') // reading | fork | done
+  // ── resume: restore any answers already given for this read ──────
+  const saved = useMemo(() => getEntries(badge.badge_id, persona), [badge.badge_id, persona])
+  const allQs = useMemo(() => [...coreQs, ...deepQs], [coreQs, deepQs])
+  const initialList = deepOnly ? deepQs : coreQs
+  const savedIds = useMemo(() => new Set(saved.map(e => e.id)), [saved])
+  const initialRecorded = useMemo(() => saved
+    .map(e => { const q = allQs.find(x => x.id === e.id); return q ? { q, value: e.value, freeText: e.freeText } : null })
+    .filter(Boolean), [saved, allQs])
+  const firstUnanswered = initialList.findIndex(qq => !savedIds.has(qq.id))
+  const allDone = firstUnanswered === -1 && saved.length > 0
+  const startI = allDone ? Math.max(0, initialList.length - 1) : Math.max(0, firstUnanswered)
+
+  const [list, setList] = useState(initialList)
+  const [i, setI] = useState(startI)
+  const [phase, setPhase] = useState(allDone && !deepOnly ? 'fork' : 'reading')
   const [deepAdded, setDeepAdded] = useState(deepOnly)
   const [answer, setAnswer] = useState({})
-  const [recorded, setRecorded] = useState([])
+  const [recorded, setRecorded] = useState(initialRecorded)
+  const [resumed, setResumed] = useState(startI > 0 || allDone)
   const [freeText, setFreeText] = useState('')
   const [busy, setBusy] = useState(false)
 
@@ -62,6 +76,7 @@ export default function ReadScreen({ badge, persona, readId, onExit, deepOnly = 
     } catch (error) { setBusy(false); alert('Could not mark the read complete: ' + error.message); return }
     setBusy(false)
     addCoverage(badge.badge_id, persona, depthVal)
+    clearProgress(badge.badge_id, persona)
     track('read_completed', { persona, depth: depthVal, questions: recorded.length })
     setPhase('done')
   }
@@ -84,7 +99,9 @@ export default function ReadScreen({ badge, persona, readId, onExit, deepOnly = 
     } catch (error) { setBusy(false); alert('Could not save that answer: ' + error.message); return }
     setBusy(false)
     track('question_answered', { persona, item_id: q.id, item_type: q.type })
-    setRecorded(r => [...r, { q, value: buildValue(q, answer), freeText: text }])
+    recordEntry(badge.badge_id, persona, q.id, buildValue(q, answer), text)
+    setRecorded(r => [...r.filter(e => e.q.id !== q.id), { q, value: buildValue(q, answer), freeText: text }])
+    setResumed(false)
     // advance / branch
     if (i + 1 < list.length) { setI(i + 1); resetInputs() }
     else if (!deepAdded) { track('depth_fork_shown', { persona }); setPhase('fork') }   // finished CORE → offer the fork
@@ -151,6 +168,8 @@ export default function ReadScreen({ badge, persona, readId, onExit, deepOnly = 
           <textarea rows={2} value={freeText} onChange={e => setFreeText(e.target.value)}
                     placeholder={isVerbatim ? 'What they said, or what you saw\u2026' : 'A quick example, in their words\u2026'} />
         </div>
+
+        {resumed && <p className="read-resumed">Picked up where you left off \u2014 your earlier answers are saved.</p>}
 
         <button className="cta continue" disabled={!answered || busy} onClick={saveAndContinue}>
           {busy ? 'Saving\u2026' : 'Continue \u2192'}
