@@ -88,7 +88,7 @@ export default function GuestSelect({ badge, onSelect, onBack }) {
               <span className="wall-desc">{DESC[p.key]}</span>
               {done
                 ? <span className="wall-band done">Complete &#10003;</span>
-                : p.mineProgress > 0
+                : (!p.mineDepth && p.mineProgress > 0)
                   ? <span className="wall-band inprogress">In progress &middot; {p.mineProgress} answered</span>
                   : <span className={'wall-band ' + p.b.key}>{p.b.label}</span>}
             </button>

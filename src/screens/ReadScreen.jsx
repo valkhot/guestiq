@@ -76,7 +76,9 @@ export default function ReadScreen({ badge, persona, readId, onExit, deepOnly = 
     } catch (error) { setBusy(false); alert('Could not mark the read complete: ' + error.message); return }
     setBusy(false)
     addCoverage(badge.badge_id, persona, depthVal)
-    clearProgress(badge.badge_id, persona)
+    // Keep the saved answers after a CORE finish so a later "go deeper" can
+    // restore them (otherwise the expert end-of-read has no core facts).
+    if (depthVal === 'expert') clearProgress(badge.badge_id, persona)
     track('read_completed', { persona, depth: depthVal, questions: recorded.length })
     setPhase('done')
   }
