@@ -30,6 +30,7 @@ export default function EndOfRead({ badge, persona, recorded, onExit }) {
 
   const [reps, setReps] = useState(null)
   // Story beat: deterministic synthesis woven from the agent's own answers.
+  // Returns paragraphs — a core read gets one; an expert read earns several.
   const story = storyFrom(persona, recorded)
   useEffect(() => {
     let alive = true
@@ -56,7 +57,11 @@ export default function EndOfRead({ badge, persona, recorded, onExit }) {
       {/* beat 2 — dossier */}
       <h1 className="serif-h hero eor-title">The {label} guest,<br/>in your read.</h1>
       <p className="eor-volume">You got down {n} thing{n === 1 ? '' : 's'} most people never notice.</p>
-      {story && <p className="eor-story">{story}</p>}
+      {story.length > 0 && (
+        <div className="eor-storyblock">
+          {story.map((para, idx) => <p key={idx} className="eor-story">{para}</p>)}
+        </div>
+      )}
 
       {rows.length > 0 && (
         <div className="dossier">
