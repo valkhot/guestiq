@@ -23,13 +23,24 @@ function isDuplicate(err) {
 // Run one queued op against Supabase. Throws only on a genuine failure worth retrying.
 async function runOp(op) {
   const t = supabase.from(op.table)
+  let error
   if (op.action === 'insert') {
-    const { error } = await t.insert(op.data)
-    if (error && !isDuplicate(error)) throw error
+    ({ error } = await t.insert(op.data))
   } else if (op.action === 'update') {
-    const { error } = await t.update(op.data).eq(op.matchCol, op.matchVal)
-    if (error) throw error
+    let qy = t.update(op.data)
+    // match on a single column (matchCol/matchVal) OR several (match: {col:val})
+    if (op.match && typeof op.match === 'object') {
+      for (const [col, val] of Object.entries(op.match)) qy = qy.eq(col, val)
+    } else {
+      qy = qy.eq(op.matchCol, op.matchVal)
+    }
+    // NOTE: no .select() here — anon has UPDATE but not necessarily SELECT rights,
+    // so .select() would return zero rows even on a successful update. Success = no error.
+    ({ error } = await qy)
+    if (error && !isDuplicate(error)) throw error
+    return
   }
+  if (error && !isDuplicate(error)) throw error   // duplicate = idempotent success
 }
 
 function enqueue(op) {
@@ -40,14 +51,23 @@ function enqueue(op) {
   save(q)
 }
 
-// Try a write now; if offline, queue it and report queued:true. Real errors still throw.
+// A genuine server rejection we should NOT hide (RLS, constraint, bad data).
+// Postgres/PostgREST errors carry a `.code` (e.g. '42501', '23514'); network
+// failures do not. So: if there's a pg code (and it's not a duplicate), surface
+// it. Otherwise (no code = fetch/network/offline failure) → QUEUE, never lose.
+function isServerRejection(err) {
+  return err && typeof err.code === 'string' && err.code.length > 0 && !isDuplicate(err)
+}
+
+// Try a write now; on any network/offline failure, queue it (never lose a read).
 export async function writeOrQueue(op) {
   try {
     await runOp(op)
     return { ok: true, queued: false }
   } catch (err) {
-    if (isOffline(err)) { enqueue(op); return { ok: false, queued: true } }
-    throw err // genuine error — let the caller surface it
+    if (isServerRejection(err)) throw err          // real DB error → surface it
+    enqueue(op)                                     // network/offline/unknown → queue it
+    return { ok: false, queued: true }
   }
 }
 
@@ -76,5 +96,5 @@ export function startQueueSync() {
   started = true
   flushQueue()
   window.addEventListener('online', () => flushQueue())
-  setInterval(() => { if (queueLength() > 0) flushQueue() }, 30000)
+  setInterval(() => { if (queueLength() > 0) flushQueue() }, 8000)
 }

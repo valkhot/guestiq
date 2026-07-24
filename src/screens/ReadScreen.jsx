@@ -6,7 +6,7 @@ import QuestionBody from './QuestionBody.jsx'
 import EndOfRead from './EndOfRead.jsx'
 import { addCoverage } from '../lib/coverage.js'
 import { getEntries, recordEntry, clearProgress } from '../lib/progress.js'
-import { track } from '../lib/analytics.js'
+import { track, captureError } from '../lib/analytics.js'
 import { buildCoreQuestions, buildDeepQuestions, personaLabel, grounding, responseIdFor } from '../lib/readFlow.js'
 
 function isAnswered(q, answer, text) {
@@ -67,13 +67,27 @@ export default function ReadScreen({ badge, persona, readId, onExit, deepOnly = 
 
   async function complete(depthVal) {
     setBusy(true)
-    try {
-      await writeOrQueue({
-        key: 'complete:' + readId, table: 'reads', action: 'update',
-        matchCol: 'id', matchVal: readId,
-        data: { completed_at: new Date().toISOString(), depth: depthVal },
-      })
-    } catch (error) { setBusy(false); alert('Could not mark the read complete: ' + error.message); return }
+    // Completion goes through a SECURITY DEFINER RPC — direct anon table updates
+    // on `reads` silently affect 0 rows (see S6 QA). The RPC returns how many
+    // rows it completed, so a failure can never pass silently again.
+    const { data, error } = await supabase.rpc('guestiq_complete_read', {
+      p_respondent_id: badge.badge_id,
+      p_persona: persona,
+      p_depth: depthVal,
+    })
+    const completedRows = Array.isArray(data) ? (data[0]?.completed ?? data[0]) : data
+    if (error) {
+      setBusy(false)
+      captureError(error, 'complete_read')
+      alert('Could not mark the read complete: ' + error.message)
+      return
+    }
+    if (!completedRows) {
+      setBusy(false)
+      captureError(new Error('completion affected 0 rows'), 'complete_read')
+      alert('Could not mark the read complete \u2014 the read was not found.')
+      return
+    }
     setBusy(false)
     addCoverage(badge.badge_id, persona, depthVal)
     // Keep the saved answers after a CORE finish so a later "go deeper" can
