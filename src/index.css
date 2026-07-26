@@ -338,7 +338,7 @@ button{ font-family:inherit; cursor:pointer; }
 .coin-btn.taken:hover{ transform:none; }
 .claim-taken-note{ font-family:var(--story); font-style:italic; color:#CC9090; margin-bottom:10px; }
 
-.wall-band.inprogress{ color:#E7C877; border-color:rgba(200,162,78,.45); background:rgba(200,162,78,.10); }
+.wall-band.resume{ color:#3a2f17; border-color:rgba(200,162,78,.9); background:#E7C877; font-weight:600; }
 .read-resumed{ font-family:var(--mono); font-size:.66rem; letter-spacing:.06em; text-transform:uppercase; color:var(--brass); margin-bottom:10px; }
 
 .badge-admin{ display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:8px; }

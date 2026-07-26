@@ -67,25 +67,21 @@ export default function ReadScreen({ badge, persona, readId, onExit, deepOnly = 
 
   async function complete(depthVal) {
     setBusy(true)
-    // Completion goes through a SECURITY DEFINER RPC — direct anon table updates
-    // on `reads` silently affect 0 rows (see S6 QA). The RPC returns how many
-    // rows it completed, so a failure can never pass silently again.
-    const { data, error } = await supabase.rpc('guestiq_complete_read', {
-      p_respondent_id: badge.badge_id,
-      p_persona: persona,
-      p_depth: depthVal,
-    })
-    const completedRows = Array.isArray(data) ? (data[0]?.completed ?? data[0]) : data
-    if (error) {
+    // Completion runs through a SECURITY DEFINER RPC (direct anon UPDATEs on
+    // `reads` silently affect 0 rows), and through the offline queue so an
+    // interrupted connection never costs the agent their finished read.
+    try {
+      await writeOrQueue({
+        key: 'complete:' + badge.badge_id + ':' + persona,
+        action: 'rpc',
+        fn: 'guestiq_complete_read',
+        args: { p_respondent_id: badge.badge_id, p_persona: persona, p_depth: depthVal },
+        expectRows: true,   // online: 0 rows = a real failure, surfaced not swallowed
+      })
+    } catch (error) {
       setBusy(false)
       captureError(error, 'complete_read')
       alert('Could not mark the read complete: ' + error.message)
-      return
-    }
-    if (!completedRows) {
-      setBusy(false)
-      captureError(new Error('completion affected 0 rows'), 'complete_read')
-      alert('Could not mark the read complete \u2014 the read was not found.')
       return
     }
     setBusy(false)

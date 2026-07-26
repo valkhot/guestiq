@@ -44,15 +44,21 @@ export default function GuestSelect({ badge, onSelect, onBack }) {
 
   if (counts == null) return <div className="screen center"><p className="sub">Loading the desk&hellip;</p></div>
 
-  const order = { gap: 0, started: 1, known: 2 }
+  const order = { resume: 0, gap: 1, started: 2, known: 3, done: 4 }
   const items = personas
     .map(p => {
       const reps = counts[p.key] || 0
       const mineDepth = coverage[p.key] // undefined | 'core' | 'expert'
       const mineProgress = progress[p.key] || 0 // answers given on an unfinished read
-      return { key: p.key, reps, b: band(reps), mineDepth, mineProgress }
+      const b = band(reps)
+      // sortKey: resume (my unfinished) first, complete (expert) last, else desk band
+      const sortKey = mineDepth === 'expert' ? 'done'
+                    : (!mineDepth && mineProgress > 0) ? 'resume'
+                    : b.key
+      return { key: p.key, reps, b, mineDepth, mineProgress, sortKey }
     })
-    .sort((a, b) => order[a.b.key] - order[b.b.key] || a.reps - b.reps)
+    .sort((a, b) => order[a.sortKey] - order[b.sortKey]
+                 || (a.sortKey === 'resume' ? b.mineProgress - a.mineProgress : a.reps - b.reps))
 
   function pick(p) {
     if (p.mineDepth === 'expert') return              // done — disabled
@@ -89,7 +95,7 @@ export default function GuestSelect({ badge, onSelect, onBack }) {
               {done
                 ? <span className="wall-band done">Complete &#10003;</span>
                 : (!p.mineDepth && p.mineProgress > 0)
-                  ? <span className="wall-band inprogress">In progress &middot; {p.mineProgress} answered</span>
+                  ? <span className="wall-band resume">Resume &middot; {p.mineProgress} answered</span>
                   : <span className={'wall-band ' + p.b.key}>{p.b.label}</span>}
             </button>
           )

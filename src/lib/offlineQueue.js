@@ -22,6 +22,17 @@ function isDuplicate(err) {
 
 // Run one queued op against Supabase. Throws only on a genuine failure worth retrying.
 async function runOp(op) {
+  // RPC ops (e.g. completing a read via a SECURITY DEFINER function).
+  if (op.action === 'rpc') {
+    const { data, error } = await supabase.rpc(op.fn, op.args)
+    if (error) throw error
+    if (op.expectRows) {
+      const n = Array.isArray(data) ? (data[0]?.completed ?? data[0]) : data
+      if (!n) { const e = new Error('completion affected 0 rows'); e.code = 'NO_ROWS'; throw e }
+    }
+    return
+  }
+
   const t = supabase.from(op.table)
   let error
   if (op.action === 'insert') {
