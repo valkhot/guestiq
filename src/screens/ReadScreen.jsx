@@ -112,8 +112,8 @@ export default function ReadScreen({ badge, persona, readId, onExit, deepOnly = 
     setBusy(false)
     track('question_answered', { persona, item_id: q.id, item_type: q.type })
     recordEntry(badge.badge_id, persona, q.id, buildValue(q, answer), text)
-    setRecorded(r => [...r.filter(e => e.q.id !== q.id), { q, value: buildValue(q, answer), freeText: text }])
     setResumed(false)
+    setRecorded(r => [...r.filter(e => e.q.id !== q.id), { q, value: buildValue(q, answer), freeText: text }])
     // advance / branch
     if (i + 1 < list.length) { setI(i + 1); resetInputs() }
     else if (!deepAdded) { track('depth_fork_shown', { persona }); setPhase('fork') }   // finished CORE → offer the fork
