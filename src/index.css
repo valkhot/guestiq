@@ -351,3 +351,4 @@ button{ font-family:inherit; cursor:pointer; }
 .badge-free-dot{ color:#3C5A2E; font-size:.7rem; }
 .eor-storyblock{ max-width:58ch; margin:18px auto 0; display:flex; flex-direction:column; gap:12px; }
 .eor-storyblock .eor-story{ margin:0; }
+.report-narrative{ font-family:var(--serif); font-size:clamp(1.02rem,1.35vw,1.22rem); line-height:1.62; color:#3A3348; max-width:60ch; margin:4px 0 22px; }

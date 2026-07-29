@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase.js'
 import { loadFindingsData } from '../lib/findingsData.js'
 import { computeFindings } from '../lib/engine.js'
 import { personaLabel } from '../lib/readFlow.js'
+import { overviewNarrative, crossCuttingLede, sharpestLede, personaNarrative } from '../lib/reportProse.js'
 import { getPin } from '../lib/adminPin.js'
 
 const SECTIONS = [
@@ -59,10 +60,38 @@ export default function GMReport({ onLock, onNav }) {
       ['mis-weight', 'Mis-weights'],
     ]
     let body = ''
+
+    // Overview first — mirrors the on-screen Overview tab.
+    const ov = s.result.overview
+    if (ov && (ov.crossCutting.length || ov.sharpest.length || ov.thin.length)) {
+      body += `<h2>Overview</h2>`
+      body += `<p class="lede">${esc(overviewNarrative(s.result))}</p>`
+      if (ov.crossCutting.length) {
+        body += `<h3>What cuts across the desk</h3>`
+        for (const x of ov.crossCutting) {
+          body += `<div class="f"><div class="fl">${esc(x.label)}${x.highValue ? ' \u2605' : ''} <span class="tier">${x.guests.length} guest types</span></div>`
+          body += `<div class="fm">${esc(x.guests.map(g => personaLabel(g.persona) + ' (' + g.count + ' of ' + g.reps + ')').join(' \u00b7 '))}</div></div>`
+        }
+      }
+      if (ov.sharpest.length) {
+        body += `<h3>Sharpest single signals</h3>`
+        for (const f of ov.sharpest) {
+          const tName = f.type === 'blind-spot' ? 'Blind spot' : f.type === 'contradiction' ? 'Contradiction' : 'Mis-weight'
+          body += `<div class="f"><div class="fl">${esc(f.label)}${f.highValue ? ' \u2605' : ''} <span class="tier">${esc(personaLabel(f.persona))}</span></div>`
+          body += `<div class="fm">${f.count} of ${f.reps} reps \u00b7 ${tName}</div></div>`
+        }
+      }
+      if (ov.thin.length) {
+        body += `<h3>Where the desk is thin</h3>`
+        body += `<p class="muted">${esc(ov.thin.map(t => personaLabel(t.persona) + ' (' + t.reps + ')').join(' \u00b7 '))}</p>`
+      }
+    }
+
     for (const key of readList) {
       const d = personas[key]
       body += `<h2>The ${esc(personaLabel(key))} guest</h2>`
       if (d.gated) { body += `<p class="muted">${esc(d.gateReason)}</p>`; continue }
+      body += `<p class="lede">${esc(personaNarrative(key, d))}</p>`
       const items = t => [...d.strong.filter(f => f.type === t).map(f => ({ f, tier: 'Strong' })),
                           ...d.emerging.filter(f => f.type === t).map(f => ({ f, tier: 'Emerging' }))]
       let any = false
@@ -115,7 +144,9 @@ export default function GMReport({ onLock, onNav }) {
   // guests that were actually read, most-read first
   const read = Object.keys(personas).filter(p => personas[p].reps > 0)
     .sort((a, b) => personas[b].reps - personas[a].reps)
-  const current = active && personas[active] ? active : read[0]
+  const overview = s.result.overview || { crossCutting: [], sharpest: [], thin: [], hasAny: false }
+  const showOverview = active === 'overview' || active == null
+  const current = (!showOverview && personas[active]) ? active : read[0]
   const d = current ? personas[current] : null
   const when = new Date(meta.computedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
 
@@ -139,14 +170,69 @@ export default function GMReport({ onLock, onNav }) {
         </header>
 
         <nav className="report-nav">
+          <button className={'report-tab' + (showOverview ? ' on' : '')} onClick={() => setActive('overview')}>
+            Overview
+          </button>
           {read.map(p => (
-            <button key={p} className={'report-tab' + (p === current ? ' on' : '')} onClick={() => setActive(p)}>
+            <button key={p} className={'report-tab' + (!showOverview && p === current ? ' on' : '')} onClick={() => setActive(p)}>
               {personaLabel(p)} <span className="report-tab-reps">{personas[p].reps}</span>
             </button>
           ))}
         </nav>
 
-        {!d ? <p className="report-empty">No guests read yet.</p> : d.gated ? (
+        {showOverview ? (
+          <div className="report-persona overview">
+            <p className="report-narrative">{overviewNarrative(s.result)}</p>
+
+            {!overview.hasAny && overview.thin.length === 0 && (
+              <p className="report-gated">Not enough reads yet to show the shape. Findings appear once guests reach the {meta.floor}-rep floor.</p>
+            )}
+
+            {overview.crossCutting.length > 0 && (
+              <section className="report-section">
+                <h3 className="report-section-title">What cuts across the desk</h3>
+                <p className="report-section-lede">{crossCuttingLede(overview)}</p>
+                <div className="report-findings">
+                  {overview.crossCutting.map((x, i) => (
+                    <div key={i} className={'rf strong'}>
+                      <div className="rf-head">
+                        <span className="rf-label">{x.label}{x.highValue ? ' \u2605' : ''}</span>
+                        <span className="rf-tier strong">{x.guests.length} guest types</span>
+                      </div>
+                      <div className="rf-meta">{x.guests.map(g => personaLabel(g.persona) + ' (' + g.count + ' of ' + g.reps + ')').join(' \u00b7 ')}</div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {overview.sharpest.length > 0 && (
+              <section className="report-section">
+                <h3 className="report-section-title">Sharpest single signals</h3>
+                <p className="report-section-lede">{sharpestLede(overview)}</p>
+                <div className="report-findings">
+                  {overview.sharpest.map((f, i) => (
+                    <div key={i} className={'rf strong'}>
+                      <div className="rf-head">
+                        <span className="rf-label">{f.label}{f.highValue ? ' \u2605' : ''}</span>
+                        <span className="rf-tier strong">{personaLabel(f.persona)}</span>
+                      </div>
+                      <div className="rf-meta">{f.count} of {f.reps} reps &middot; {f.type === 'blind-spot' ? 'Blind spot' : f.type === 'contradiction' ? 'Contradiction' : 'Mis-weight'}</div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {overview.thin.length > 0 && (
+              <section className="report-section">
+                <h3 className="report-section-title">Where the desk is thin</h3>
+                <p className="report-section-lede">Guests read, but not yet enough to show findings.</p>
+                <p className="report-gated">{overview.thin.map(t => personaLabel(t.persona) + ' (' + t.reps + ')').join(' \u00b7 ')}</p>
+              </section>
+            )}
+          </div>
+        ) : !d ? <p className="report-empty">No guests read yet.</p> : d.gated ? (
           <div className="report-persona">
             <h2 className="report-persona-name">The {personaLabel(current)} guest</h2>
             <p className="report-gated">{d.gateReason}</p>
@@ -156,6 +242,7 @@ export default function GMReport({ onLock, onNav }) {
             <h2 className="report-persona-name">The {personaLabel(current)} guest
               <span className="report-persona-reps">{d.reps} reps &middot; {d.strong.length} strong &middot; {d.emerging.length} emerging</span>
             </h2>
+            <p className="report-narrative">{personaNarrative(current, d)}</p>
 
             {SECTIONS.map(sec => {
               const items = sectionItems(sec.type)

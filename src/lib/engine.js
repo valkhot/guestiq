@@ -109,11 +109,50 @@ export function computeFindings(data) {
   }
 
   const totalReads = Object.values(reps).reduce((sum, v) => sum + v, 0)
+
+  // ── OVERVIEW LAYER ─────────────────────────────────────────────────
+  // Honest cross-guest view: cross-cutting patterns + sharpest signals +
+  // where the desk is thin. Never averages; every item keeps its guest.
+  const readPersonas = Object.keys(personas).filter(k => personas[k].reps > 0)
+
+  // 1) Cross-cutting: the SAME finding label appearing as Strong in 2+ guest types.
+  const byLabel = {}
+  for (const k of readPersonas) {
+    if (personas[k].gated) continue
+    for (const f of personas[k].strong) {
+      const key = f.label.toLowerCase().trim()
+      if (!byLabel[key]) byLabel[key] = { label: f.label, type: f.type, tag: f.tag, highValue: f.highValue, guests: [] }
+      byLabel[key].guests.push({ persona: k, count: f.count, reps: f.reps })
+    }
+  }
+  const crossCutting = Object.values(byLabel)
+    .filter(x => x.guests.length >= 2)
+    .sort((a, b) => (b.highValue - a.highValue) || (b.guests.length - a.guests.length))
+
+  // 2) Sharpest single signals: top high-value Strong findings across all guests,
+  //    each still tagged with its guest. (Falls back to strongest by count.)
+  const allStrong = []
+  for (const k of readPersonas) {
+    if (personas[k].gated) continue
+    for (const f of personas[k].strong) allStrong.push({ ...f, persona: k })
+  }
+  const sharpest = allStrong
+    .sort((a, b) => (b.highValue - a.highValue) || (b.count - a.count))
+    .slice(0, 5)
+
+  // 3) Where the desk is thin: guests read but still gated (below the floor).
+  const thin = readPersonas
+    .filter(k => personas[k].gated)
+    .map(k => ({ persona: k, reps: personas[k].reps }))
+    .sort((a, b) => a.reps - b.reps)
+
+  const overview = { crossCutting, sharpest, thin, hasAny: crossCutting.length > 0 || sharpest.length > 0 }
+
   const meta = {
     computedAt: new Date().toISOString(),
     floor: FLOOR,
     personaCount: Object.keys(personas).length,
     reads: totalReads,
   }
-  return { meta, personas }
+  return { meta, personas, overview }
 }
