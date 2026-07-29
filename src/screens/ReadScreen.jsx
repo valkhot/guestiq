@@ -10,15 +10,16 @@ import { track, captureError } from '../lib/analytics.js'
 import { buildCoreQuestions, buildDeepQuestions, personaLabel, grounding, responseIdFor } from '../lib/readFlow.js'
 
 function isAnswered(q, answer, text) {
-  // Their own words are always a valid answer — so free text alone can continue.
-  if ((text || '').trim().length > 0) return true
+  // Verbatim questions ARE the free text. Everything else needs a selection —
+  // the optional example supplements a choice, it doesn't replace it (a
+  // text-only answer can't be counted by the findings engine, so it's blocked).
   switch (q.type) {
+    case 'verbatim': return (text || '').trim().length > 0
     case 'single':
     case 'observer': return (answer.keys?.length || 0) > 0
     case 'multi':    return (answer.keys?.length || 0) > 0
     case 'kano':     return Object.keys(answer.marks || {}).length > 0
     case 'scale5':   return answer.scale != null
-    case 'verbatim': return text.trim().length > 0
     default:         return true
   }
 }
@@ -149,6 +150,7 @@ export default function ReadScreen({ badge, persona, readId, onExit, deepOnly = 
 
   const answered = isAnswered(q, answer, freeText)
   const isVerbatim = q.type === 'verbatim'
+  const needsPick = !answered && !isVerbatim && (freeText || '').trim().length > 0
 
   return (
     <div className="read">
@@ -174,14 +176,16 @@ export default function ReadScreen({ badge, persona, readId, onExit, deepOnly = 
 
         <div className="freetext">
           <label>
-            &#9998;&nbsp; {isVerbatim ? 'In their own words' : 'Or write it in their own words'}
+            &#9998;&nbsp; {isVerbatim ? 'In their own words' : 'Add an example, in their words'}
             {!isVerbatim && <span className="ft-opt"> optional</span>}
           </label>
           <textarea rows={2} value={freeText} onChange={e => setFreeText(e.target.value)}
-                    placeholder={isVerbatim ? 'What they said, or what you saw\u2026' : 'A quick example, in their words\u2026'} />
+                    placeholder={isVerbatim ? 'What they said, or what you saw\u2026' : 'e.g. a moment that shows what you picked above\u2026'} />
         </div>
 
         {resumed && <p className="read-resumed">Picked up where you left off \u2014 your earlier answers are saved.</p>}
+
+        {needsPick && <p className="pick-hint">Pick the option that fits best above — your example adds to it.</p>}
 
         <button className="cta continue" disabled={!answered || busy} onClick={saveAndContinue}>
           {busy ? 'Saving\u2026' : 'Continue \u2192'}
