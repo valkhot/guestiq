@@ -290,7 +290,7 @@
         "options": [
           {
             "key": "too_noisy",
-            "label": "too noisy (street, lift, air-con)",
+            "label": "too noisy (street, elevator, air-con)",
             "tag": "BS"
           },
           {
@@ -315,7 +315,7 @@
           },
           {
             "key": "far_from_the_lift",
-            "label": "far from the lift",
+            "label": "far from the elevator",
             "tag": "MW"
           },
           {
@@ -2830,7 +2830,7 @@
             },
             {
               "key": "crowding_at_check_in_lifts",
-              "label": "crowding at check-in / lifts",
+              "label": "crowding at check-in / elevators",
               "tag": "BS"
             },
             {

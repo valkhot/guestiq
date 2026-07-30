@@ -183,7 +183,7 @@ export default function ReadScreen({ badge, persona, readId, onExit, deepOnly = 
                     placeholder={isVerbatim ? 'What they said, or what you saw\u2026' : 'e.g. a moment that shows what you picked above\u2026'} />
         </div>
 
-        {resumed && <p className="read-resumed">Picked up where you left off \u2014 your earlier answers are saved.</p>}
+        {resumed && <p className="read-resumed">Picked up where you left off — your earlier answers are saved.</p>}
 
         {needsPick && <p className="pick-hint">Pick the option that fits best above — your example adds to it.</p>}
 

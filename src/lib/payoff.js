@@ -159,7 +159,7 @@ export function storyFrom(persona, recorded) {
   const p3 = []
   const uw = fresh(unwritten), rp = fresh(repeat)
   if (uw)        p3.push(pick(['There\u2019s something you do for them that no rule asks for: ', 'Not in any rulebook, but you do it anyway: ', 'The thing you do that isn\u2019t written down: '], sub(seed, 0x33c7)) + said(uw) + '.')
-  if (sorryRule) p3.push(`The rule you apologise for most: ${emb(sorryRule)}.`)
+  if (sorryRule) p3.push(`The rule you apologize for most: ${emb(sorryRule)}.`)
   if (rp)        p3.push(`And the thing you do again and again that one small change would end: ${said(rp)}.`)
   if (p3.length) paras.push(p3.join(' '))
 
